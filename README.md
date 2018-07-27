@@ -6,8 +6,18 @@ A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS 
 
 ## Installation
 
-Download the desired [release](https://github.com/vinyldns/vinyldns-cli/releases) version
-for your operating system; untar and install the `vinyldns-cli` excutable somewhere in your `$PATH`.
+Download the desired pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases) version
+for your operating system.
+
+For example, to install version 0.7.0 on Mac OS:
+
+```
+wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.7.0/vinyldns_0.7.0_darwin_x86_64
+
+chmod +x vinyldns_0.7.0_darwin_x86_64
+
+./vinyldns_0.7.0_darwin_x86_64 --help
+```
 
 ### Compiling from Golang source
 
