@@ -2,7 +2,7 @@
 
 # vinyldns-cli
 
-A Golang-based CLI for the [vinyldns](https://github.com/vinyldns) DNS as a service API.
+A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS as a service API.
 
 ## Installation
 
