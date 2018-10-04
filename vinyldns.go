@@ -406,6 +406,11 @@ func zones(c *cli.Context) error {
 		data = append(data, []string{
 			z.Name,
 			z.ID,
+			z.Email,
+			z.AdminGroupID,
+			z.Created,
+			z.Updated,
+			z.Status,
 		})
 	}
 
@@ -428,6 +433,10 @@ func zone(c *cli.Context) error {
 	data := [][]string{
 		{"Name", z.Name},
 		{"ID", z.ID},
+		{"Email", z.Email},
+		{"AdminGroupID", z.AdminGroupID},
+		{"Created", z.Created},
+		{"Updated", z.Updated},
 		{"Status", z.Status},
 	}
 
