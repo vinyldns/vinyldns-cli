@@ -29,10 +29,6 @@ import (
 // passed in via Makefile
 var version string
 
-const hostFlag = "host"
-const accessKeyFlag = "access-key"
-const secretKeyFlag = "secret-key"
-
 func main() {
 	app := cli.NewApp()
 	app.Name = "vinyldns"
@@ -40,17 +36,17 @@ func main() {
 	app.Usage = "A CLI to the vinyldns DNS-as-a-service API"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:   hostFlag,
+			Name:   "host",
 			Usage:  "vinyldns API Hostname",
 			EnvVar: "VINYLDNS_HOST",
 		},
 		cli.StringFlag{
-			Name:   fmt.Sprintf("%s, ak", accessKeyFlag),
+			Name:   "access_key, ak",
 			Usage:  "vinyldns access key",
 			EnvVar: "VINYLDNS_ACCESS_KEY",
 		},
 		cli.StringFlag{
-			Name:   fmt.Sprintf("%s, sk", secretKeyFlag),
+			Name:   "secret_key, sk",
 			Usage:  "vinyldns secret key",
 			EnvVar: "VINYLDNS_SECRET_KEY",
 		},
@@ -286,7 +282,7 @@ func main() {
 
 func groups(c *cli.Context) error {
 	client := client(c)
-	validateEnv(c)
+	validateEnv()
 	groups, err := client.Groups()
 	if err != nil {
 		return err
@@ -399,7 +395,7 @@ func groupActivity(c *cli.Context) error {
 
 func zones(c *cli.Context) error {
 	client := client(c)
-	validateEnv(c)
+	validateEnv()
 	zones, err := client.Zones()
 	if err != nil {
 		return err
@@ -686,26 +682,18 @@ func recordSetDelete(c *cli.Context) error {
 	return nil
 }
 
-func validateEnv(c *cli.Context) {
-	h := c.GlobalString(hostFlag)
-	ak := c.GlobalString(accessKeyFlag)
-	sk := c.GlobalString(secretKeyFlag)
+func validateEnv() {
+	required := []string{"vinyldns_HOST", "vinyldns_ACCESS_KEY", "vinyldns_SECRET_KEY"}
 	missing := []string{}
 
-	if h == "" {
-		missing = append(missing, h)
-		fmt.Printf("\nPlease pass '--%s' or set 'VINYLDNS_HOST'\n", hostFlag)
-	}
-	if ak == "" {
-		missing = append(missing, h)
-		fmt.Printf("\nPlease pass '--%s' or set 'VINYLDNS_ACCESS_KEY'\n", accessKeyFlag)
-	}
-	if sk == "" {
-		missing = append(missing, h)
-		fmt.Printf("\nPlease pass '--%s' or set 'VINYLDNS_SECRET_KEY'\n", secretKeyFlag)
+	for _, r := range required {
+		if os.Getenv(r) == "" {
+			missing = append(missing, r)
+		}
 	}
 
 	if len(missing) > 0 {
+		fmt.Printf("\nPlease set the following required environment variables:\n\n%s\n", strings.Join(missing, "\n"))
 		os.Exit(1)
 	}
 }
