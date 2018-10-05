@@ -683,7 +683,7 @@ func recordSetDelete(c *cli.Context) error {
 }
 
 func validateEnv() {
-	required := []string{"vinyldns_HOST", "vinyldns_ACCESS_KEY", "vinyldns_SECRET_KEY"}
+	required := []string{"VINYLDNS_HOST", "VINYLDNS_ACCESS_KEY", "VINYLDNS_SECRET_KEY"}
 	missing := []string{}
 
 	for _, r := range required {
