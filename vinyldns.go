@@ -406,11 +406,7 @@ func zones(c *cli.Context) error {
 		data = append(data, []string{
 			z.Name,
 			z.ID,
-			z.Email,
 			z.AdminGroupID,
-			z.Created,
-			z.Updated,
-			z.Status,
 		})
 	}
 
