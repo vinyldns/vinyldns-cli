@@ -716,12 +716,20 @@ func getRecord(recs []vinyldns.Record) string {
 	for _, r := range recs {
 		cname := r.CName
 		address := r.Address
+		preference := r.Preference
+		exchange := r.Exchange
 
 		if cname != "" {
 			records = append(records, "CNAME: "+cname)
 		}
 		if address != "" {
 			records = append(records, "address: "+address)
+		}
+		if preference != "" {
+			records = append(records, "preference:"+preference)
+		}
+		if exchange != "" {
+			records = append(records, "exchange:"+exchange)
 		}
 	}
 
