@@ -599,9 +599,9 @@ func recordSet(c *cli.Context) error {
 
 func client(c *cli.Context) *vinyldns.Client {
 	return &vinyldns.Client{
-		AccessKey:  c.GlobalString("access_key"),
-		SecretKey:  c.GlobalString("secret_key"),
-		Host:       c.GlobalString("host"),
+		AccessKey:  c.GlobalString(accessKeyFlag),
+		SecretKey:  c.GlobalString(secretKeyFlag),
+		Host:       c.GlobalString(hostFlag),
 		HTTPClient: &http.Client{},
 	}
 }
