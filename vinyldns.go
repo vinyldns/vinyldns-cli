@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/vinyldns/go-vinyldns/vinyldns"
@@ -741,8 +742,17 @@ func getRecord(recs []vinyldns.Record) string {
 }
 
 func getRecordValue(records []string, recordValue interface{}, recordPrepend string) []string {
-	if recordValue != "" {
-		records = append(records, recordPrepend + ": " + recordValue.(string))
+	var strVal string
+	switch recordValue.(type) {
+	case int:
+		strVal = strconv.Itoa(recordValue.(int))
+	case string:
+		strVal = recordValue.(string)
+	default:
+		strVal = ""
+	}
+	if strVal != "" && strVal != "0" {
+		records = append(records, recordPrepend+": "+strVal)
 	}
 
 	return records
