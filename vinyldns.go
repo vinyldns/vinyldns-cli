@@ -714,18 +714,38 @@ func getRecord(recs []vinyldns.Record) string {
 	records := []string{}
 
 	for _, r := range recs {
-		cname := r.CName
-		address := r.Address
-
-		if cname != "" {
-			records = append(records, "CNAME: "+cname)
-		}
-		if address != "" {
-			records = append(records, "address: "+address)
-		}
+		records = getRecordValue(records, r.Address, "Address")
+		records = getRecordValue(records, r.Algorithm, "Algorithm")
+		records = getRecordValue(records, r.CName, "CNAME")
+		records = getRecordValue(records, r.Exchange, "Exchange")
+		records = getRecordValue(records, r.Expire, "Expire")
+		records = getRecordValue(records, r.Fingerprint, "Fingerprint")
+		records = getRecordValue(records, r.MName, "MNAME")
+		records = getRecordValue(records, r.Minimum, "Minimum")
+		records = getRecordValue(records, r.NSDName, "NSDNAME")
+		records = getRecordValue(records, r.Port, "Port")
+		records = getRecordValue(records, r.Preference, "Preference")
+		records = getRecordValue(records, r.Priority, "Priority")
+		records = getRecordValue(records, r.PTRDName, "PTRDNAME")
+		records = getRecordValue(records, r.Refresh, "Refresh")
+		records = getRecordValue(records, r.Retry, "Retry")
+		records = getRecordValue(records, r.RName, "RNAME")
+		records = getRecordValue(records, r.Serial, "Serial")
+		records = getRecordValue(records, r.Target, "Target")
+		records = getRecordValue(records, r.Text, "Text")
+		records = getRecordValue(records, r.Type, "Type")
+		records = getRecordValue(records, r.Weight, "Weight")
 	}
 
 	return strings.Join(records, "\n")
+}
+
+func getRecordValue(records []string, recordValue interface{}, recordPrepend string) []string {
+	if recordValue != "" {
+		records = append(records, recordPrepend + ": " + recordValue.(string))
+	}
+
+	return records
 }
 
 func userIDList(mems []vinyldns.User) string {
