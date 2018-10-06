@@ -649,16 +649,27 @@ func recordSetCreate(c *cli.Context) error {
 	}
 
 	rdata := strings.Split(rdataS, ",")
-	rs := &vinyldns.RecordSet{
-		ZoneID: c.String("zone-id"),
-		Name:   c.String("record-set-name"),
-		Type:   t,
-		TTL:    c.Int("record-set-ttl"),
-		Records: []vinyldns.Record{
+
+	var record []vinyldns.Record
+	if t == "CNAME" {
+		record = []vinyldns.Record{
+			{
+				CName: rdata[0],
+			},
+		}
+	} else {
+		record = []vinyldns.Record{
 			{
 				Address: rdata[0],
 			},
-		},
+		}
+	}
+	rs := &vinyldns.RecordSet{
+		ZoneID:  c.String("zone-id"),
+		Name:    c.String("record-set-name"),
+		Type:    t,
+		TTL:     c.Int("record-set-ttl"),
+		Records: record,
 	}
 
 	_, err = client.RecordSetCreate(c.String("zone-id"), rs)
