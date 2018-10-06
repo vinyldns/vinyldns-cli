@@ -733,7 +733,7 @@ func getRecord(recs []vinyldns.Record) string {
 		records = getRecordValue(records, r.Serial, "Serial")
 		records = getRecordValue(records, r.Target, "Target")
 		records = getRecordValue(records, r.Text, "Text")
-		records = getRecordValue(records, r.Type, "Type")
+		records = getRecordValue(records, r.Typ, "Type")
 		records = getRecordValue(records, r.Weight, "Weight")
 	}
 
