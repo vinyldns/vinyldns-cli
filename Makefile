@@ -21,6 +21,7 @@ build_releases: deps
 	rm -rf release && mkdir release
 	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)
 	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH)
+	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo
 
 deps:
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
