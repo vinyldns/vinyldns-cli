@@ -312,7 +312,7 @@ func groups(c *cli.Context) error {
 
 func group(c *cli.Context) error {
 	client := client(c)
-	g, err := client.Group(c.String("id"))
+	g, err := client.Group(c.String("group-id"))
 	if err != nil {
 		return err
 	}
@@ -411,7 +411,6 @@ func zones(c *cli.Context) error {
 		data = append(data, []string{
 			z.Name,
 			z.ID,
-			z.AdminGroupID,
 		})
 	}
 
@@ -434,10 +433,6 @@ func zone(c *cli.Context) error {
 	data := [][]string{
 		{"Name", z.Name},
 		{"ID", z.ID},
-		{"Email", z.Email},
-		{"AdminGroupID", z.AdminGroupID},
-		{"Created", z.Created},
-		{"Updated", z.Updated},
 		{"Status", z.Status},
 	}
 
@@ -655,27 +650,16 @@ func recordSetCreate(c *cli.Context) error {
 	}
 
 	rdata := strings.Split(rdataS, ",")
-
-	var record []vinyldns.Record
-	if t == "CNAME" {
-		record = []vinyldns.Record{
-			{
-				CName: rdata[0],
-			},
-		}
-	} else {
-		record = []vinyldns.Record{
+	rs := &vinyldns.RecordSet{
+		ZoneID: c.String("zone-id"),
+		Name:   c.String("record-set-name"),
+		Type:   t,
+		TTL:    c.Int("record-set-ttl"),
+		Records: []vinyldns.Record{
 			{
 				Address: rdata[0],
 			},
-		}
-	}
-	rs := &vinyldns.RecordSet{
-		ZoneID:  c.String("zone-id"),
-		Name:    c.String("record-set-name"),
-		Type:    t,
-		TTL:     c.Int("record-set-ttl"),
-		Records: record,
+		},
 	}
 
 	_, err = client.RecordSetCreate(c.String("zone-id"), rs)
