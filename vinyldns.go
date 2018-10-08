@@ -13,6 +13,7 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -286,6 +287,18 @@ func main() {
 			Usage:       "batch-changes",
 			Description: "List all batch changes",
 			Action:      batchChanges,
+		},
+		{
+			Name:        "batch-change",
+			Usage:       "batch-change --batch-change-id <batchChangeID>",
+			Description: "view batch change details for a particular batch-id",
+			Action:      batchChange,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "batch-change-id",
+					Usage: "The batch change ID",
+				},
+			},
 		},
 	}
 	app.RunAndExitOnError()
@@ -625,6 +638,41 @@ func batchChanges(c *cli.Context) error {
 		clitable.PrintTable([]string{"ID", "CreatedTimestamp", "Comments"}, changes)
 	} else {
 		fmt.Println("No batch changes found")
+	}
+
+	return nil
+}
+
+func batchChange(c *cli.Context) error {
+	client := client(c)
+	rc, err := client.BatchRecordChange(c.String("batch-change-id"))
+	if err != nil {
+		return err
+	}
+
+	change := [][]string{}
+	for _, r := range rc.Changes {
+		changeElem := []string{}
+
+		changeElem = append(changeElem, `"ChangeType" - ` +  r.ChangeType)
+		changeElem = append(changeElem, `"InputName" - ` + r.InputName)
+		changeElem = append(changeElem, `"Type" - ` + r.Type)
+		changeElem = append(changeElem, `"TTL" - ` + string(r.TTL))
+
+		recordData, err := json.Marshal(&(r.Record))
+		if err != nil {
+			return err
+		}
+		changeElem = append(changeElem, `"Record" - ` + string(recordData))
+		changeElem = append(changeElem, `"Status" - ` + r.Status)
+
+		change = append(change, changeElem)
+	}
+
+	if len(change) != 0 {
+		printBasicTable(change)
+	} else {
+		fmt.Println("No batch change found with id: " + c.String("batch-change-id"))
 	}
 
 	return nil
