@@ -281,6 +281,12 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:        "batch-changes",
+			Usage:       "batch-changes",
+			Description: "List all batch changes",
+			Action:      batchChanges,
+		},
 	}
 	app.RunAndExitOnError()
 }
@@ -594,6 +600,32 @@ func recordSet(c *cli.Context) error {
 		"Updated": rs.Updated,
 		"TTL":     rs.TTL,
 	})
+
+	return nil
+}
+
+func batchChanges(c *cli.Context) error {
+	client := client(c)
+	rc, err := client.BatchRecordChanges()
+	if err != nil {
+		return err
+	}
+
+	changes := []map[string]interface{}{}
+	for _, r := range rc {
+		m := map[string]interface{}{}
+		m["ID"] = r.ID
+		m["CreatedTimestamp"] = r.CreatedTimestamp
+		m["Comments"] = r.Comments
+
+		changes = append(changes, m)
+	}
+
+	if len(changes) != 0 {
+		clitable.PrintTable([]string{"ID", "CreatedTimestamp", "Comments"}, changes)
+	} else {
+		fmt.Println("No batch changes found")
+	}
 
 	return nil
 }
