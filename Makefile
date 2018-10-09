@@ -4,6 +4,9 @@ TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
 VETARGS?=-all
+DOCKER_NAME=vinyldns/vinyldns-cli
+IMG=${DOCKER_NAME}:${VERSION}
+LATEST=${DOCKER_NAME}:latest
 
 all: lint vet build_releases
 
@@ -63,4 +66,12 @@ vet:
 		exit 1; \
 	fi
 
-.PHONY: install uninstall build build_releases deps release lint vet
+docker:
+	docker build -t ${IMG} .
+	docker tag ${IMG} ${LATEST}
+
+docker-push:
+	docker push ${LATEST}
+	docker push ${IMG}
+
+.PHONY: install uninstall build build_releases deps release lint vet docker docker-push
