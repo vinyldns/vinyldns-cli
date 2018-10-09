@@ -91,3 +91,24 @@ VINYLDNS_HOST=
 VINYLDNS_ACCESS_KEY=
 VINYLDNS_SECRET_KEY=
 ```
+
+### Docker
+
+There is also a `vinyldns-cli` [Docker image](https://hub.docker.com/r/vinyldns/vinyldns-cli/).
+
+Usage...
+
+```
+docker pull vinyldns/vinyldns-cli
+```
+
+```
+docker run vinyldns/vinyldns-cli:latest --help
+NAME:
+   vinyldns - A CLI to the vinyldns DNS-as-a-service API
+
+USAGE:
+   vinyldns [global options] command [command options] [arguments...]
+
+...
+```
