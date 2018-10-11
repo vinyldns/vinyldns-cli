@@ -7,8 +7,10 @@ VETARGS?=-all
 DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
+BATS=github.com/sstephenson/bats
+VINYLDNS=github.com/vinyldns/vinyldns
 
-all: lint vet build_releases
+all: lint vet acceptance stop-api build_releases
 
 install: build
 	mkdir -p $(PREFIX)/bin
@@ -33,6 +35,24 @@ deps:
 	go get github.com/golang/lint/golint
 	go get -u github.com/golang/dep/cmd/dep
 	dep ensure
+
+start-api:
+	if [ ! -d "$(GOPATH)/src/$(VINYLDNS)" ]; then \
+		echo "$(VINYLDNS) not found in your GOPATH (necessary for acceptance tests), getting..."; \
+		git clone https://$(VINYLDNS) $(GOPATH)/src/$(VINYLDNS); \
+	fi
+	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh
+
+stop-api:
+	$(GOPATH)/src/$(VINYLDNS)/bin/remove-vinyl-containers.sh
+
+bats:
+	if ! [ -x bats ]; then \
+		git clone --depth 1 https://${BATS}.git ${GOPATH}/src/${BATS}; \
+	fi
+
+acceptance: build bats start-api
+	${GOPATH}/src/${BATS}/bin/bats tests
 
 release: build_releases
 	go get github.com/aktau/github-release
