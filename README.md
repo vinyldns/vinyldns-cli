@@ -113,3 +113,15 @@ USAGE:
 
 ...
 ```
+
+## Development
+
+To compile, lint, run acceptance tests, etc.:
+
+```
+make
+```
+
+### Testing
+
+The `tests` directory contains a suite of [bats](https://github.com/sstephenson/bats) acceptance tests verifying `vinyldns` commands. Tests should accompany New features.
