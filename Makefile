@@ -47,7 +47,7 @@ stop-api:
 	$(GOPATH)/src/$(VINYLDNS)/bin/remove-vinyl-containers.sh
 
 bats:
-	if ! [ -x bats && -x ${GOPATH}/src/${BATS}/bin/bats ]; then \
+	if ! [ -x ${GOPATH}/src/${BATS}/bin/bats ]; then \
 		git clone --depth 1 https://${BATS}.git ${GOPATH}/src/${BATS}; \
 	fi
 
