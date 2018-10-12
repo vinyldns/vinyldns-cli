@@ -4,6 +4,8 @@ load test_helper
   result=$($ew zones)
   fixture=$(cat tests/fixtures/zones_none)
 
+  echo $result
+
   [ "${result}" = "${fixture}" ]
 }
 
@@ -12,11 +14,9 @@ load test_helper
     --name "ok." \
     --email "test@test.com" \
     --admin-group-id "ok-group" \
-    --zone-connection-name "test-ok." \
     --zone-connection-key-name "vinyldns." \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --zone-connection-primary-server "vinyldns-bind9" \
-    --transfer-connection-name "ok." \
     --transfer-connection-key-name "vinyldns." \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --transfer-connection-primary-server "vinyldns-bind9"

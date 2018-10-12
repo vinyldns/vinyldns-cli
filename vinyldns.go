@@ -161,10 +161,6 @@ func main() {
 					Usage: "The zone admin group ID",
 				},
 				cli.StringFlag{
-					Name:  "transfer-connection-name",
-					Usage: "The zone transfer connection",
-				},
-				cli.StringFlag{
 					Name:  "transfer-connection-key-name",
 					Usage: "The zone transfer connection key name",
 				},
@@ -175,10 +171,6 @@ func main() {
 				cli.StringFlag{
 					Name:  "transfer-connection-primary-server",
 					Usage: "The zone transfer connection primary server",
-				},
-				cli.StringFlag{
-					Name:  "zone-connection-name",
-					Usage: "The zone connection",
 				},
 				cli.StringFlag{
 					Name:  "zone-connection-key-name",
@@ -528,15 +520,15 @@ func zoneDelete(c *cli.Context) error {
 func zoneCreate(c *cli.Context) error {
 	client := client(c)
 	connection := &vinyldns.ZoneConnection{
-		Name:          c.String("zone-connection-name"),
 		Key:           c.String("zone-connection-key"),
 		KeyName:       c.String("zone-connection-key-name"),
+		Name:          c.String("zone-connection-key-name"),
 		PrimaryServer: c.String("zone-connection-primary-server"),
 	}
 	tConnection := &vinyldns.ZoneConnection{
-		Name:          c.String("transfer-connection-name"),
 		Key:           c.String("transfer-connection-key"),
 		KeyName:       c.String("transfer-connection-key-name"),
+		Name:          c.String("transfer-connection-key-name"),
 		PrimaryServer: c.String("transfer-connection-primary-server"),
 	}
 	z := &vinyldns.Zone{
