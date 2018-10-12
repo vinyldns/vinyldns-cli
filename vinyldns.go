@@ -532,12 +532,27 @@ func zoneCreate(c *cli.Context) error {
 		PrimaryServer: c.String("transfer-connection-primary-server"),
 	}
 	z := &vinyldns.Zone{
-		Name:               c.String("name"),
-		Email:              c.String("email"),
-		AdminGroupID:       c.String("admin-group-id"),
-		Connection:         connection,
-		TransferConnection: tConnection,
+		Name:         c.String("name"),
+		Email:        c.String("email"),
+		AdminGroupID: c.String("admin-group-id"),
 	}
+
+	zc, err := validateConnection("zone", connection)
+	if err != nil {
+		return err
+	}
+	if zc {
+		z.Connection = connection
+	}
+
+	tc, err := validateConnection("transfer", tConnection)
+	if err != nil {
+		return err
+	}
+	if tc {
+		z.TransferConnection = tConnection
+	}
+
 	created, err := client.ZoneCreate(z)
 	if err != nil {
 		return err
@@ -961,4 +976,18 @@ func printTableWithHeaders(headers []string, data [][]string) {
 	table.AppendBulk(data)
 	table.SetRowLine(true)
 	table.Render()
+}
+
+func validateConnection(connection string, c *vinyldns.ZoneConnection) (bool, error) {
+	// if all are empty, we assume the user does not want to declare a connection
+	if c.Key == "" && c.KeyName == "" && c.Name == "" && c.PrimaryServer == "" {
+		return false, nil
+	}
+
+	// if any but not all are empty, we have a problem
+	if c.Key == "" || c.KeyName == "" || c.Name == "" || c.PrimaryServer == "" {
+		return false, fmt.Errorf("%s connection requires '--%s-connection-key-name', '--%s-connection-key', and '--%s-connection-primary-server'", connection, connection, connection, connection)
+	}
+
+	return true, nil
 }
