@@ -1,12 +1,11 @@
 load test_helper
 
 @test "zones (when none exist)" {
-  result="$($ew zones)"
+  run $ew zones
+
   fixture="$(cat tests/fixtures/zones_none)"
 
-  echo $result
-
-  [ "${result}" = "${fixture}" ]
+  [ "${output}" = "${fixture}" ]
 }
 
 @test "zone-create" {
