@@ -10,14 +10,44 @@ A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS 
 Download the desired pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases) version
 for your operating system.
 
-For example, to install version 0.7.0 on Mac OS:
+For example, to install version 0.8.4 on Mac OS...
+
+Download:
 
 ```
-wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.7.0/vinyldns_0.7.0_darwin_x86_64
+wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.8.4/vinyldns_0.8.4_darwin_x86_64
+```
 
-chmod +x vinyldns_0.7.0_darwin_x86_64
+Make the downloaded binary executable:
 
-./vinyldns_0.7.0_darwin_x86_64 --help
+```
+chmod +x vinyldns_0.8.4_darwin_x86_64
+```
+
+Use it:
+
+```
+./vinyldns_0.8.4_darwin_x86_64 --help
+```
+
+And, of course, you can also rename the executable and move it to your path. For example...
+
+Rename your downloaded binary:
+
+```
+mv vinyldns_0.8.4_darwin_x86_64 vinyldns
+```
+
+Move it somewhere in your `$PATH`:
+
+```
+mv vinyldns /usr/local/bin
+```
+
+Use the `vinyldns` command:
+
+```
+vinyldns --help
 ```
 
 ### Compiling from Golang source
@@ -124,4 +154,4 @@ make
 
 ### Testing
 
-The `tests` directory contains a suite of [bats](https://github.com/sstephenson/bats) acceptance tests verifying `vinyldns` commands. Tests should accompany New features.
+The `tests` directory contains a suite of [bats](https://github.com/sstephenson/bats) acceptance tests verifying `vinyldns` commands. Tests should accompany new features.
