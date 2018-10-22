@@ -77,6 +77,7 @@ COMMANDS:
      group-activity      group-activity --group-id <groupID>
      zones               zones
      zone                zone --zone-id <zoneID>
+     zone-create         zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>
      zone-delete         zone-delete --zone-id <zoneID>
      zone-connection     zone-connection --zone-id <zoneID>
      zone-changes        zone-changes --zone-changes <zoneID>
@@ -87,6 +88,7 @@ COMMANDS:
      record-set-delete   record-set-delete --zone-id <zoneID> --record-set-id <recordSetID>
      record-sets         record-sets --zone-id <zoneID>
      batch-changes       batch-changes
+     batch-change        batch-change --batch-change-id <batchChangeID>
      help, h             Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
