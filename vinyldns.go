@@ -143,6 +143,50 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-create",
+			Usage:       "zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>",
+			Description: "Create a zone",
+			Action:      zoneCreate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The zone name",
+				},
+				cli.StringFlag{
+					Name:  "email",
+					Usage: "The zone email",
+				},
+				cli.StringFlag{
+					Name:  "admin-group-id",
+					Usage: "The zone admin group ID",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-key-name",
+					Usage: "The zone transfer connection key name",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-key",
+					Usage: "The zone transfer connection key",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-primary-server",
+					Usage: "The zone transfer connection primary server",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-key-name",
+					Usage: "The zone connection key name",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-key",
+					Usage: "The zone connection key",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-primary-server",
+					Usage: "The zone zone connection primary server",
+				},
+			},
+		},
+		{
 			Name:        "zone-delete",
 			Usage:       "zone-delete --zone-id <zoneID>",
 			Description: "Delete a zone",
@@ -473,6 +517,52 @@ func zoneDelete(c *cli.Context) error {
 	return nil
 }
 
+func zoneCreate(c *cli.Context) error {
+	client := client(c)
+	connection := &vinyldns.ZoneConnection{
+		Key:           c.String("zone-connection-key"),
+		KeyName:       c.String("zone-connection-key-name"),
+		Name:          c.String("zone-connection-key-name"),
+		PrimaryServer: c.String("zone-connection-primary-server"),
+	}
+	tConnection := &vinyldns.ZoneConnection{
+		Key:           c.String("transfer-connection-key"),
+		KeyName:       c.String("transfer-connection-key-name"),
+		Name:          c.String("transfer-connection-key-name"),
+		PrimaryServer: c.String("transfer-connection-primary-server"),
+	}
+	z := &vinyldns.Zone{
+		Name:         c.String("name"),
+		Email:        c.String("email"),
+		AdminGroupID: c.String("admin-group-id"),
+	}
+
+	zc, err := validateConnection("zone", connection)
+	if err != nil {
+		return err
+	}
+	if zc {
+		z.Connection = connection
+	}
+
+	tc, err := validateConnection("transfer", tConnection)
+	if err != nil {
+		return err
+	}
+	if tc {
+		z.TransferConnection = tConnection
+	}
+
+	created, err := client.ZoneCreate(z)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Created zone %s\n", created.Zone.Name)
+
+	return nil
+}
+
 func zoneConnection(c *cli.Context) error {
 	client := client(c)
 	id := c.String("zone-id")
@@ -654,17 +744,17 @@ func batchChange(c *cli.Context) error {
 	for _, r := range rc.Changes {
 		changeElem := []string{}
 
-		changeElem = append(changeElem, `"ChangeType" - ` +  r.ChangeType)
-		changeElem = append(changeElem, `"InputName" - ` + r.InputName)
-		changeElem = append(changeElem, `"Type" - ` + r.Type)
-		changeElem = append(changeElem, `"TTL" - ` + string(r.TTL))
+		changeElem = append(changeElem, `"ChangeType" - `+r.ChangeType)
+		changeElem = append(changeElem, `"InputName" - `+r.InputName)
+		changeElem = append(changeElem, `"Type" - `+r.Type)
+		changeElem = append(changeElem, `"TTL" - `+string(r.TTL))
 
 		recordData, err := json.Marshal(&(r.Record))
 		if err != nil {
 			return err
 		}
-		changeElem = append(changeElem, `"Record" - ` + string(recordData))
-		changeElem = append(changeElem, `"Status" - ` + r.Status)
+		changeElem = append(changeElem, `"Record" - `+string(recordData))
+		changeElem = append(changeElem, `"Status" - `+r.Status)
 
 		change = append(change, changeElem)
 	}
@@ -886,4 +976,18 @@ func printTableWithHeaders(headers []string, data [][]string) {
 	table.AppendBulk(data)
 	table.SetRowLine(true)
 	table.Render()
+}
+
+func validateConnection(connection string, c *vinyldns.ZoneConnection) (bool, error) {
+	// if all are empty, we assume the user does not want to declare a connection
+	if c.Key == "" && c.KeyName == "" && c.Name == "" && c.PrimaryServer == "" {
+		return false, nil
+	}
+
+	// if any but not all are empty, we have a problem
+	if c.Key == "" || c.KeyName == "" || c.Name == "" || c.PrimaryServer == "" {
+		return false, fmt.Errorf("%s connection requires '--%s-connection-key-name', '--%s-connection-key', and '--%s-connection-primary-server'", connection, connection, connection, connection)
+	}
+
+	return true, nil
 }
