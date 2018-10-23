@@ -79,3 +79,14 @@ load test_helper
 
   [ "${output}" = "${fixture}" ]
 }
+
+@test "group-members" {
+  # `| sed '10,$d'` to get only the first 10 lines of output,
+  # as the last line contains a `Created` field that will differ
+  # with each startup of Dockerized VinylDNS.
+  run $ew group-members --group-id ok-group | sed '10,$d'
+
+  fixture="$(cat tests/fixtures/group_members)"
+
+  [ "${output}" = "${fixture}" ]
+}
