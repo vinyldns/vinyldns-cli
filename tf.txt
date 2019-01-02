@@ -1,0 +1,30 @@
+---
+
+1. Modules
+docs: https://www.terraform.io/docs/modules/usage.html
+example: https://github.comcast.com/aae/terraform-security-groups
+example usage: https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/security_groups.tf#L68-L70
+
+---
+
+2. Data sources
+docs: https://www.terraform.io/docs/configuration/data-sources.html
+example (s3): https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/tango.tf#L24-L27
+example use (s3): https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/tango.tf#L84
+
+---
+
+3. tfstate data source (referencing value output by another tfstate)
+docs: https://www.terraform.io/docs/providers/terraform/d/remote_state.html
+example: https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/tango.tf#L34-L42
+example use: https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/tango.tf#L110
+
+Note that this works because `route53_zone_name` (https://github.comcast.com/aae/xfinityapi-tango/blob/master/infra/terraform/cec/variables.tf#L129)
+is output (https://www.terraform.io/intro/getting-started/outputs.html) by platform-dns-base tfstate (https://github.comcast.com/aae/platform-dns-base/blob/master/terraform/_outputs.tf#L21-L23)
+
+---
+
+4. referencing another value within the same .tf file
+example:
+this: https://github.comcast.com/aae/concourse/blob/master/infra/terraform/cec/concourse.tf#L462
+is read from this resource: https://github.comcast.com/aae/concourse/blob/master/infra/terraform/cec/concourse.tf#L354-L376
