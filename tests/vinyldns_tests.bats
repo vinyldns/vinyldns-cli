@@ -1,5 +1,37 @@
 load test_helper
 
+@test "groups (when none exist)" {
+  run $ew groups
+
+  fixture="$(cat tests/fixtures/groups_none)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "group-create" {
+  run $ew group-create --name ok-group
+
+  fixture="$(cat tests/fixtures/group_create)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "groups (when groups exist)" {
+  run $ew groups
+
+  fixture="$(cat tests/fixtures/groups)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "group (when the group exists)" {
+  run $ew group --group-id ok-group
+
+  fixture="$(cat tests/fixtures/group)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
 @test "zones (when none exist)" {
   run $ew zones
 
@@ -61,21 +93,5 @@ load test_helper
   fixture="$(cat tests/fixtures/zone_create_invalid_transfer_connection)"
 
   [ "${status}" -eq 1 ]
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "groups" {
-  run $ew groups
-
-  fixture="$(cat tests/fixtures/groups)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "group" {
-  run $ew group --group-id ok-group
-
-  fixture="$(cat tests/fixtures/group)"
-
   [ "${output}" = "${fixture}" ]
 }
