@@ -77,6 +77,26 @@ func main() {
 			},
 		},
 		{
+			Name:        "group-create",
+			Usage:       "group-create --name <groupName> --description <groupDescription> --email <groupEmail>",
+			Description: "Create a vinyldns group",
+			Action:      groupCreate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The group name",
+				},
+				cli.StringFlag{
+					Name:  "description",
+					Usage: "The group description",
+				},
+				cli.StringFlag{
+					Name:  "email",
+					Usage: "The group email",
+				},
+			},
+		},
+		{
 			Name:        "group-delete",
 			Usage:       "group-delete --group-id <groupID>",
 			Description: "Delete the targeted vinyldns group",
@@ -391,6 +411,22 @@ func group(c *cli.Context) error {
 	}
 
 	printBasicTable(data)
+
+	return nil
+}
+
+func groupCreate(c *cli.Context) error {
+	client := client(c)
+	_, err := client.GroupCreate(&vinyldns.Group{
+		Name:        c.String("name"),
+		Description: c.String("description"),
+		Email:       c.String("email"),
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Created group %s\n", name)
 
 	return nil
 }
