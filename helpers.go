@@ -25,6 +25,7 @@ import (
 )
 
 func client(c *cli.Context) *vinyldns.Client {
+	validateEnv(c)
 	return &vinyldns.Client{
 		AccessKey:  c.GlobalString(accessKeyFlag),
 		SecretKey:  c.GlobalString(secretKeyFlag),

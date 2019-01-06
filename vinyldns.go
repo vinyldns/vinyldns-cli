@@ -366,7 +366,6 @@ func main() {
 
 func groups(c *cli.Context) error {
 	client := client(c)
-	validateEnv(c)
 	groups, err := client.Groups()
 	if err != nil {
 		return err
@@ -497,7 +496,6 @@ func groupActivity(c *cli.Context) error {
 
 func zones(c *cli.Context) error {
 	client := client(c)
-	validateEnv(c)
 	zones, err := client.Zones()
 	if err != nil {
 		return err
