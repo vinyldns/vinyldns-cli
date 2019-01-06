@@ -1,5 +1,5 @@
 NAME=vinyldns
-VERSION=0.8.5
+VERSION=0.8.6
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
