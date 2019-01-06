@@ -80,8 +80,8 @@ vet:
 	@go vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
 		go get golang.org/x/tools/cmd/vet; \
 	fi
-	@echo "go tool vet $(VETARGS)"
-	@go tool vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
+	@echo "go vet $(VETARGS)"
+	@go vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
 		echo ""; \
 		echo "Vet found suspicious constructs. Please check the reported constructs"; \
 		echo "and fix them if necessary before submitting the code for review."; \
