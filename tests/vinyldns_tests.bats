@@ -9,7 +9,8 @@ load test_helper
 }
 
 @test "group-create" {
-  run $ew group-create --name ok-group
+  run $ew group-create \
+    --json "$(cat tests/fixtures/group_create_json)"
 
   fixture="$(cat tests/fixtures/group_create)"
 
@@ -17,19 +18,15 @@ load test_helper
 }
 
 @test "groups (when groups exist)" {
-  run $ew groups
-
   fixture="$(cat tests/fixtures/groups)"
 
-  [ "${output}" = "${fixture}" ]
+  $ew groups | grep "${fixture}"
 }
 
 @test "group (when the group exists)" {
-  run $ew group --group-id ok-group
-
   fixture="$(cat tests/fixtures/group)"
 
-  [ "${output}" = "${fixture}" ]
+  $ew group --name "ok-group" | grep "${fixture}"
 }
 
 @test "zones (when none exist)" {
