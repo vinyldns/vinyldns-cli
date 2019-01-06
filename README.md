@@ -72,6 +72,7 @@ Supported commands:
 COMMANDS:
      groups              groups
      group               group --group-id <groupID>
+     group-create        group-create --json <groupJSON>
      group-delete        group-delete --group-id <groupID>
      group-admins        group-admins --group-id <groupID>
      group-members       group-members --group-id <groupID>
