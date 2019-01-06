@@ -74,25 +74,21 @@ func main() {
 					Name:  "group-id",
 					Usage: "The group ID",
 				},
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The group name (in alternative to group-id)",
+				},
 			},
 		},
 		{
 			Name:        "group-create",
-			Usage:       "group-create --name <groupName> --description <groupDescription> --email <groupEmail>",
+			Usage:       "group-create --json <groupJSON>",
 			Description: "Create a vinyldns group",
 			Action:      groupCreate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "name",
-					Usage: "The group name",
-				},
-				cli.StringFlag{
-					Name:  "description",
-					Usage: "The group description",
-				},
-				cli.StringFlag{
-					Name:  "email",
-					Usage: "The group email",
+					Name:  "json",
+					Usage: "The vinyldns JSON representing the group",
 				},
 			},
 		},
@@ -394,8 +390,9 @@ func groups(c *cli.Context) error {
 }
 
 func group(c *cli.Context) error {
-	client := client(c)
-	g, err := client.Group(c.String("group-id"))
+	id := c.String("group-id")
+	name := c.String("name")
+	g, err := getGroup(client(c), name, id)
 	if err != nil {
 		return err
 	}
@@ -415,18 +412,44 @@ func group(c *cli.Context) error {
 	return nil
 }
 
+func getGroup(c *vinyldns.Client, name, id string) (*vinyldns.Group, error) {
+	if name != "" {
+		fmt.Println(fmt.Printf("here: %s", name))
+		return groupByName(c, name)
+	}
+
+	return c.Group(id)
+}
+
+func groupByName(c *vinyldns.Client, name string) (*vinyldns.Group, error) {
+	var g *vinyldns.Group
+	groups, err := c.Groups()
+	if err != nil {
+		return g, err
+	}
+
+	for _, group := range groups {
+		if group.Name == name {
+			return &group, nil
+		}
+	}
+
+	return g, fmt.Errorf("Group %s not found", name)
+}
+
 func groupCreate(c *cli.Context) error {
+	data := []byte(c.String("json"))
+	group := &vinyldns.Group{}
+	if err := json.Unmarshal(data, &group); err != nil {
+		return err
+	}
 	client := client(c)
-	_, err := client.GroupCreate(&vinyldns.Group{
-		Name:        c.String("name"),
-		Description: c.String("description"),
-		Email:       c.String("email"),
-	})
+	_, err := client.GroupCreate(group)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Created group %s\n", name)
+	fmt.Printf("Created group %s\n", group.Name)
 
 	return nil
 }
