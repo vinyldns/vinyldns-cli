@@ -77,7 +77,7 @@ lint: deps
 # vet runs the Go source code static analysis tool `vet` to find
 # any common errors.
 vet:
-	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
+	@go vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
 		go get golang.org/x/tools/cmd/vet; \
 	fi
 	@echo "go tool vet $(VETARGS)"
