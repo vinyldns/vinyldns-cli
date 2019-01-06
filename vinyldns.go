@@ -177,6 +177,10 @@ func main() {
 					Usage: "The zone admin group ID",
 				},
 				cli.StringFlag{
+					Name:  "admin-group-name",
+					Usage: "The zone admin group name (an alternative to admin-group-id)",
+				},
+				cli.StringFlag{
 					Name:  "transfer-connection-key-name",
 					Usage: "The zone transfer connection key name",
 				},
@@ -578,6 +582,10 @@ func zoneDelete(c *cli.Context) error {
 
 func zoneCreate(c *cli.Context) error {
 	client := client(c)
+	id, err := getAdminGroupID(client, c.String("admin-group-id"), c.String("admin-group-name"))
+	if err != nil {
+		return err
+	}
 	connection := &vinyldns.ZoneConnection{
 		Key:           c.String("zone-connection-key"),
 		KeyName:       c.String("zone-connection-key-name"),
@@ -593,7 +601,7 @@ func zoneCreate(c *cli.Context) error {
 	z := &vinyldns.Zone{
 		Name:         c.String("name"),
 		Email:        c.String("email"),
-		AdminGroupID: c.String("admin-group-id"),
+		AdminGroupID: id,
 	}
 
 	zc, err := validateConnection("zone", connection)
@@ -620,6 +628,19 @@ func zoneCreate(c *cli.Context) error {
 	fmt.Printf("Created zone %s\n", created.Zone.Name)
 
 	return nil
+}
+
+func getAdminGroupID(c *vinyldns.Client, id, name string) (string, error) {
+	if id != "" {
+		return id, nil
+	}
+
+	g, err := groupByName(c, name)
+	if err != nil {
+		return "", err
+	}
+
+	return g.ID, nil
 }
 
 func zoneConnection(c *cli.Context) error {

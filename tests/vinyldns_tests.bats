@@ -41,7 +41,7 @@ load test_helper
   run $ew zone-create \
     --name "ok." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --zone-connection-key-name "vinyldns." \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --zone-connection-primary-server "vinyldns-bind9" \
@@ -58,7 +58,7 @@ load test_helper
   run $ew zone-create \
     --name "vinyldns." \
     --email "admin@test.com" \
-    --admin-group-id "ok-group"
+    --admin-group-name "ok-group"
 
   fixture="$(cat tests/fixtures/zone_create_no_connection)"
 
@@ -69,7 +69,7 @@ load test_helper
   run $ew zone-create \
     --name "ok-invalid-connection." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --zone-connection-primary-server "vinyldns-bind9"
 
@@ -83,7 +83,7 @@ load test_helper
   run $ew zone-create \
     --name "ok-invalid-connection." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --transfer-connection-primary-server "vinyldns-bind9"
 
