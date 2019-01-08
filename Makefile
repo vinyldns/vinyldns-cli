@@ -1,5 +1,5 @@
 NAME=vinyldns
-VERSION=0.8.5
+VERSION=0.8.6
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
@@ -41,7 +41,9 @@ start-api:
 		echo "$(VINYLDNS) not found in your GOPATH (necessary for acceptance tests), getting..."; \
 		git clone https://$(VINYLDNS) $(GOPATH)/src/$(VINYLDNS); \
 	fi
-	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh
+	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh \
+		--api-only
+		--version 0.8.0
 
 stop-api:
 	$(GOPATH)/src/$(VINYLDNS)/bin/remove-vinyl-containers.sh
@@ -75,11 +77,11 @@ lint: deps
 # vet runs the Go source code static analysis tool `vet` to find
 # any common errors.
 vet:
-	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
+	@go vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
 		go get golang.org/x/tools/cmd/vet; \
 	fi
-	@echo "go tool vet $(VETARGS)"
-	@go tool vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
+	@echo "go vet $(VETARGS)"
+	@go vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
 		echo ""; \
 		echo "Vet found suspicious constructs. Please check the reported constructs"; \
 		echo "and fix them if necessary before submitting the code for review."; \

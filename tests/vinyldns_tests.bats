@@ -1,5 +1,34 @@
 load test_helper
 
+@test "groups (when none exist)" {
+  run $ew groups
+
+  fixture="$(cat tests/fixtures/groups_none)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "group-create" {
+  run $ew group-create \
+    --json "$(cat tests/fixtures/group_create_json)"
+
+  fixture="$(cat tests/fixtures/group_create)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "groups (when groups exist)" {
+  fixture="$(cat tests/fixtures/groups)"
+
+  $ew groups | grep "${fixture}"
+}
+
+@test "group (when the group exists)" {
+  fixture="$(cat tests/fixtures/group)"
+
+  $ew group --name "ok-group" | grep "${fixture}"
+}
+
 @test "zones (when none exist)" {
   run $ew zones
 
@@ -12,7 +41,7 @@ load test_helper
   run $ew zone-create \
     --name "ok." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --zone-connection-key-name "vinyldns." \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --zone-connection-primary-server "vinyldns-bind9" \
@@ -29,7 +58,7 @@ load test_helper
   run $ew zone-create \
     --name "vinyldns." \
     --email "admin@test.com" \
-    --admin-group-id "ok-group"
+    --admin-group-name "ok-group"
 
   fixture="$(cat tests/fixtures/zone_create_no_connection)"
 
@@ -40,7 +69,7 @@ load test_helper
   run $ew zone-create \
     --name "ok-invalid-connection." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --zone-connection-primary-server "vinyldns-bind9"
 
@@ -54,28 +83,12 @@ load test_helper
   run $ew zone-create \
     --name "ok-invalid-connection." \
     --email "test@test.com" \
-    --admin-group-id "ok-group" \
+    --admin-group-name "ok-group" \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
     --transfer-connection-primary-server "vinyldns-bind9"
 
   fixture="$(cat tests/fixtures/zone_create_invalid_transfer_connection)"
 
   [ "${status}" -eq 1 ]
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "groups" {
-  run $ew groups
-
-  fixture="$(cat tests/fixtures/groups)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "group" {
-  run $ew group --group-id ok-group
-
-  fixture="$(cat tests/fixtures/group)"
-
   [ "${output}" = "${fixture}" ]
 }
