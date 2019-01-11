@@ -585,9 +585,13 @@ func zone(c *cli.Context) error {
 func zoneDelete(c *cli.Context) error {
 	id := c.String("zone-id")
 	client := client(c)
-	_, err := client.ZoneDelete(id)
+	deleted, err := client.ZoneDelete(id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(deleted)
 	}
 
 	fmt.Printf("Deleted zone %s\n", id)
