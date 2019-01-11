@@ -485,12 +485,16 @@ func groupAdmins(c *cli.Context) error {
 
 func groupMembers(c *cli.Context) error {
 	client := client(c)
-	admins, err := client.GroupMembers(c.String("group-id"))
+	members, err := client.GroupMembers(c.String("group-id"))
 	if err != nil {
 		return err
 	}
 
-	printUsers(admins)
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(members)
+	}
+
+	printUsers(members)
 
 	return nil
 }
@@ -500,6 +504,10 @@ func groupActivity(c *cli.Context) error {
 	activity, err := client.GroupActivity(c.String("group-id"))
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(activity)
 	}
 
 	for _, c := range activity.Changes {
