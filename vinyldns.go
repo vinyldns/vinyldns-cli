@@ -436,9 +436,13 @@ func groupCreate(c *cli.Context) error {
 		return err
 	}
 	client := client(c)
-	_, err := client.GroupCreate(group)
+	create, err := client.GroupCreate(group)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(create)
 	}
 
 	fmt.Printf("Created group %s\n", group.Name)
