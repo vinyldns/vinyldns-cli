@@ -692,6 +692,10 @@ func zoneChanges(c *cli.Context) error {
 	}
 	cs := zh.ZoneChanges
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(cs)
+	}
+
 	for _, c := range cs {
 		clitable.PrintHorizontal(map[string]interface{}{
 			"Zone":       c.Zone.Name,
