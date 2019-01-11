@@ -662,6 +662,10 @@ func zoneConnection(c *cli.Context) error {
 	}
 	con := z.Connection
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(con)
+	}
+
 	if con == nil {
 		fmt.Printf("No zone connection found for zone %s\n", id)
 
