@@ -30,6 +30,7 @@ var version string
 const hostFlag = "host"
 const accessKeyFlag = "access-key"
 const secretKeyFlag = "secret-key"
+const outputFlag = "output"
 
 func main() {
 	app := cli.NewApp()
@@ -51,6 +52,11 @@ func main() {
 			Name:   fmt.Sprintf("%s, sk", secretKeyFlag),
 			Usage:  "vinyldns secret key",
 			EnvVar: "VINYLDNS_SECRET_KEY",
+		},
+		cli.StringFlag{
+			Name:   fmt.Sprintf("%s, op", outputFlag),
+			Usage:  "vinyldns output format ('table' (default), 'json')",
+			EnvVar: "VINYLDNS_FORMAT",
 		},
 	}
 	app.Commands = []cli.Command{
@@ -371,6 +377,14 @@ func groups(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(groups)
+	}
+
+	return printGroupsTable(groups)
+}
+
+func printGroupsTable(groups []vinyldns.Group) error {
 	data := [][]string{}
 	for _, g := range groups {
 		data = append(data, []string{
