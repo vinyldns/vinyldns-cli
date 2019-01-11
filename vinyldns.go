@@ -644,6 +644,10 @@ func zoneCreate(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(created)
+	}
+
 	fmt.Printf("Created zone %s\n", created.Zone.Name)
 
 	return nil
