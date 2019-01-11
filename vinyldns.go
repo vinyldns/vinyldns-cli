@@ -539,6 +539,10 @@ func zones(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(zones)
+	}
+
 	data := [][]string{}
 	for _, z := range zones {
 		data = append(data, []string{
