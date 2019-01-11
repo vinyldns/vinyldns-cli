@@ -567,6 +567,10 @@ func zone(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(z)
+	}
+
 	data := [][]string{
 		{"Name", z.Name},
 		{"ID", z.ID},
