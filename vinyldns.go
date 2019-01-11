@@ -410,6 +410,10 @@ func group(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(g)
+	}
+
 	data := [][]string{
 		{"Name", g.Name},
 		{"ID", g.ID},
