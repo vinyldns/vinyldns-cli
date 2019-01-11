@@ -453,9 +453,13 @@ func groupCreate(c *cli.Context) error {
 func groupDelete(c *cli.Context) error {
 	id := c.String("group-id")
 	client := client(c)
-	_, err := client.GroupDelete(id)
+	deleted, err := client.GroupDelete(id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(deleted)
 	}
 
 	fmt.Printf("Deleted group %s\n", id)
