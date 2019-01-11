@@ -474,6 +474,10 @@ func groupAdmins(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(admins)
+	}
+
 	printUsers(admins)
 
 	return nil
