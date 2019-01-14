@@ -944,9 +944,13 @@ func recordSetDelete(c *cli.Context) error {
 	}
 
 	client := client(c)
-	_, err := client.RecordSetDelete(c.String("zone-id"), id)
+	d, err := client.RecordSetDelete(c.String("zone-id"), id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(d)
 	}
 
 	fmt.Printf("Deleted record set %s\n", id)
