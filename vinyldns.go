@@ -720,7 +720,7 @@ func recordSetChanges(c *cli.Context) error {
 	rsc := zh.RecordSetChanges
 
 	if c.GlobalString(outputFlag) == "json" {
-		return printJSON(cs)
+		return printJSON(rsc)
 	}
 
 	for _, c := range rsc {
