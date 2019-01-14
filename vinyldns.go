@@ -828,6 +828,10 @@ func batchChanges(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rc)
+	}
+
 	changes := []map[string]interface{}{}
 	for _, r := range rc {
 		m := map[string]interface{}{}
