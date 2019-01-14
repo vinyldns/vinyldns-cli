@@ -746,6 +746,10 @@ func recordSetChange(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rsc)
+	}
+
 	clitable.PrintHorizontal(map[string]interface{}{
 		"Zone":          rsc.Zone.Name,
 		"RecordSetName": rsc.RecordSet.Name,
