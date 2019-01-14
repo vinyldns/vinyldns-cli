@@ -801,6 +801,10 @@ func recordSet(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rs)
+	}
+
 	clitable.PrintHorizontal(map[string]interface{}{
 		"Zone":    rs.ZoneID,
 		"Name":    rs.Name,
