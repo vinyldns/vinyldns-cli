@@ -858,6 +858,10 @@ func batchChange(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rc)
+	}
+
 	change := [][]string{}
 	for _, r := range rc.Changes {
 		changeElem := []string{}
