@@ -719,6 +719,10 @@ func recordSetChanges(c *cli.Context) error {
 	}
 	rsc := zh.RecordSetChanges
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(cs)
+	}
+
 	for _, c := range rsc {
 		clitable.PrintHorizontal(map[string]interface{}{
 			"Zone":          c.Zone.Name,
