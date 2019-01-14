@@ -771,6 +771,10 @@ func recordSets(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rs)
+	}
+
 	s := []map[string]interface{}{}
 	for _, r := range rs {
 		m := map[string]interface{}{}
