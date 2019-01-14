@@ -924,13 +924,13 @@ func recordSetCreate(c *cli.Context) error {
 		},
 	}
 
-	c, err = client.RecordSetCreate(c.String("zone-id"), rs)
+	rsc, err = client.RecordSetCreate(c.String("zone-id"), rs)
 	if err != nil {
 		return err
 	}
 
 	if c.GlobalString(outputFlag) == "json" {
-		return printJSON(c)
+		return printJSON(rsc)
 	}
 
 	fmt.Printf("Created record set %s\n", name)
