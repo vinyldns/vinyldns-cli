@@ -43,10 +43,24 @@ load test_helper
   $ew group --name "ok-group" | grep "${fixture}"
 }
 
+@test "group --output=json (when the group exists)" {
+  fixture="$(cat tests/fixtures/group_json)"
+
+  $ew --output=json group --name "ok-group" | grep "${fixture}"
+}
+
 @test "zones (when none exist)" {
   run $ew zones
 
   fixture="$(cat tests/fixtures/zones_none)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "zones --output=json (when none exist)" {
+  run $ew --output=json zones
+
+  fixture="$(cat tests/fixtures/zones_none_json)"
 
   [ "${output}" = "${fixture}" ]
 }
