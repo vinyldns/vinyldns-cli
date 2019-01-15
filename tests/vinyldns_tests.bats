@@ -8,6 +8,14 @@ load test_helper
   [ "${output}" = "${fixture}" ]
 }
 
+@test "groups --output=json (when none exist)" {
+  run $ew --output=json groups
+
+  fixture="$(cat tests/fixtures/groups_none_json)"
+
+  [ "${output}" = "${fixture}" ]
+}
+
 @test "group-create" {
   run $ew group-create \
     --json "$(cat tests/fixtures/group_create_json)"
@@ -21,6 +29,12 @@ load test_helper
   fixture="$(cat tests/fixtures/groups)"
 
   $ew groups | grep "${fixture}"
+}
+
+@test "groups --output=json (when groups exist)" {
+  fixture="$(cat tests/fixtures/groups_json)"
+
+  $ew --output=json groups | grep "${fixture}"
 }
 
 @test "group (when the group exists)" {
