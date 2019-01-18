@@ -13,6 +13,7 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -196,4 +197,15 @@ func validateConnection(connection string, c *vinyldns.ZoneConnection) (bool, er
 	}
 
 	return true, nil
+}
+
+func printJSON(i interface{}) error {
+	j, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(j))
+
+	return nil
 }

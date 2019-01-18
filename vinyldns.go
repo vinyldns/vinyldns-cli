@@ -30,6 +30,7 @@ var version string
 const hostFlag = "host"
 const accessKeyFlag = "access-key"
 const secretKeyFlag = "secret-key"
+const outputFlag = "output"
 
 func main() {
 	app := cli.NewApp()
@@ -51,6 +52,11 @@ func main() {
 			Name:   fmt.Sprintf("%s, sk", secretKeyFlag),
 			Usage:  "vinyldns secret key",
 			EnvVar: "VINYLDNS_SECRET_KEY",
+		},
+		cli.StringFlag{
+			Name:   fmt.Sprintf("%s, op", outputFlag),
+			Usage:  "vinyldns output format ('table' (default), 'json')",
+			EnvVar: "VINYLDNS_FORMAT",
 		},
 	}
 	app.Commands = []cli.Command{
@@ -371,6 +377,14 @@ func groups(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(groups)
+	}
+
+	return printGroupsTable(groups)
+}
+
+func printGroupsTable(groups []vinyldns.Group) error {
 	data := [][]string{}
 	for _, g := range groups {
 		data = append(data, []string{
@@ -396,6 +410,10 @@ func group(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(g)
+	}
+
 	data := [][]string{
 		{"Name", g.Name},
 		{"ID", g.ID},
@@ -418,9 +436,13 @@ func groupCreate(c *cli.Context) error {
 		return err
 	}
 	client := client(c)
-	_, err := client.GroupCreate(group)
+	create, err := client.GroupCreate(group)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(create)
 	}
 
 	fmt.Printf("Created group %s\n", group.Name)
@@ -431,9 +453,13 @@ func groupCreate(c *cli.Context) error {
 func groupDelete(c *cli.Context) error {
 	id := c.String("group-id")
 	client := client(c)
-	_, err := client.GroupDelete(id)
+	deleted, err := client.GroupDelete(id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(deleted)
 	}
 
 	fmt.Printf("Deleted group %s\n", id)
@@ -448,6 +474,10 @@ func groupAdmins(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(admins)
+	}
+
 	printUsers(admins)
 
 	return nil
@@ -455,12 +485,16 @@ func groupAdmins(c *cli.Context) error {
 
 func groupMembers(c *cli.Context) error {
 	client := client(c)
-	admins, err := client.GroupMembers(c.String("group-id"))
+	members, err := client.GroupMembers(c.String("group-id"))
 	if err != nil {
 		return err
 	}
 
-	printUsers(admins)
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(members)
+	}
+
+	printUsers(members)
 
 	return nil
 }
@@ -470,6 +504,10 @@ func groupActivity(c *cli.Context) error {
 	activity, err := client.GroupActivity(c.String("group-id"))
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(activity)
 	}
 
 	for _, c := range activity.Changes {
@@ -501,6 +539,10 @@ func zones(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(zones)
+	}
+
 	data := [][]string{}
 	for _, z := range zones {
 		data = append(data, []string{
@@ -525,6 +567,10 @@ func zone(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(z)
+	}
+
 	data := [][]string{
 		{"Name", z.Name},
 		{"ID", z.ID},
@@ -539,9 +585,13 @@ func zone(c *cli.Context) error {
 func zoneDelete(c *cli.Context) error {
 	id := c.String("zone-id")
 	client := client(c)
-	_, err := client.ZoneDelete(id)
+	deleted, err := client.ZoneDelete(id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(deleted)
 	}
 
 	fmt.Printf("Deleted zone %s\n", id)
@@ -594,6 +644,10 @@ func zoneCreate(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(created)
+	}
+
 	fmt.Printf("Created zone %s\n", created.Zone.Name)
 
 	return nil
@@ -607,6 +661,10 @@ func zoneConnection(c *cli.Context) error {
 		return err
 	}
 	con := z.Connection
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(con)
+	}
 
 	if con == nil {
 		fmt.Printf("No zone connection found for zone %s\n", id)
@@ -634,6 +692,10 @@ func zoneChanges(c *cli.Context) error {
 	}
 	cs := zh.ZoneChanges
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(cs)
+	}
+
 	for _, c := range cs {
 		clitable.PrintHorizontal(map[string]interface{}{
 			"Zone":       c.Zone.Name,
@@ -656,6 +718,10 @@ func recordSetChanges(c *cli.Context) error {
 		return err
 	}
 	rsc := zh.RecordSetChanges
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rsc)
+	}
 
 	for _, c := range rsc {
 		clitable.PrintHorizontal(map[string]interface{}{
@@ -680,6 +746,10 @@ func recordSetChange(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rsc)
+	}
+
 	clitable.PrintHorizontal(map[string]interface{}{
 		"Zone":          rsc.Zone.Name,
 		"RecordSetName": rsc.RecordSet.Name,
@@ -699,6 +769,10 @@ func recordSets(c *cli.Context) error {
 	rs, err := client.RecordSets(c.String("zone-id"))
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rs)
 	}
 
 	s := []map[string]interface{}{}
@@ -727,6 +801,10 @@ func recordSet(c *cli.Context) error {
 		return err
 	}
 
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rs)
+	}
+
 	clitable.PrintHorizontal(map[string]interface{}{
 		"Zone":    rs.ZoneID,
 		"Name":    rs.Name,
@@ -748,6 +826,10 @@ func batchChanges(c *cli.Context) error {
 	rc, err := client.BatchRecordChanges()
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rc)
 	}
 
 	changes := []map[string]interface{}{}
@@ -774,6 +856,10 @@ func batchChange(c *cli.Context) error {
 	rc, err := client.BatchRecordChange(c.String("batch-change-id"))
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rc)
 	}
 
 	change := [][]string{}
@@ -838,9 +924,13 @@ func recordSetCreate(c *cli.Context) error {
 		},
 	}
 
-	_, err = client.RecordSetCreate(c.String("zone-id"), rs)
+	rsc, err := client.RecordSetCreate(c.String("zone-id"), rs)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rsc)
 	}
 
 	fmt.Printf("Created record set %s\n", name)
@@ -854,9 +944,13 @@ func recordSetDelete(c *cli.Context) error {
 	}
 
 	client := client(c)
-	_, err := client.RecordSetDelete(c.String("zone-id"), id)
+	d, err := client.RecordSetDelete(c.String("zone-id"), id)
 	if err != nil {
 		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(d)
 	}
 
 	fmt.Printf("Deleted record set %s\n", id)
