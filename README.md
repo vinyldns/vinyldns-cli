@@ -97,6 +97,7 @@ GLOBAL OPTIONS:
    --host value                    vinyldns API Hostname [$VINYLDNS_HOST]
    --access-key value, --ak value  vinyldns access key [$VINYLDNS_ACCESS_KEY]
    --secret-key value, --sk value  vinyldns secret key [$VINYLDNS_SECRET_KEY]
+   --output value, --op value      vinyldns output format ('table' (default), 'json') [$VINYLDNS_FORMAT]
    --help, -h                      show help
    --version, -v                   print the version
 ```
