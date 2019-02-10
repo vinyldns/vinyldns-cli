@@ -121,9 +121,15 @@ load test_helper
   [ "${output}" = "${fixture}" ]
 }
 
+@test "zone (when the zone exists)" {
+  fixture="$(cat tests/fixtures/zone)"
+
+  $ew zone --zone-name "ok." | grep "${fixture}"
+}
+
 @test "record-set-create (CNAME)" {
   run $ew record-set-create \
-    --zone-name "vinyldns." \
+    --zone-name "ok." \
     --record-set-name "some-cname" \
     --record-set-type "CNAME" \
     --record-set-ttl "123" \

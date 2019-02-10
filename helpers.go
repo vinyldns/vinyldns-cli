@@ -37,7 +37,6 @@ func client(c *cli.Context) *vinyldns.Client {
 
 func getGroup(c *vinyldns.Client, name, id string) (*vinyldns.Group, error) {
 	if name != "" {
-		fmt.Println(fmt.Printf("here: %s", name))
 		return groupByName(c, name)
 	}
 
@@ -73,8 +72,8 @@ func getAdminGroupID(c *vinyldns.Client, id, name string) (string, error) {
 	return g.ID, nil
 }
 
-func zoneByName(c *vinyldns.Client, name string) (*vinyldns.Zone, error) {
-	var z *vinyldns.Zone
+func zoneByName(c *vinyldns.Client, name string) (vinyldns.Zone, error) {
+	var z vinyldns.Zone
 	zones, err := c.Zones()
 	if err != nil {
 		return z, err
@@ -82,7 +81,7 @@ func zoneByName(c *vinyldns.Client, name string) (*vinyldns.Zone, error) {
 
 	for _, zone := range zones {
 		if zone.Name == name {
-			return &zone, nil
+			return zone, nil
 		}
 	}
 
@@ -100,6 +99,14 @@ func getZoneID(c *vinyldns.Client, id, name string) (string, error) {
 	}
 
 	return z.ID, nil
+}
+
+func getZone(c *vinyldns.Client, name, id string) (vinyldns.Zone, error) {
+	if name != "" {
+		return zoneByName(c, name)
+	}
+
+	return c.Zone(id)
 }
 
 func typeSwitch(t string) string {
