@@ -73,6 +73,35 @@ func getAdminGroupID(c *vinyldns.Client, id, name string) (string, error) {
 	return g.ID, nil
 }
 
+func zoneByName(c *vinyldns.Client, name string) (*vinyldns.Zone, error) {
+	var z *vinyldns.Zone
+	zones, err := c.Zones()
+	if err != nil {
+		return z, err
+	}
+
+	for _, zone := range zones {
+		if zone.Name == name {
+			return &zone, nil
+		}
+	}
+
+	return z, fmt.Errorf("Zone %s not found", name)
+}
+
+func getZoneID(c *vinyldns.Client, id, name string) (string, error) {
+	if id != "" {
+		return id, nil
+	}
+
+	z, err := zoneByName(c, name)
+	if err != nil {
+		return "", err
+	}
+
+	return z.ID, nil
+}
+
 func typeSwitch(t string) string {
 	switch t {
 	case "A", "a":

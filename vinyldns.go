@@ -303,6 +303,10 @@ func main() {
 					Usage: "The zone ID",
 				},
 				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to zone-id)",
+				},
+				cli.StringFlag{
 					Name:  "record-set-name",
 					Usage: "The record set name",
 				},
@@ -892,6 +896,11 @@ func batchChange(c *cli.Context) error {
 
 func recordSetCreate(c *cli.Context) error {
 	client := client(c)
+	zoneID, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
+	if err != nil {
+		return err
+	}
+
 	name, err := getOption(c, "record-set-name")
 	if err != nil {
 		return err
@@ -913,7 +922,7 @@ func recordSetCreate(c *cli.Context) error {
 
 	rdata := strings.Split(rdataS, ",")
 	rs := &vinyldns.RecordSet{
-		ZoneID: c.String("zone-id"),
+		ZoneID: zoneID,
 		Name:   c.String("record-set-name"),
 		Type:   t,
 		TTL:    c.Int("record-set-ttl"),
