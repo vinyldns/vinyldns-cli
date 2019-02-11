@@ -939,7 +939,7 @@ func recordSetCreate(c *cli.Context) error {
 		},
 	}
 
-	rsc, err := client.RecordSetCreate(c.String("zone-id"), rs)
+	rsc, err := client.RecordSetCreate(zoneID, rs)
 	if err != nil {
 		return err
 	}
