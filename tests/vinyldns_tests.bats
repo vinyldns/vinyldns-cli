@@ -120,3 +120,22 @@ load test_helper
   [ "${status}" -eq 1 ]
   [ "${output}" = "${fixture}" ]
 }
+
+@test "zone (when the zone exists)" {
+  fixture="$(cat tests/fixtures/zone)"
+
+  $ew zone --zone-name "ok." | grep "${fixture}"
+}
+
+@test "record-set-create (CNAME)" {
+  run $ew record-set-create \
+    --zone-name "ok." \
+    --record-set-name "some-cname" \
+    --record-set-type "CNAME" \
+    --record-set-ttl "123" \
+    --record-set-data "test.com"
+
+  fixture="$(cat tests/fixtures/record_set_create_cname)"
+
+  [ "${output}" = "${fixture}" ]
+}

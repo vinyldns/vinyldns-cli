@@ -1,5 +1,5 @@
 NAME=vinyldns
-VERSION=0.8.7
+VERSION=0.8.8
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
@@ -42,7 +42,7 @@ start-api:
 		git clone https://$(VINYLDNS) $(GOPATH)/src/$(VINYLDNS); \
 	fi
 	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh \
-		--api-only
+		--api-only \
 		--version 0.8.0
 
 stop-api:

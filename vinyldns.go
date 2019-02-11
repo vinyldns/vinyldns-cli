@@ -158,6 +158,10 @@ func main() {
 					Name:  "zone-id",
 					Usage: "The zone ID",
 				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
 			},
 		},
 		{
@@ -301,6 +305,10 @@ func main() {
 				cli.StringFlag{
 					Name:  "zone-id",
 					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to zone-id)",
 				},
 				cli.StringFlag{
 					Name:  "record-set-name",
@@ -562,7 +570,9 @@ func zones(c *cli.Context) error {
 
 func zone(c *cli.Context) error {
 	client := client(c)
-	z, err := client.Zone(c.String("zone-id"))
+	name := c.String("zone-name")
+	id := c.String("zone-id")
+	z, err := getZone(client, name, id)
 	if err != nil {
 		return err
 	}
@@ -892,6 +902,11 @@ func batchChange(c *cli.Context) error {
 
 func recordSetCreate(c *cli.Context) error {
 	client := client(c)
+	zoneID, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
+	if err != nil {
+		return err
+	}
+
 	name, err := getOption(c, "record-set-name")
 	if err != nil {
 		return err
@@ -912,19 +927,32 @@ func recordSetCreate(c *cli.Context) error {
 	}
 
 	rdata := strings.Split(rdataS, ",")
-	rs := &vinyldns.RecordSet{
-		ZoneID: c.String("zone-id"),
-		Name:   c.String("record-set-name"),
-		Type:   t,
-		TTL:    c.Int("record-set-ttl"),
-		Records: []vinyldns.Record{
+
+	var records []vinyldns.Record
+
+	if t == "CNAME" {
+		records = []vinyldns.Record{
+			{
+				CName: rdata[0],
+			},
+		}
+	} else {
+		records = []vinyldns.Record{
 			{
 				Address: rdata[0],
 			},
-		},
+		}
 	}
 
-	rsc, err := client.RecordSetCreate(c.String("zone-id"), rs)
+	rs := &vinyldns.RecordSet{
+		ZoneID:  zoneID,
+		Name:    c.String("record-set-name"),
+		Type:    t,
+		TTL:     c.Int("record-set-ttl"),
+		Records: records,
+	}
+
+	rsc, err := client.RecordSetCreate(zoneID, rs)
 	if err != nil {
 		return err
 	}
