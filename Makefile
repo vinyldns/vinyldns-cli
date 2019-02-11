@@ -42,7 +42,7 @@ start-api:
 		git clone https://$(VINYLDNS) $(GOPATH)/src/$(VINYLDNS); \
 	fi
 	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh \
-		--api-only
+		--api-only \
 		--version 0.8.0
 
 stop-api:
