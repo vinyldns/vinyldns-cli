@@ -8,6 +8,7 @@ IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
 BATS=github.com/sstephenson/bats
 VINYLDNS=github.com/vinyldns/vinyldns
+SRC=src/*.go
 
 all: lint vet acceptance stop-api build-releases
 
@@ -19,13 +20,13 @@ uninstall:
 	rm -vf $(PREFIX)/bin/$(NAME)
 
 build: deps
-	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) src/*.go
+	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) $(SRC)
 
 build-releases: deps
 	rm -rf release && mkdir release
-	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) src/*.go
-	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) src/*.go
-	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo src/*.go
+	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
+	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) $(SRC)
+	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
 
 deps:
 	go get -u golang.org/x/lint/golint
@@ -68,10 +69,10 @@ release: build-releases
 		--file FILE
 
 lint: deps
-	golint -set_exit_status src/*.go
+	golint -set_exit_status $(SRC)
 
 vet:
-	go tool vet src
+	go vet $(SRC)
 
 docker:
 	docker build -t ${IMG} .
