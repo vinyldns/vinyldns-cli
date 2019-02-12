@@ -3,14 +3,13 @@ VERSION=0.8.8
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
-VETARGS?=-all
 DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
 BATS=github.com/sstephenson/bats
 VINYLDNS=github.com/vinyldns/vinyldns
 
-all: lint vet acceptance stop-api build_releases
+all: lint vet acceptance stop-api build-releases
 
 install: build
 	mkdir -p $(PREFIX)/bin
@@ -29,9 +28,6 @@ build-releases: deps
 	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo src/*.go
 
 deps:
-	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
-		go get -u golang.org/x/tools/cmd/cover; \
-	fi
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/golang/dep/cmd/dep
 	dep ensure
@@ -72,21 +68,10 @@ release: build-releases
 		--file FILE
 
 lint: deps
-	golint -set_exit_status
+	golint src/... -set_exit_status
 
-# vet runs the Go source code static analysis tool `vet` to find
-# any common errors.
 vet:
-	@go vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
-		go get golang.org/x/tools/cmd/vet; \
-	fi
-	@echo "go vet $(VETARGS)"
-	@go vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
-		echo ""; \
-		echo "Vet found suspicious constructs. Please check the reported constructs"; \
-		echo "and fix them if necessary before submitting the code for review."; \
-		exit 1; \
-	fi
+	go tool vet src
 
 docker:
 	docker build -t ${IMG} .
