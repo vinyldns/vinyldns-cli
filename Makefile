@@ -22,7 +22,7 @@ uninstall:
 build: deps
 	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) src/*.go
 
-build_releases: deps
+build-releases: deps
 	rm -rf release && mkdir release
 	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) src/*.go
 	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) src/*.go
@@ -56,7 +56,7 @@ bats:
 acceptance: build bats start-api
 	${GOPATH}/src/${BATS}/bin/bats tests
 
-release: build_releases
+release: build-releases
 	go get github.com/aktau/github-release
 	github-release release \
 		--user vinyldns \
