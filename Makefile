@@ -20,13 +20,13 @@ uninstall:
 	rm -vf $(PREFIX)/bin/$(NAME)
 
 build: deps
-	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME)
+	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) src/*.go
 
 build_releases: deps
 	rm -rf release && mkdir release
-	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)
-	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH)
-	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo
+	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) src/*.go
+	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) src/*.go
+	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo src/*.go
 
 deps:
 	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
