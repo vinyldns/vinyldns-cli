@@ -17,6 +17,7 @@ import (
 	"fmt"
 
 	clitable "github.com/crackcomm/go-clitable"
+
 	"github.com/urfave/cli"
 )
 
