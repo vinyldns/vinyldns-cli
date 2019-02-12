@@ -68,7 +68,7 @@ release: build-releases
 		--file FILE
 
 lint: deps
-	golint src/... -set_exit_status
+	golint -set_exit_status src/*.go
 
 vet:
 	go tool vet src
