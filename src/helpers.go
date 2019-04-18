@@ -87,7 +87,14 @@ func printJSON(i interface{}) error {
 		return err
 	}
 
-	fmt.Println(string(j))
+	jStr := string(j)
+
+	if jStr == "null" {
+		fmt.Println("[]")
+		return nil
+	}
+
+	fmt.Println(jStr)
 
 	return nil
 }
