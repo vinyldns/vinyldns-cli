@@ -77,7 +77,7 @@ func recordSetChange(c *cli.Context) error {
 
 func recordSets(c *cli.Context) error {
 	client := client(c)
-	rs, err := client.RecordSets(c.String("zone-id"))
+	rs, err := client.RecordSetsListAll(c.String("zone-id"), vinyldns.ListFilter{})
 	if err != nil {
 		return err
 	}
