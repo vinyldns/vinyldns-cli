@@ -42,12 +42,12 @@
   version = "v1.20.0"
 
 [[projects]]
-  digest = "1:077b5b1528e1176f7432804c91ad6ecd916d402c8feab879ea246e5dd3e19760"
+  digest = "1:631cb5c3d8fc4cf5c18b604810c0dd3db6228f9f6d0cb25115ea6929278f6c35"
   name = "github.com/vinyldns/go-vinyldns"
   packages = ["vinyldns"]
   pruneopts = "UT"
-  revision = "96567c672b2184e656c570a3c1ab249b191c7936"
-  version = "0.8.3"
+  revision = "6d0bbf52fa7710eff0f6ff9721b7f6b2b36dd41d"
+  version = "0.8.4"
 
 [solve-meta]
   analyzer-name = "dep"
