@@ -38,8 +38,8 @@
   version = "1.20.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/vinyldns/go-vinyldns"
+  version = "0.8.4"
 
 [prune]
   go-tests = true

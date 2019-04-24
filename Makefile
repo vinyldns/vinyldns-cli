@@ -1,5 +1,5 @@
 NAME=vinyldns
-VERSION=0.8.8
+VERSION=0.8.9
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
@@ -7,7 +7,7 @@ DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
 BATS=github.com/sstephenson/bats
-VINYLDNS=github.com/vinyldns/vinyldns
+VINYLDNS_REPO=github.com/vinyldns/vinyldns
 SRC=src/*.go
 
 all: lint vet acceptance stop-api build-releases
@@ -34,16 +34,16 @@ deps:
 	dep ensure
 
 start-api:
-	if [ ! -d "$(GOPATH)/src/$(VINYLDNS)" ]; then \
-		echo "$(VINYLDNS) not found in your GOPATH (necessary for acceptance tests), getting..."; \
-		git clone https://$(VINYLDNS) $(GOPATH)/src/$(VINYLDNS); \
+	if [ ! -d "$(GOPATH)/src/$(VINYLDNS_REPO)" ]; then \
+		echo "$(VINYLDNS_REPO) not found in your GOPATH (necessary for acceptance tests), getting..."; \
+		git clone https://$(VINYLDNS_REPO) $(GOPATH)/src/$(VINYLDNS_REPO); \
 	fi
-	$(GOPATH)/src/$(VINYLDNS)/bin/docker-up-vinyldns.sh \
+	$(GOPATH)/src/$(VINYLDNS_REPO)/bin/docker-up-vinyldns.sh \
 		--api-only \
 		--version 0.8.0
 
 stop-api:
-	$(GOPATH)/src/$(VINYLDNS)/bin/remove-vinyl-containers.sh
+	$(GOPATH)/src/$(VINYLDNS_REPO)/bin/remove-vinyl-containers.sh
 
 bats:
 	if ! [ -x ${GOPATH}/src/${BATS}/bin/bats ]; then \

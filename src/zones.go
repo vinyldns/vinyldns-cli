@@ -22,7 +22,7 @@ import (
 
 func zones(c *cli.Context) error {
 	client := client(c)
-	zones, err := client.Zones()
+	zones, err := client.ZonesListAll(vinyldns.ListFilter{})
 	if err != nil {
 		return err
 	}
