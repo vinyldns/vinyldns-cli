@@ -1,4 +1,4 @@
-FROM golang:latest AS builder
+FROM golang:alpine AS builder
 
 COPY . /go/src/github.com/vinyldns/vinyldns-cli
 RUN cd /go/src/github.com/vinyldns/vinyldns-cli \
