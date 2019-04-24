@@ -149,6 +149,12 @@ USAGE:
 ...
 ```
 
+#### License
+
+Source code for `vinyldns-cli` is licensed under Apache-2.0; [view license information](https://github.com/vinyldns/vinyldns-cli/blob/master/LICENSE) for the `vinyldns-cli` software contained in the `vinyldns/vinyldns-cli` Docker image.
+
+Its `docker build` makes use of a "builder" stage based on [golang:alpine](https://hub.docker.com/_/golang) and builds a final, lightweight `vinyldns/vinyldns-cli` image based in [scratch](https://hub.docker.com/_/golang).
+
 ## Development
 
 To compile, lint, run acceptance tests, etc.:
