@@ -10,7 +10,7 @@ BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
 SRC=src/*.go
 
-all: lint vet acceptance stop-api build-releases
+all: lint vet acceptance stop-api docker build-releases
 
 install: build
 	mkdir -p $(PREFIX)/bin
