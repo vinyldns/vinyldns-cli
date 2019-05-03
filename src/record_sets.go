@@ -184,7 +184,7 @@ func recordSetCreate(c *cli.Context) error {
 		Records: records,
 	}
 
-	rsc, err := client.RecordSetCreate(zoneID, rs)
+	rsc, err := client.RecordSetCreate(rs)
 	if err != nil {
 		return err
 	}
