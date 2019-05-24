@@ -213,7 +213,7 @@ func main() {
 			Action:      zoneDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "id",
+					Name:  "zone-id",
 					Usage: "The zone ID",
 				},
 			},
