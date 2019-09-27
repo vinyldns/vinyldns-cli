@@ -19,19 +19,14 @@ install: build
 uninstall:
 	rm -vf $(PREFIX)/bin/$(NAME)
 
-build: deps
+build:
 	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) $(SRC)
 
-build-releases: deps
+build-releases:
 	rm -rf release && mkdir release
-	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
+	GOOS=linux go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
 	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) $(SRC)
 	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
-
-deps:
-	go get -u golang.org/x/lint/golint
-	go get -u github.com/golang/dep/cmd/dep
-	dep ensure
 
 start-api:
 	if [ ! -d "$(GOPATH)/src/$(VINYLDNS_REPO)" ]; then \
@@ -68,7 +63,7 @@ release: build-releases
 		--name FILE \
 		--file FILE
 
-lint: deps
+lint:
 	golint -set_exit_status $(SRC)
 
 vet:
@@ -82,4 +77,4 @@ docker-push:
 	docker push ${LATEST}
 	docker push ${IMG}
 
-.PHONY: install uninstall build build_releases deps release lint vet docker docker-push
+.PHONY: install uninstall build build_releases release lint vet docker docker-push
