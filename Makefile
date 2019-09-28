@@ -10,7 +10,7 @@ BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
 SRC=src/*.go
 
-all: vet acceptance stop-api docker build-releases
+all: lint vet acceptance stop-api docker build-releases
 
 install: build
 	mkdir -p $(PREFIX)/bin
@@ -63,6 +63,9 @@ release: build-releases
 		--name FILE \
 		--file FILE
 
+lint:
+	golint -set_exit_status $(SRC)
+
 vet:
 	go vet $(SRC)
 
@@ -74,4 +77,4 @@ docker-push:
 	docker push ${LATEST}
 	docker push ${IMG}
 
-.PHONY: install uninstall build build_releases release vet docker docker-push
+.PHONY: install uninstall build build_releases release lint vet docker docker-push

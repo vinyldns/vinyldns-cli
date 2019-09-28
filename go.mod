@@ -10,4 +10,6 @@ require (
 	github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9 // indirect
 	github.com/urfave/cli v1.22.1 // indirect
 	github.com/vinyldns/go-vinyldns v0.0.0-20190423102547-6d0bbf52fa77
+	golang.org/x/lint v0.0.0-20190909230951-414d861bb4ac // indirect
+	golang.org/x/tools v0.0.0-20190927191325-030b2cf1153e // indirect
 )
