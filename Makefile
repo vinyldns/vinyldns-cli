@@ -46,6 +46,7 @@ bats:
 	fi
 
 test: build bats start-api
+	go get -u golang.org/x/lint/golint
 	golint -set_exit_status $(SRC)
 	go vet $(SRC)
 	${GOPATH}/src/${BATS}/bin/bats tests
