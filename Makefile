@@ -10,7 +10,7 @@ BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
 SRC=src/*.go
 
-all: lint vet acceptance stop-api docker build-releases
+all: test stop-api docker build-releases
 
 install: build
 	mkdir -p $(PREFIX)/bin
@@ -19,19 +19,14 @@ install: build
 uninstall:
 	rm -vf $(PREFIX)/bin/$(NAME)
 
-build: deps
+build:
 	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) $(SRC)
 
-build-releases: deps
+build-releases:
 	rm -rf release && mkdir release
-	GOOS=linux  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
+	GOOS=linux go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
 	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) $(SRC)
 	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
-
-deps:
-	go get -u golang.org/x/lint/golint
-	go get -u github.com/golang/dep/cmd/dep
-	dep ensure
 
 start-api:
 	if [ ! -d "$(GOPATH)/src/$(VINYLDNS_REPO)" ]; then \
@@ -40,7 +35,7 @@ start-api:
 	fi
 	$(GOPATH)/src/$(VINYLDNS_REPO)/bin/docker-up-vinyldns.sh \
 		--api-only \
-		--version 0.8.0
+		--version 0.9.1
 
 stop-api:
 	$(GOPATH)/src/$(VINYLDNS_REPO)/bin/remove-vinyl-containers.sh
@@ -50,7 +45,10 @@ bats:
 		git clone --depth 1 https://${BATS}.git ${GOPATH}/src/${BATS}; \
 	fi
 
-acceptance: build bats start-api
+test: build bats start-api
+	go get -u golang.org/x/lint/golint
+	golint -set_exit_status $(SRC)
+	go vet $(SRC)
 	${GOPATH}/src/${BATS}/bin/bats tests
 
 release: build-releases
@@ -68,12 +66,6 @@ release: build-releases
 		--name FILE \
 		--file FILE
 
-lint: deps
-	golint -set_exit_status $(SRC)
-
-vet:
-	go vet $(SRC)
-
 docker:
 	docker build -t ${IMG} .
 	docker tag ${IMG} ${LATEST}
@@ -82,4 +74,4 @@ docker-push:
 	docker push ${LATEST}
 	docker push ${IMG}
 
-.PHONY: install uninstall build build_releases deps release lint vet docker docker-push
+.PHONY: install uninstall build build_releases release test docker docker-push
