@@ -243,6 +243,18 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-sync",
+			Usage:       "zone-sync --zone-sync <zoneID>",
+			Description: "starts zone sync process",
+			Action:      zoneSync,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+			},
+		},
+		{
 			Name:        "record-set-changes",
 			Usage:       "record-set-changes --zone-id <zoneID>",
 			Description: "view record set change history details for a zone",

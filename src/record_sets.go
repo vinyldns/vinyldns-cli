@@ -24,7 +24,7 @@ import (
 
 func recordSetChanges(c *cli.Context) error {
 	client := client(c)
-	zh, err := client.ZoneHistory(c.String("zone-id"))
+	zh, err := client.RecordSetChanges(c.String("zone-id"), vinyldns.ListFilter{})
 	if err != nil {
 		return err
 	}
@@ -184,7 +184,7 @@ func recordSetCreate(c *cli.Context) error {
 		Records: records,
 	}
 
-	rsc, err := client.RecordSetCreate(zoneID, rs)
+	rsc, err := client.RecordSetCreate(rs)
 	if err != nil {
 		return err
 	}

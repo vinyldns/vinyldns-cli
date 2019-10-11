@@ -176,7 +176,7 @@ func zoneConnection(c *cli.Context) error {
 
 func zoneChanges(c *cli.Context) error {
 	client := client(c)
-	zh, err := client.ZoneHistory(c.String("zone-id"))
+	zh, err := client.ZoneChanges(c.String("zone-id"))
 	if err != nil {
 		return err
 	}
@@ -197,6 +197,31 @@ func zoneChanges(c *cli.Context) error {
 			"ID":         c.ID,
 		})
 	}
+
+	return nil
+}
+
+func zoneSync(c *cli.Context) error {
+	client := client(c)
+	zs, err := client.ZoneSync(c.String("zone-id"))
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(zs)
+	}
+
+	clitable.PrintHorizontal(map[string]interface{}{
+		"Zone":        zs.Zone.Name,
+		"ZoneID":      zs.Zone.ID,
+		"Zone-Status": zs.Zone.Status,
+		"UserID":      zs.UserID,
+		"ChangeType":  zs.ChangeType,
+		"Sync-Status": zs.Status,
+		"Created":     zs.Created,
+		"ID":          zs.ID,
+	})
 
 	return nil
 }
