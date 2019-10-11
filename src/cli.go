@@ -252,6 +252,10 @@ func main() {
 					Name:  "zone-id",
 					Usage: "The zone ID",
 				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
 			},
 		},
 		{

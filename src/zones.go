@@ -203,24 +203,25 @@ func zoneChanges(c *cli.Context) error {
 
 func zoneSync(c *cli.Context) error {
 	client := client(c)
-	zs, err := client.ZoneSync(c.String("zone-id"))
+	id, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
+	z, err := client.ZoneSync(id)
 	if err != nil {
 		return err
 	}
 
 	if c.GlobalString(outputFlag) == "json" {
-		return printJSON(zs)
+		return printJSON(z)
 	}
 
 	clitable.PrintHorizontal(map[string]interface{}{
-		"Zone":        zs.Zone.Name,
-		"ZoneID":      zs.Zone.ID,
-		"Zone-Status": zs.Zone.Status,
-		"UserID":      zs.UserID,
-		"ChangeType":  zs.ChangeType,
-		"Sync-Status": zs.Status,
-		"Created":     zs.Created,
-		"ID":          zs.ID,
+		"Zone":       z.Zone.Name,
+		"ZoneID":     z.Zone.ID,
+		"ZoneStatus": z.Zone.Status,
+		"UserID":     z.UserID,
+		"ChangeType": z.ChangeType,
+		"SyncStatus": z.Status,
+		"Created":    z.Created,
+		"ID":         z.ID,
 	})
 
 	return nil
