@@ -23,8 +23,12 @@ github.com/smartystreets/gunit v1.0.4 h1:tpTjnuH7MLlqhoD21vRoMZbMIi5GmBsAJDFyF67
 github.com/smartystreets/gunit v1.0.4/go.mod h1:EH5qMBab2UclzXUcpR8b93eHsIlp9u+pDQIRp5DZNzQ=
 github.com/urfave/cli v1.22.1 h1:+mkCCcOFKPnCmVYVcURKps1Xe+3zP90gSYGNfRkjoIY=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
+github.com/vinyldns/go-vinyldns v0.0.0-20190823201453-1137fca6396f h1:wYWGiqNCv4JtMpYh3PUMBntMZjfNkt3KOLgR/BvHWIw=
+github.com/vinyldns/go-vinyldns v0.0.0-20190823201453-1137fca6396f/go.mod h1:AZuEfReFWdvtU0LatbLpo70t3lqdLvph2D5mqFP0bkA=
 github.com/vinyldns/go-vinyldns v0.0.0-20191004230835-b522d34f92ff h1:586x3IIkPKyJ6eyP+gP579rWbLxEAIVAOvJ8N1ia5PA=
 github.com/vinyldns/go-vinyldns v0.0.0-20191004230835-b522d34f92ff/go.mod h1:RWc47jtnVuQv6+lY3c768WtXCas/Xi+U5UFc5xULmYg=
+github.com/vinyldns/go-vinyldns v0.0.0-20191012113016-d95bc18b1f5d h1:zWad14vLQJq4NPhy3fr8MSITN/FKKZZ74WdQId/9GYQ=
+github.com/vinyldns/go-vinyldns v0.0.0-20191012113016-d95bc18b1f5d/go.mod h1:RWc47jtnVuQv6+lY3c768WtXCas/Xi+U5UFc5xULmYg=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/lint v0.0.0-20190930215403-16217165b5de h1:5hukYrvBGR8/eNkX5mdUezrA6JiaEZDtJb9Ei+1LlBs=
 golang.org/x/lint v0.0.0-20190930215403-16217165b5de/go.mod h1:6SW0HCj/g11FgYtHlgUYUwCkIfeOF89ocIRzGO/8vkc=
@@ -39,6 +43,8 @@ golang.org/x/tools v0.0.0-20191010201905-e5ffc44a6fee h1:Cgj5oVkw7Gktu56MAiU0r1u
 golang.org/x/tools v0.0.0-20191010201905-e5ffc44a6fee/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
 golang.org/x/tools v0.0.0-20191011165106-638914d249c5 h1:Jj8+k9DBERcVYkyiWRkP4WnWwjhC4dcfPCjxcXFNo58=
 golang.org/x/tools v0.0.0-20191011165106-638914d249c5/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
+golang.org/x/tools v0.0.0-20191011211836-4c025a95b26e h1:1o2bDs9pCd2xFhdwqJTrCIswAeEsn4h/PCNelWpfcsI=
+golang.org/x/tools v0.0.0-20191011211836-4c025a95b26e/go.mod h1:b+2E5dAYhXwXZwtnZ6UAqBI28+e2cm9otk0dWdXHAEo=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
