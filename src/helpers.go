@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
@@ -30,7 +31,19 @@ func client(c *cli.Context) *vinyldns.Client {
 		SecretKey:  c.GlobalString(secretKeyFlag),
 		Host:       c.GlobalString(hostFlag),
 		HTTPClient: &http.Client{},
+		UserAgent:  userAgent(),
 	}
+}
+
+func userAgent() string {
+	if version == "" {
+		return "vinyldns-cli"
+	}
+
+	return strings.Join([]string{
+		"vinyldns-cli",
+		version,
+	}, "/")
 }
 
 func getOption(c *cli.Context, name string) (string, error) {
