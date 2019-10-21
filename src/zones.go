@@ -143,6 +143,60 @@ func zoneCreate(c *cli.Context) error {
 	return nil
 }
 
+func zoneUpdate(c *cli.Context) error {
+	client := client(c)
+	id, err := getAdminGroupID(client, c.String("admin-group-id"), c.String("admin-group-name"))
+	if err != nil {
+		return err
+	}
+	connection := &vinyldns.ZoneConnection{
+		Key:           c.String("zone-connection-key"),
+		KeyName:       c.String("zone-connection-key-name"),
+		Name:          c.String("zone-connection-key-name"),
+		PrimaryServer: c.String("zone-connection-primary-server"),
+	}
+	tConnection := &vinyldns.ZoneConnection{
+		Key:           c.String("transfer-connection-key"),
+		KeyName:       c.String("transfer-connection-key-name"),
+		Name:          c.String("transfer-connection-key-name"),
+		PrimaryServer: c.String("transfer-connection-primary-server"),
+	}
+	z := &vinyldns.Zone{
+		Name:         c.String("name"),
+		Email:        c.String("email"),
+		AdminGroupID: id,
+	}
+
+	zc, err := validateConnection("zone", connection)
+	if err != nil {
+		return err
+	}
+	if zc {
+		z.Connection = connection
+	}
+
+	tc, err := validateConnection("transfer", tConnection)
+	if err != nil {
+		return err
+	}
+	if tc {
+		z.TransferConnection = tConnection
+	}
+
+	updated, err := client.ZoneUpdate(z)
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(updated)
+	}
+
+	fmt.Printf("Updated zone %s\n", updated.Zone.Name)
+
+	return nil
+}
+
 func zoneConnection(c *cli.Context) error {
 	client := client(c)
 	id := c.String("zone-id")

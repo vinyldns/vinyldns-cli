@@ -207,6 +207,54 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-update",
+			Usage:       "zone-update --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>",
+			Description: "Update a zone",
+			Action:      zoneUpdate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The zone name",
+				},
+				cli.StringFlag{
+					Name:  "email",
+					Usage: "The zone email",
+				},
+				cli.StringFlag{
+					Name:  "admin-group-id",
+					Usage: "The zone admin group ID",
+				},
+				cli.StringFlag{
+					Name:  "admin-group-name",
+					Usage: "The zone admin group name (an alternative to admin-group-id)",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-key-name",
+					Usage: "The zone transfer connection key name",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-key",
+					Usage: "The zone transfer connection key",
+				},
+				cli.StringFlag{
+					Name:  "transfer-connection-primary-server",
+					Usage: "The zone transfer connection primary server",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-key-name",
+					Usage: "The zone connection key name",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-key",
+					Usage: "The zone connection key",
+				},
+				cli.StringFlag{
+					Name:  "zone-connection-primary-server",
+					Usage: "The zone zone connection primary server",
+				},
+			},
+		},
+		{
 			Name:        "zone-delete",
 			Usage:       "zone-delete --zone-id <zoneID>",
 			Description: "Delete a zone",
