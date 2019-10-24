@@ -1,7 +1,7 @@
 [![Docker Automated build](https://img.shields.io/docker/automated/vinyldns/vinyldns-cli.svg?style=flat)](https://hub.docker.com/r/vinyldns/vinyldns-cli/)
 [![Build Status](https://travis-ci.org/vinyldns/vinyldns-cli.svg?branch=master)](https://travis-ci.org/vinyldns/vinyldns-cli)
 [![Go Report Card](https://goreportcard.com/badge/github.com/vinyldns/vinyldns-cli)](https://goreportcard.com/report/github.com/vinyldns/vinyldns-cli)
-![GitHub](https://img.shields.io/github/license/vinyldns/vinyldns-cli)
+[![GitHub](https://img.shields.io/github/license/vinyldns/vinyldns-cli)](https://github.com/vinyldns/vinyldns-cli/blob/master/LICENSE)
 
 # vinyldns-cli
 
