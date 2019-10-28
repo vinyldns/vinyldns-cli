@@ -173,7 +173,7 @@ func recordSetCreate(c *cli.Context) error {
     i, err := strconv.Atoi(rdata[0])
 
     if err != nil {
-      return error
+      return err
     }
 
     records = []vinyldns.Record{
