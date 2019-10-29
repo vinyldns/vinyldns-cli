@@ -22,12 +22,12 @@ func typeSwitch(t string) string {
 		return "AAAA"
 	case "CNAME", "cname":
 		return "CNAME"
-  case "MX", "mx":
-    return "MX"
-  case "PTR", "ptr":
-    return "PTR"
-  case "TXT", "txt":
-    return "TXT"
+	case "MX", "mx":
+		return "MX"
+	case "PTR", "ptr":
+		return "PTR"
+	case "TXT", "txt":
+		return "TXT"
 	}
 	return ""
 }
