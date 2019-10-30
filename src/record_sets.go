@@ -15,6 +15,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	clitable "github.com/crackcomm/go-clitable"
@@ -166,6 +167,31 @@ func recordSetCreate(c *cli.Context) error {
 		records = []vinyldns.Record{
 			{
 				CName: rdata[0],
+			},
+		}
+	} else if t == "MX" {
+		i, err := strconv.Atoi(rdata[0])
+
+		if err != nil {
+			return err
+		}
+
+		records = []vinyldns.Record{
+			{
+				Preference: i,
+				Exchange:   rdata[1],
+			},
+		}
+	} else if t == "PTR" {
+		records = []vinyldns.Record{
+			{
+				PTRDName: rdata[0],
+			},
+		}
+	} else if t == "TXT" {
+		records = []vinyldns.Record{
+			{
+				Text: rdata[0],
 			},
 		}
 	} else {
