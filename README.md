@@ -59,7 +59,7 @@ Alternatively, if you choose to compile from Golang source code:
 * install Golang
 * set up your `$GOPATH`
 * `go get github.com/vinyldns/vinyldns-cli`
-* `cd $GOPATH/github.com/vinyldns/vinyldns-cli && make`
+* `cd $GOPATH/src/github.com/vinyldns/vinyldns-cli && make`
 
 ## Usage
 
