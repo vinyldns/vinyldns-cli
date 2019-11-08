@@ -20,18 +20,12 @@ import (
 
 func zoneByName(c *vinyldns.Client, name string) (vinyldns.Zone, error) {
 	var z vinyldns.Zone
-	zones, err := c.Zones()
+	zone, err := c.ZoneByName(name)
 	if err != nil {
 		return z, err
 	}
 
-	for _, zone := range zones {
-		if zone.Name == name {
-			return zone, nil
-		}
-	}
-
-	return z, fmt.Errorf("Zone %s not found", name)
+	return zone, nil
 }
 
 func getZoneID(c *vinyldns.Client, id, name string) (string, error) {
