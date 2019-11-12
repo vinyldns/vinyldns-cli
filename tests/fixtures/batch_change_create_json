@@ -1,8 +1,7 @@
 {
   "comments": "this is optional",
-  "ownerGroupId": "global-acl-group-id",
   "changes": [{
-    "inputName": "test-cli.shared.",
+    "inputName": "test-batch-change-cli.ok.",
     "changeType": "Add",
     "type": "A",
     "ttl": 7200,
