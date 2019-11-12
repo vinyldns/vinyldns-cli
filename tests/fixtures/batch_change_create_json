@@ -1,0 +1,13 @@
+{
+  "comments": "this is optional",
+  "ownerGroupId": "global-acl-group-id",
+  "changes": [{
+    "inputName": "test-cli.shared."
+    "changeType": "Add",
+    "type": "A",
+    "ttl": 7200,
+    "record": {
+      "address": "1.1.1.1"
+    }
+  }]
+}

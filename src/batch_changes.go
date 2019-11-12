@@ -19,6 +19,8 @@ import (
 	clitable "github.com/crackcomm/go-clitable"
 
 	"github.com/urfave/cli"
+
+  "github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 func batchChanges(c *cli.Context) error {
@@ -86,6 +88,27 @@ func batchChange(c *cli.Context) error {
 	} else {
 		fmt.Println("No batch change found with id: " + c.String("batch-change-id"))
 	}
+
+	return nil
+}
+
+func batchChangeCreate(c *cli.Context) error {
+	data := []byte(c.String("json"))
+	batchChange := &vinyldns.BatchRecordChange{}
+	if err := json.Unmarshal(data, &batchChange); err != nil {
+		return err
+	}
+	client := client(c)
+	create, err := client.BatchRecordChangeCreate(batchChange)
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(create)
+	}
+
+	fmt.Printf("Created batchChange\n")
 
 	return nil
 }
