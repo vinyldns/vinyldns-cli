@@ -181,5 +181,8 @@ load test_helper
 
   fixture="$(cat tests/fixtures/batch_change_create)"
 
+  echo "$fixture"
   [ "$status" -eq 0 ]
+  [ "${output}" = "${fixture}" ]
+  echo "$output"
 }

@@ -1,7 +1,7 @@
 {
-  "comments": "this is optional",
+  "comments": "request on behalf of someone.",
   "changes": [{
-    "inputName": "test-batch-change-cli.ok.",
+    "inputName": "test-cli.ok.",
     "changeType": "Add",
     "type": "A",
     "ttl": 7200,
