@@ -179,10 +179,5 @@ load test_helper
   run $ew batch-change-create \
     --json "$(cat tests/fixtures/batch_change_create_json)"
 
-  fixture="$(cat tests/fixtures/batch_change_create)"
-
-  echo "$fixture"
   [ "$status" -eq 0 ]
-  [ "${output}" = "${fixture}" ]
-  echo "$output"
 }
