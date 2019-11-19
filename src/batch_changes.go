@@ -15,10 +15,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"strconv"
 
 	clitable "github.com/crackcomm/go-clitable"
 
 	"github.com/urfave/cli"
+
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 func batchChanges(c *cli.Context) error {
@@ -69,7 +73,7 @@ func batchChange(c *cli.Context) error {
 		changeElem = append(changeElem, `"ChangeType" - `+r.ChangeType)
 		changeElem = append(changeElem, `"InputName" - `+r.InputName)
 		changeElem = append(changeElem, `"Type" - `+r.Type)
-		changeElem = append(changeElem, `"TTL" - `+string(r.TTL))
+		changeElem = append(changeElem, `"TTL" - `+strconv.Itoa(r.TTL))
 
 		recordData, err := json.Marshal(&(r.Record))
 		if err != nil {
@@ -86,6 +90,64 @@ func batchChange(c *cli.Context) error {
 	} else {
 		fmt.Println("No batch change found with id: " + c.String("batch-change-id"))
 	}
+
+	return nil
+}
+
+func changeList(chs []vinyldns.RecordChange) string {
+	changes := []string{}
+
+  for _, r := range chs {
+    recordData, _ := json.Marshal(&(r.Record))
+
+    changes = append(changes,
+      `"ChangeType" - `+r.ChangeType,
+      `"InputName" - `+r.InputName,
+      `"Type" - `+r.Type,
+      `"TTL" - `+strconv.Itoa(r.TTL),
+      `"Record" - `+string(recordData),
+      `"Status" - `+r.Status)
+  }
+
+  return strings.Join(changes, "\n")
+}
+
+
+func batchChangeCreate(c *cli.Context) error {
+	data := []byte(c.String("json"))
+	batchChange := &vinyldns.BatchRecordChange{}
+	if err := json.Unmarshal(data, &batchChange); err != nil {
+		return err
+	}
+	client := client(c)
+	bc, err := client.BatchRecordChangeCreate(batchChange)
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(bc)
+	}
+
+  formattedData := [][]string{
+    {"ID", bc.ID},
+    {"UserName", bc.UserName},
+    {"UserID", bc.UserID},
+    {"Status", bc.Status},
+    {"Comments", bc.Comments},
+    {"Changes", changeList(bc.Changes)},
+    {"CreatedTimestamp", bc.CreatedTimestamp},
+    {"OwnerGroupID", bc.OwnerGroupID},
+    {"ApprovalStatus", bc.ApprovalStatus},
+    {"ReviewerID", bc.ReviewerID},
+    {"ReviewerUserName", bc.ReviewerUserName},
+    {"ReviewerTimestamp", bc.ReviewTimestamp},
+    {"ReviewComment", bc.ReviewComment},
+    {"ScheduledTime", bc.ScheduledTime},
+    {"CancelledTimestamp", bc.CancelledTimestamp},
+  }
+
+  printBasicTable(formattedData)
 
 	return nil
 }

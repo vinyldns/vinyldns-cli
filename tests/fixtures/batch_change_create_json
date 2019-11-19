@@ -1,0 +1,12 @@
+{
+  "comments": "request on behalf of someone.",
+  "changes": [{
+    "inputName": "test-cli.ok.",
+    "changeType": "Add",
+    "type": "A",
+    "ttl": 7200,
+    "record": {
+      "address": "1.1.1.1"
+    }
+  }]
+}
