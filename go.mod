@@ -7,5 +7,5 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/olekukonko/tablewriter v0.0.1
 	github.com/urfave/cli v1.22.1
-	github.com/vinyldns/go-vinyldns v0.0.0-20191012113016-d95bc18b1f5d
+	github.com/vinyldns/go-vinyldns v0.0.0-20191118153722-a3af7b349422
 )
