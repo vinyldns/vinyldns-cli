@@ -15,14 +15,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-  "strings"
-  "strconv"
+	"strings"
+	"strconv"
 
 	clitable "github.com/crackcomm/go-clitable"
 
 	"github.com/urfave/cli"
 
-  "github.com/vinyldns/go-vinyldns/vinyldns"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 func batchChanges(c *cli.Context) error {
