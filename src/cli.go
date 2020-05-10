@@ -384,18 +384,18 @@ func main() {
 				},
 			},
 		},
-    {
-      Name:        "batch-change-create",
-      Usage:       "batch-change-create --json <batchChangeJSON>",
-      Description: "Create a batch change",
-      Action:      batchChangeCreate,
-      Flags: []cli.Flag{
-        cli.StringFlag{
-          Name:  "json",
-          Usage: "The vinyldns JSON representing the batch change",
-        },
-      },
-    },
+		{
+			Name:        "batch-change-create",
+			Usage:       "batch-change-create --json <batchChangeJSON>",
+			Description: "Create a batch change",
+			Action:      batchChangeCreate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "json",
+					Usage: "The vinyldns JSON representing the batch change",
+				},
+			},
+		},
 	}
 	app.RunAndExitOnError()
 }
