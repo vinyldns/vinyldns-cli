@@ -1,19 +1,13 @@
 load test_helper
 
 @test "groups (when none exist)" {
-  run $ew groups
-
   fixture="$(cat tests/fixtures/groups_none)"
-
-  [ "${output}" = "${fixture}" ]
+  $ew groups | grep "${fixture}"
 }
 
 @test "groups --output=json (when none exist)" {
-  run $ew --output=json groups
-
   fixture="$(cat tests/fixtures/groups_none_json)"
-
-  [ "${output}" = "${fixture}" ]
+  $ew --output=json groups | grep "${fixture}"
 }
 
 @test "group-create" {
@@ -27,7 +21,6 @@ load test_helper
 
 @test "groups (when groups exist)" {
   fixture="$(cat tests/fixtures/groups)"
-
   $ew groups | grep "${fixture}"
 }
 
@@ -164,6 +157,21 @@ load test_helper
   fixture="$(cat tests/fixtures/record_set_create_txt)"
 
   [ "${output}" = "${fixture}" ]
+}
+
+@test "search-record-sets" {
+  run $ew search-record-sets \
+    --record-name-filter "so*" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
+    --name-sort "DESC"
+  record_sets[0]="some-cname"
+  record_sets[1]="some-mx"
+  for record_set in ${record_sets}
+  do
+    [[ "${output}" =~ "${record_set}" ]]
+  done
 }
 
 @test "zone-sync (when the zone exists)" {
