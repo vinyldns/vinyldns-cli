@@ -207,6 +207,18 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-update",
+			Usage:       "zone-update --json <zoneJSON>",
+			Description: "update zone details",
+			Action:      zoneUpdate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "json",
+					Usage: "The vinyldns JSON representing the zone details",
+				},
+			},
+		},
+		{
 			Name:        "zone-delete",
 			Usage:       "zone-delete --zone-id <zoneID>",
 			Description: "Delete a zone",
