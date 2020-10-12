@@ -89,6 +89,18 @@ func main() {
 			},
 		},
 		{
+			Name:        "group-update",
+			Usage:       "group-update --json <groupJSON>",
+			Description: "Update a vinyldns group",
+			Action:      groupUpdate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "json",
+					Usage: "The vinyldns JSON representing the group",
+				},
+			},
+		},
+		{
 			Name:        "group-delete",
 			Usage:       "group-delete --group-id <groupID>",
 			Description: "Delete the targeted vinyldns group",
