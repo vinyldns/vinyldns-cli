@@ -30,6 +30,8 @@ Provide more context by answering these questions:
 
 * Complete the [the required template](PULL_REQUEST_TEMPLATE.md)
 * Do not include issue numbers in the PR title
+* Requests containing new features must also contain test cases to exercise them.
+* Requests that contain new features or changes to existing features should also contain updates to the README.md if they impact the docs.
 
 ### Contributor License Agreement
 
