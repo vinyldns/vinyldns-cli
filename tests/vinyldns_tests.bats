@@ -53,13 +53,10 @@ load test_helper
   fixture="$(cat tests/fixtures/group_updated)"
   ok_group=$($ew --op json group --name "ok-group")
   updated_group="$(echo ${ok_group} | sed 's/test@test.com/update@update.com/g')"
-  run $ew group-update \
-    --json "${updated_group}"
+  run $ew group-update --json "${updated_group}"
 
   [ "${output}" = "${fixture}" ]
 }
-
-
 
 @test "zones (when none exist)" {
   run $ew zones
