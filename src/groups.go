@@ -100,6 +100,24 @@ func groupCreate(c *cli.Context) error {
 	return nil
 }
 
+func groupUpdate(c *cli.Context) error {
+	data := []byte(c.String("json"))
+	group := &vinyldns.Group{}
+	if err := json.Unmarshal(data, &group); err != nil {
+		return err
+	}
+	client := client(c)
+	updated, err := client.GroupUpdate(group.ID, group)
+	if err != nil {
+		return err
+	}
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(updated)
+	}
+	fmt.Printf("Updated group %s\n", updated.Name)
+	return nil
+}
+
 func groupDelete(c *cli.Context) error {
 	id := c.String("group-id")
 	client := client(c)
