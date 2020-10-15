@@ -127,6 +127,16 @@ load test_helper
   $ew zone --zone-name "ok." | grep "${fixture}"
 }
 
+@test "update zone (when the zone exists)" {
+  fixture="$(cat tests/fixtures/zone_updated)"
+  ok_zone=$($ew --op json zone --zone-name "ok.")
+  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@update.com/g')"
+  run $ew zone-update \
+    --json "${updated_zone}"
+
+  [ "${output}" = "${fixture}" ]
+}
+
 @test "record-set-create (CNAME)" {
   run $ew record-set-create \
     --zone-name "ok." \

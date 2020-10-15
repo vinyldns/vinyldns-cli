@@ -81,6 +81,7 @@ COMMANDS:
      zones               zones
      zone                zone --zone-id <zoneID>
      zone-create         zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>
+     zone-update         zone-update --json <zoneJSON>
      zone-delete         zone-delete --zone-id <zoneID>
      zone-connection     zone-connection --zone-id <zoneID>
      zone-changes        zone-changes --zone-changes <zoneID>

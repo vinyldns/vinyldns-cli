@@ -13,6 +13,7 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	clitable "github.com/crackcomm/go-clitable"
@@ -69,6 +70,24 @@ func zone(c *cli.Context) error {
 
 	printBasicTable(data)
 
+	return nil
+}
+
+func zoneUpdate(c *cli.Context) error {
+	data := []byte(c.String("json"))
+	zone := &vinyldns.Zone{}
+	if err := json.Unmarshal(data, &zone); err != nil {
+		return err
+	}
+	client := client(c)
+	updated, err := client.ZoneUpdate(zone)
+	if err != nil {
+		return err
+	}
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(updated)
+	}
+	fmt.Printf("Updated zone %s\n", updated.Zone.Name)
 	return nil
 }
 
