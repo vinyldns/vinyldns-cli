@@ -159,19 +159,25 @@ load test_helper
   [ "${output}" = "${fixture}" ]
 }
 
-@test "search-record-sets" {
-  run $ew search-record-sets \
+@test "search-record-sets (when the search returns results)" {
+  fixture="$(cat tests/fixtures/search_with_results)"
+  $ew search-record-sets \
     --record-name-filter "so*" \
     --record-type-filter "CNAME" \
     --record-type-filter "mx" \
     --max-items "50" \
+    --name-sort "DESC" | grep "${fixture}"
+}
+
+@test "search-record-sets (when the search returns no results)" {
+  run $ew search-record-sets \
+    --record-name-filter "asdf" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
     --name-sort "DESC"
-  record_sets[0]="some-cname"
-  record_sets[1]="some-mx"
-  for record_set in ${record_sets}
-  do
-    [[ "${output}" =~ "${record_set}" ]]
-  done
+  fixture="$(cat tests/fixtures/search_with_no_results)"
+  [ "${output}" = "${fixture}" ]
 }
 
 @test "zone-sync (when the zone exists)" {
