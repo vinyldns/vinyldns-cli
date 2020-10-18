@@ -53,5 +53,17 @@ var _ = Describe("the 'vinyldns' CLI", func() {
 		It("prints NAME info", func() {
 			Eventually(session.Out, 5).Should(gbytes.Say("vinyldns - A CLI to the vinyldns DNS-as-a-service API"))
 		})
+
+		It("prints USAGE info", func() {
+			Eventually(session.Out, 5).Should(gbytes.Say("USAGE"))
+		})
+
+		It("prints COMMANDS info", func() {
+			Eventually(session.Out, 5).Should(gbytes.Say("COMMANDS"))
+		})
+
+		It("prints GLOBAL OPTIONS info", func() {
+			Eventually(session.Out, 5).Should(gbytes.Say("GLOBAL OPTIONS"))
+		})
 	})
 })
