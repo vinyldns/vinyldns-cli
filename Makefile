@@ -61,6 +61,7 @@ test: test-fmt build bats start-api
 	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SRC)
 	go vet $(SRC)
 	${LOCAL_GO_PATH}/src/${BATS}/bin/bats tests
+	go test $(SRC) -tags=integration -count=1
 
 release: build-releases
 	go get github.com/aktau/github-release
