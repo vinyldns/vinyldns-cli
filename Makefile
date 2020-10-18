@@ -15,7 +15,7 @@ LOCAL_GO_PATH=`go env GOPATH`
 all: test stop-api docker build-releases
 
 install: build
-	mkdir -p $(PREFIX)/bin	
+	mkdir -p $(PREFIX)/bin
 	cp -v bin/$(NAME) $(PREFIX)/bin/$(NAME)
 
 uninstall:
@@ -50,7 +50,13 @@ bats:
 		git clone --depth 1 https://${BATS}.git ${LOCAL_GO_PATH}/src/${BATS}; \
 	fi
 
-test: build bats start-api
+test-fmt:
+	if [ `go fmt $(SRC) | wc -l` != "0" ]; then \
+		echo "fix go code formatting by running 'go fmt'."; \
+		exit 1; \
+	fi;
+
+test: test-fmt build bats start-api
 	go get -u golang.org/x/lint/golint
 	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SRC)
 	go vet $(SRC)
