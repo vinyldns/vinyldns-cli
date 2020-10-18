@@ -23,44 +23,37 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
-var _ = Describe("the --help flag", func() {
+var _ = Describe("its commands for working with record sets", func() {
 	var (
 		session *gexec.Session
 		err     error
 	)
 
-	BeforeEach(func() {
-		args := []string{
-			"--help",
-		}
+	Describe("its 'record-sets' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				args := []string{
+					"record-sets",
+					"--help",
+				}
 
-		cmd := exec.Command(exe, args...)
-		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-	})
+				cmd := exec.Command(exe, args...)
+				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+			})
 
-	AfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
-	})
+			AfterEach(func() {
+				if session != nil {
+					session.Terminate()
+				}
+			})
 
-	It("does not error", func() {
-		Expect(err).NotTo(HaveOccurred())
-	})
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
 
-	It("prints NAME info", func() {
-		Eventually(session.Out, 5).Should(gbytes.Say("vinyldns - A CLI to the vinyldns DNS-as-a-service API"))
-	})
-
-	It("prints USAGE info", func() {
-		Eventually(session.Out, 5).Should(gbytes.Say("USAGE"))
-	})
-
-	It("prints COMMANDS info", func() {
-		Eventually(session.Out, 5).Should(gbytes.Say("COMMANDS"))
-	})
-
-	It("prints GLOBAL OPTIONS info", func() {
-		Eventually(session.Out, 5).Should(gbytes.Say("GLOBAL OPTIONS"))
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("List all record sets associated with a zone"))
+			})
+		})
 	})
 })

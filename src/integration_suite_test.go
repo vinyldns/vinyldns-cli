@@ -21,7 +21,13 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+var (
+	exe string
+)
+
 func TestVinylDNSCLI(t *testing.T) {
+	exe = "../bin/vinyldns"
+
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "vinyldns CLI integration test suite")
 }
