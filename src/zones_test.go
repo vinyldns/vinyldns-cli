@@ -25,26 +25,30 @@ import (
 
 var _ = Describe("its commands for working with zones", func() {
 	var (
-		session *gexec.Session
-		err     error
+		session   *gexec.Session
+		err       error
+		args      []string
+		zonesArgs []string
 	)
+
+	JustBeforeEach(func() {
+		args = append(baseArgs, zonesArgs...)
+		cmd := exec.Command(exe, args...)
+		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	})
+
+	JustAfterEach(func() {
+		if session != nil {
+			session.Terminate()
+		}
+	})
 
 	Describe("its 'zones' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				zonesArgs := []string{
+				zonesArgs = []string{
 					"zones",
 					"--help",
-				}
-
-				args := append(baseArgs, zonesArgs...)
-				cmd := exec.Command(exe, args...)
-				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-			})
-
-			AfterEach(func() {
-				if session != nil {
-					session.Terminate()
 				}
 			})
 

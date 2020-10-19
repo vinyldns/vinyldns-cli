@@ -25,26 +25,30 @@ import (
 
 var _ = Describe("its commands for working with record sets", func() {
 	var (
-		session *gexec.Session
-		err     error
+		session        *gexec.Session
+		err            error
+		args           []string
+		recordSetsArgs []string
 	)
+
+	JustBeforeEach(func() {
+		args = append(baseArgs, recordSetsArgs...)
+		cmd := exec.Command(exe, args...)
+		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	})
+
+	JustAfterEach(func() {
+		if session != nil {
+			session.Terminate()
+		}
+	})
 
 	Describe("its 'record-sets' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				recordSetsArgs := []string{
+				recordSetsArgs = []string{
 					"record-sets",
 					"--help",
-				}
-
-				args := append(baseArgs, recordSetsArgs...)
-				cmd := exec.Command(exe, args...)
-				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-			})
-
-			AfterEach(func() {
-				if session != nil {
-					session.Terminate()
 				}
 			})
 

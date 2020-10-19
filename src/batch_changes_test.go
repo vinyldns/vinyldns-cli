@@ -27,25 +27,30 @@ var _ = Describe("its commands for working with batch changes", func() {
 	var (
 		session *gexec.Session
 		err     error
+		args    []string
+		bcArgs  []string
 	)
+
+	JustBeforeEach(func() {
+		cmd := exec.Command(exe, args...)
+		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	})
+
+	JustAfterEach(func() {
+		if session != nil {
+			session.Terminate()
+		}
+	})
 
 	Describe("its 'batch-changes' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				bcArgs := []string{
+				bcArgs = []string{
 					"batch-changes",
 					"--help",
 				}
 
-				args := append(baseArgs, bcArgs...)
-				cmd := exec.Command(exe, args...)
-				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-			})
-
-			AfterEach(func() {
-				if session != nil {
-					session.Terminate()
-				}
+				args = append(baseArgs, bcArgs...)
 			})
 
 			It("does not error", func() {

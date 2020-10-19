@@ -25,26 +25,30 @@ import (
 
 var _ = Describe("its commands for working with groups", func() {
 	var (
-		session *gexec.Session
-		err     error
+		session    *gexec.Session
+		err        error
+		args       []string
+		groupsArgs []string
 	)
+
+	JustBeforeEach(func() {
+		args = append(baseArgs, groupsArgs...)
+		cmd := exec.Command(exe, args...)
+		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+	})
+
+	JustAfterEach(func() {
+		if session != nil {
+			session.Terminate()
+		}
+	})
 
 	Describe("its 'groups' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				groupsArgs := []string{
+				groupsArgs = []string{
 					"groups",
 					"--help",
-				}
-
-				args := append(baseArgs, groupsArgs...)
-				cmd := exec.Command(exe, args...)
-				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
-			})
-
-			AfterEach(func() {
-				if session != nil {
-					session.Terminate()
 				}
 			})
 
