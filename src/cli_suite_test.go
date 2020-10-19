@@ -22,11 +22,17 @@ import (
 )
 
 var (
-	exe string
+	exe      string
+	baseArgs []string
 )
 
 func TestVinylDNSCLI(t *testing.T) {
 	exe = "../bin/vinyldns"
+	baseArgs = []string{
+		"--host=http://localhost:9000",
+		"--access-key=okAccessKey",
+		"--secret-key=okSecretKey",
+	}
 
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "vinyldns CLI integration test suite")

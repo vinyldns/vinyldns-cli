@@ -32,11 +32,12 @@ var _ = Describe("its commands for working with record sets", func() {
 	Describe("its 'record-sets' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				args := []string{
+				recordSetsArgs := []string{
 					"record-sets",
 					"--help",
 				}
 
+				args := append(baseArgs, recordSetsArgs...)
 				cmd := exec.Command(exe, args...)
 				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 			})

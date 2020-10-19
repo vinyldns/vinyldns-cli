@@ -32,11 +32,12 @@ var _ = Describe("its commands for working with batch changes", func() {
 	Describe("its 'batch-changes' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				args := []string{
+				bcArgs := []string{
 					"batch-changes",
 					"--help",
 				}
 
+				args := append(baseArgs, bcArgs...)
 				cmd := exec.Command(exe, args...)
 				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 			})

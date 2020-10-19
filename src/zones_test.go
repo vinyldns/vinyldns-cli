@@ -32,11 +32,12 @@ var _ = Describe("its commands for working with zones", func() {
 	Describe("its 'zones' command", func() {
 		Context("when it's passed '--help'", func() {
 			BeforeEach(func() {
-				args := []string{
+				zonesArgs := []string{
 					"zones",
 					"--help",
 				}
 
+				args := append(baseArgs, zonesArgs...)
 				cmd := exec.Command(exe, args...)
 				session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 			})
