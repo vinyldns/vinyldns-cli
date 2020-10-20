@@ -106,6 +106,68 @@ func recordSets(c *cli.Context) error {
 	return nil
 }
 
+func searchRecordSets(c *cli.Context) error {
+	client := client(c)
+	filterOptions := vinyldns.GlobalListFilter{}
+	recordNameFilter, err := getOption(c, "record-name-filter")
+	if err != nil {
+		return err
+	}
+	filterOptions.RecordNameFilter = recordNameFilter
+	startFrom := c.String("start-from")
+	if startFrom != "" {
+		filterOptions.StartFrom = startFrom
+	}
+	maxItemsString := c.String("max-items")
+	if maxItemsString != "" {
+		maxItems, err := strconv.Atoi(maxItemsString)
+		if err != nil {
+			return err
+		}
+		filterOptions.MaxItems = maxItems
+	}
+	recordTypeFilter := c.String("record-type-filter")
+	if recordTypeFilter != "" {
+		filterOptions.RecordTypeFilter = recordTypeFilter
+	}
+	recordOwnerGroup := c.String("record-owner-group")
+	if recordOwnerGroup != "" {
+		filterOptions.RecordOwnerGroupFilter = recordOwnerGroup
+	}
+	nameSortString := c.String("name-sort")
+	nameSort := vinyldns.ASC
+	if nameSortString == "DESC" {
+		nameSort = vinyldns.DESC
+	}
+	filterOptions.NameSort = nameSort
+	rs, err := client.RecordSetsGlobalListAll(filterOptions)
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(rs)
+	}
+
+	s := []map[string]interface{}{}
+	for _, r := range rs {
+		m := map[string]interface{}{}
+		m["Name"] = r.Name
+		m["ID"] = r.ID
+		m["Type"] = r.Type
+		m["Status"] = r.Status
+		s = append(s, m)
+	}
+
+	if len(s) != 0 {
+		clitable.PrintTable([]string{"Name", "ID", "Type", "Status"}, s)
+	} else {
+		fmt.Printf("No record sets found")
+	}
+
+	return nil
+}
+
 func recordSet(c *cli.Context) error {
 	client := client(c)
 	rs, err := client.RecordSet(c.String("zone-id"), c.String("record-set-id"))

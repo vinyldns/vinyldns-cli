@@ -1,19 +1,13 @@
 load test_helper
 
 @test "groups (when none exist)" {
-  run $ew groups
-
   fixture="$(cat tests/fixtures/groups_none)"
-
-  [ "${output}" = "${fixture}" ]
+  $ew groups | grep "${fixture}"
 }
 
 @test "groups --output=json (when none exist)" {
-  run $ew --output=json groups
-
   fixture="$(cat tests/fixtures/groups_none_json)"
-
-  [ "${output}" = "${fixture}" ]
+  $ew --output=json groups | grep "${fixture}"
 }
 
 @test "group-create" {
@@ -27,7 +21,6 @@ load test_helper
 
 @test "groups (when groups exist)" {
   fixture="$(cat tests/fixtures/groups)"
-
   $ew groups | grep "${fixture}"
 }
 
@@ -182,6 +175,27 @@ load test_helper
 
   fixture="$(cat tests/fixtures/record_set_create_txt)"
 
+  [ "${output}" = "${fixture}" ]
+}
+
+@test "search-record-sets (when the search returns results)" {
+  fixture="$(cat tests/fixtures/search_with_results)"
+  $ew search-record-sets \
+    --record-name-filter "so*" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
+    --name-sort "DESC" | grep "${fixture}"
+}
+
+@test "search-record-sets (when the search returns no results)" {
+  run $ew search-record-sets \
+    --record-name-filter "asdf" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
+    --name-sort "DESC"
+  fixture="$(cat tests/fixtures/search_with_no_results)"
   [ "${output}" = "${fixture}" ]
 }
 

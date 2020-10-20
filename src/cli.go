@@ -391,6 +391,43 @@ func main() {
 			},
 		},
 		{
+			Name:        "search-record-sets",
+			Usage:       "search-record-sets",
+			Description: "List all record sets matching given record name filter",
+			Action:      searchRecordSets,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "record-name-filter",
+					Usage: "Record name search string. At least two alpha-numeric characters are required.",
+				},
+				cli.StringFlag{
+					Name:     "start-from",
+					Usage:    "The start key of the page.",
+					Required: false,
+				},
+				cli.StringFlag{
+					Name:     "max-items",
+					Usage:    "The page limit.",
+					Required: false,
+				},
+				cli.StringSliceFlag{
+					Name:     "record-type-filter",
+					Usage:    "Return record_sets whose type is present in the given list.",
+					Required: false,
+				},
+				cli.StringFlag{
+					Name:     "record-owner-group",
+					Usage:    "Returns record_sets belonging to the given owner.",
+					Required: false,
+				},
+				cli.StringFlag{
+					Name:     "name-sort",
+					Usage:    "Sort the results as per given order",
+					Required: false,
+				},
+			},
+		},
+		{
 			Name:        "batch-changes",
 			Usage:       "batch-changes",
 			Description: "List all batch changes",
