@@ -15,6 +15,7 @@ limitations under the License.
 package main
 
 import (
+	"io/ioutil"
 	"os/exec"
 
 	. "github.com/onsi/ginkgo"
@@ -58,6 +59,81 @@ var _ = Describe("its commands for working with groups", func() {
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all vinyldns groups"))
+			})
+		})
+
+		Context("when no groups exist", func() {
+			Context("when not passed an --output", func() {
+				BeforeEach(func() {
+					groupsArgs = []string{
+						"groups",
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("prints the correct data", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say("No groups found"))
+				})
+			})
+
+			Context("when passed --output=json", func() {
+				BeforeEach(func() {
+					groupsArgs = []string{
+						"--output=json",
+						"groups",
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("prints the correct data", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say(`\[\]`))
+				})
+			})
+		})
+	})
+
+	Describe("its 'group-create' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				groupsArgs = []string{
+					"group-create",
+					"--help",
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Create a vinyldns group"))
+			})
+		})
+
+		Context("when it's passed group JSON", func() {
+			BeforeEach(func() {
+				j, err := ioutil.ReadFile("../fixtures/group_create_json")
+				Expect(err).NotTo(HaveOccurred())
+
+				groupsArgs = []string{
+					"group-create",
+					"--json",
+					string(j),
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("creates the group and prints a helpful message", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Created group ok-group"))
 			})
 		})
 	})
