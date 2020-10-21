@@ -15,24 +15,37 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 var (
-	exe      string
-	baseArgs []string
+	exe         string
+	baseArgs    []string
+	vinylClient *vinyldns.Client
 )
 
 func TestVinylDNSCLI(t *testing.T) {
+	host := "http://localhost:9000"
+	accessKey := "okAccessKey"
+	secretKey := "okSecretKey"
+
 	exe = "../bin/vinyldns"
 	baseArgs = []string{
-		"--host=http://localhost:9000",
-		"--access-key=okAccessKey",
-		"--secret-key=okSecretKey",
+		fmt.Sprintf("--host=%s", host),
+		fmt.Sprintf("--access-key=%s", accessKey),
+		fmt.Sprintf("--secret-key=%s", secretKey),
 	}
+
+	vinylClient = vinyldns.NewClient(vinyldns.ClientConfiguration{
+		Host:      host,
+		AccessKey: accessKey,
+		SecretKey: secretKey,
+	})
 
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "vinyldns CLI integration test suite")

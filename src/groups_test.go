@@ -22,6 +22,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 var _ = Describe("its commands for working with groups", func() {
@@ -96,6 +97,46 @@ var _ = Describe("its commands for working with groups", func() {
 				})
 			})
 		})
+
+		Context("when groups exist", func() {
+			var (
+				group *vinyldns.Group
+				name  string = "ok-groups-test"
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(&vinyldns.Group{
+					Name:        name,
+					Description: "description",
+					Email:       "email@email.com",
+					Admins: []vinyldns.User{{
+						UserName: "ok",
+						ID:       "ok",
+					}},
+					Members: []vinyldns.User{{
+						UserName: "ok",
+						ID:       "ok",
+					}},
+				})
+
+				groupsArgs = []string{
+					"groups",
+				}
+			})
+
+			AfterEach(func() {
+				_, err = vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns the groups", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say(name))
+			})
+		})
 	})
 
 	Describe("its 'group-create' command", func() {
@@ -117,6 +158,10 @@ var _ = Describe("its commands for working with groups", func() {
 		})
 
 		Context("when it's passed group JSON", func() {
+			var (
+				name string = "ok-group"
+			)
+
 			BeforeEach(func() {
 				j, err := ioutil.ReadFile("../fixtures/group_create_json")
 				Expect(err).NotTo(HaveOccurred())
@@ -125,6 +170,17 @@ var _ = Describe("its commands for working with groups", func() {
 					"group-create",
 					"--json",
 					string(j),
+				}
+			})
+
+			AfterEach(func() {
+				groups, err := vinylClient.Groups()
+
+				for _, g := range groups {
+					if g.Name == name {
+						_, err = vinylClient.GroupDelete(g.ID)
+						Expect(err).NotTo(HaveOccurred())
+					}
 				}
 			})
 
