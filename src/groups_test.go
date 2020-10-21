@@ -133,8 +133,19 @@ var _ = Describe("its commands for working with groups", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
-			It("returns the groups", func() {
-				Eventually(session.Out, 5).Should(gbytes.Say(name))
+			It("prints the groups table headings", func() {
+				result, err := ioutil.ReadFile("../fixtures/groups")
+				Expect(err).NotTo(HaveOccurred())
+
+				Eventually(func() string {
+					return string(session.Out.Contents())
+				}).Should(ContainSubstring(string(result)))
+			})
+
+			It("prints groups info", func() {
+				Eventually(func() string {
+					return string(session.Out.Contents())
+				}).Should(ContainSubstring("| ok-groups-test |"))
 			})
 		})
 	})
