@@ -192,38 +192,40 @@ var _ = Describe("its commands for working with groups", func() {
 		})
 
 		Context("when it's passed group JSON", func() {
-			var (
-				name string = "ok-group"
-			)
+			Context("when it's not passed '--output=json'", func() {
+				var (
+					name string = "ok-group-create-test"
+				)
 
-			BeforeEach(func() {
-				j, err := ioutil.ReadFile("../fixtures/group_create_json")
-				Expect(err).NotTo(HaveOccurred())
+				BeforeEach(func() {
+					j, err := ioutil.ReadFile("../fixtures/group_create_json")
+					Expect(err).NotTo(HaveOccurred())
 
-				groupsArgs = []string{
-					"group-create",
-					"--json",
-					string(j),
-				}
-			})
-
-			AfterEach(func() {
-				groups, err := vinylClient.Groups()
-
-				for _, g := range groups {
-					if g.Name == name {
-						_, err = vinylClient.GroupDelete(g.ID)
-						Expect(err).NotTo(HaveOccurred())
+					groupsArgs = []string{
+						"group-create",
+						"--json",
+						string(j),
 					}
-				}
-			})
+				})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
+				AfterEach(func() {
+					groups, err := vinylClient.Groups()
 
-			It("creates the group and prints a helpful message", func() {
-				Eventually(session.Out, 5).Should(gbytes.Say("Created group ok-group"))
+					for _, g := range groups {
+						if g.Name == name {
+							_, err = vinylClient.GroupDelete(g.ID)
+							Expect(err).NotTo(HaveOccurred())
+						}
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("creates the group and prints a helpful message", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say("Created group ok-group-create-test"))
+				})
 			})
 		})
 	})
