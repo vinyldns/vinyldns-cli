@@ -118,10 +118,6 @@ var _ = Describe("its commands for working with groups", func() {
 						ID:       "ok",
 					}},
 				})
-
-				groupsArgs = []string{
-					"groups",
-				}
 			})
 
 			AfterEach(func() {
@@ -129,23 +125,50 @@ var _ = Describe("its commands for working with groups", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
+			Context("when it's not passed the --output=json option", func() {
+				BeforeEach(func() {
+					groupsArgs = []string{
+						"groups",
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("prints the groups table headings", func() {
+					result, err := ioutil.ReadFile("../fixtures/groups")
+					Expect(err).NotTo(HaveOccurred())
+
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring(string(result)))
+				})
+
+				It("prints groups info", func() {
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring("| ok-groups-test |"))
+				})
 			})
 
-			It("prints the groups table headings", func() {
-				result, err := ioutil.ReadFile("../fixtures/groups")
-				Expect(err).NotTo(HaveOccurred())
+			Context("when it's passed the --output=json option", func() {
+				BeforeEach(func() {
+					groupsArgs = []string{
+						"--output=json",
+						"groups",
+					}
+				})
 
-				Eventually(func() string {
-					return string(session.Out.Contents())
-				}).Should(ContainSubstring(string(result)))
-			})
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
 
-			It("prints groups info", func() {
-				Eventually(func() string {
-					return string(session.Out.Contents())
-				}).Should(ContainSubstring("| ok-groups-test |"))
+				It("prints the groups JSON", func() {
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring(`"name":"ok-groups-test","email":"email@email.com","description":"description","status":"Active"`))
+				})
 			})
 		})
 	})
