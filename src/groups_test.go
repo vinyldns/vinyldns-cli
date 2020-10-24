@@ -137,19 +137,16 @@ var _ = Describe("its commands for working with groups", func() {
 					Expect(err).NotTo(HaveOccurred())
 				})
 
-				It("prints the groups table headings", func() {
-					result, err := ioutil.ReadFile("../fixtures/groups")
-					Expect(err).NotTo(HaveOccurred())
+				It("prints groups details", func() {
+					output := fmt.Sprintf(`+----------------+--------------------------------------+
+|      NAME      |                  ID                  |
++----------------+--------------------------------------+
+| ok-groups-test | %s |
++----------------+--------------------------------------+`, group.ID)
 
 					Eventually(func() string {
 						return string(session.Out.Contents())
-					}).Should(ContainSubstring(string(result)))
-				})
-
-				It("prints groups info", func() {
-					Eventually(func() string {
-						return string(session.Out.Contents())
-					}).Should(ContainSubstring("| ok-groups-test |"))
+					}).Should(ContainSubstring(output))
 				})
 			})
 
@@ -287,7 +284,25 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			It("prints the group details", func() {
-				Eventually(session.Out, 5).Should(gbytes.Say(name))
+				output := fmt.Sprintf(`+-------------+--------------------------------------+
+| Name        | ok-group-test                        |
++-------------+--------------------------------------+
+| ID          | %s |
++-------------+--------------------------------------+
+| Email       | email@email.com                      |
++-------------+--------------------------------------+
+| Description | description                          |
++-------------+--------------------------------------+
+| Status      | Active                               |
++-------------+--------------------------------------+
+| Members     | ok                                   |
++-------------+--------------------------------------+
+| Admins      | ok                                   |
++-------------+--------------------------------------+`, group.ID)
+
+				Eventually(func() string {
+					return string(session.Out.Contents())
+				}).Should(ContainSubstring(output))
 			})
 		})
 	})
