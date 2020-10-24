@@ -15,6 +15,7 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 
@@ -245,6 +246,48 @@ var _ = Describe("its commands for working with groups", func() {
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Retrieve details for vinyldns group"))
+			})
+		})
+
+		Context("when it's passed the name of a group that exists", func() {
+			var (
+				group *vinyldns.Group
+				name  string = "ok-group-test"
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(&vinyldns.Group{
+					Name:        name,
+					Description: "description",
+					Email:       "email@email.com",
+					Admins: []vinyldns.User{{
+						UserName: "ok",
+						ID:       "ok",
+					}},
+					Members: []vinyldns.User{{
+						UserName: "ok",
+						ID:       "ok",
+					}},
+				})
+
+				groupsArgs = []string{
+					"group",
+					fmt.Sprintf("--name=%s", name),
+				}
+
+			})
+
+			AfterEach(func() {
+				_, err = vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints the group details", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say(name))
 			})
 		})
 	})
