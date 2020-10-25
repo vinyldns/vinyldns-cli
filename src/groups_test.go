@@ -17,7 +17,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os/exec"
 	"time"
 
@@ -201,7 +200,8 @@ var _ = Describe("its commands for working with groups", func() {
 				)
 
 				BeforeEach(func() {
-					j, err := ioutil.ReadFile("../fixtures/group_create_json")
+					g := makeGroup(name)
+					j, err := json.Marshal(g)
 					Expect(err).NotTo(HaveOccurred())
 
 					groupsArgs = []string{
