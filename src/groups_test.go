@@ -330,4 +330,23 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 		})
 	})
+
+	Describe("its 'group-update' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				groupsArgs = []string{
+					"group-update",
+					"--help",
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Update a vinyldns group"))
+			})
+		})
+	})
 })
