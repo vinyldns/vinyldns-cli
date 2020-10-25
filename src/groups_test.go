@@ -15,9 +15,11 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -32,6 +34,21 @@ var _ = Describe("its commands for working with groups", func() {
 		err        error
 		args       []string
 		groupsArgs []string
+		makeGroup  = func(name string) *vinyldns.Group {
+			return &vinyldns.Group{
+				Name:        name,
+				Description: "description",
+				Email:       "email@email.com",
+				Admins: []vinyldns.User{{
+					UserName: "ok",
+					ID:       "ok",
+				}},
+				Members: []vinyldns.User{{
+					UserName: "ok",
+					ID:       "ok",
+				}},
+			}
+		}
 	)
 
 	JustBeforeEach(func() {
@@ -106,19 +123,7 @@ var _ = Describe("its commands for working with groups", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(&vinyldns.Group{
-					Name:        name,
-					Description: "description",
-					Email:       "email@email.com",
-					Admins: []vinyldns.User{{
-						UserName: "ok",
-						ID:       "ok",
-					}},
-					Members: []vinyldns.User{{
-						UserName: "ok",
-						ID:       "ok",
-					}},
-				})
+				group, err = vinylClient.GroupCreate(makeGroup(name))
 			})
 
 			AfterEach(func() {
@@ -346,6 +351,53 @@ var _ = Describe("its commands for working with groups", func() {
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Update a vinyldns group"))
+			})
+		})
+
+		Context("when it's passed the JSON for a valid, existing group", func() {
+			var (
+				group       *vinyldns.Group
+				err         error
+				updatedDesc string = "updated-description"
+				name        string = "ok-group-update-test"
+			)
+
+			BeforeEach(func() {
+				g := makeGroup(name)
+				group, err = vinylClient.GroupCreate(g)
+				Expect(err).NotTo(HaveOccurred())
+
+				groupUpdated := group
+				groupUpdated.Description = updatedDesc
+				j, err := json.Marshal(groupUpdated)
+				Expect(err).NotTo(HaveOccurred())
+
+				fmt.Println(string(j))
+
+				groupsArgs = []string{
+					"group-update",
+					"--json",
+					string(j),
+				}
+			})
+
+			AfterEach(func() {
+				_, err := vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a message", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say(fmt.Sprintf("Updated group %s", name)))
+			})
+
+			It("updates the group", func() {
+				time.Sleep(3 * time.Second)
+
+				g, err := vinylClient.Group(group.ID)
+				fmt.Println(g)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(g.Description).To(Equal(updatedDesc))
 			})
 		})
 	})
