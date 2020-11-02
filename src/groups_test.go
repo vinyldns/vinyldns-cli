@@ -123,6 +123,7 @@ var _ = Describe("its commands for working with groups", func() {
 
 			BeforeEach(func() {
 				group, err = vinylClient.GroupCreate(makeGroup(name))
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			AfterEach(func() {
