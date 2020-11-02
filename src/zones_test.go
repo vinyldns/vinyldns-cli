@@ -60,5 +60,40 @@ var _ = Describe("its commands for working with zones", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all vinyldns zones"))
 			})
 		})
+
+		Context("when no zones exist", func() {
+			Context("when not passed an --output", func() {
+				BeforeEach(func() {
+					zonesArgs = []string{
+						"zones",
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("prints the correct data", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say("No zones found"))
+				})
+			})
+
+			Context("when passed an --output=json", func() {
+				BeforeEach(func() {
+					zonesArgs = []string{
+						"--output=json",
+						"zones",
+					}
+				})
+
+				It("does not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("prints the correct data", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say(`\[\]`))
+				})
+			})
+		})
 	})
 })

@@ -1,21 +1,5 @@
 load test_helper
 
-@test "zones (when none exist)" {
-  run $ew zones
-
-  fixture="$(cat tests/fixtures/zones_none)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "zones --output=json (when none exist)" {
-  run $ew --output=json zones
-
-  fixture="$(cat tests/fixtures/zones_none_json)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "zone-create (with connection)" {
   run $ew zone-create \
     --name "ok." \
