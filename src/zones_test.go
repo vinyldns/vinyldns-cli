@@ -15,12 +15,15 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 var _ = Describe("its commands for working with zones", func() {
@@ -29,6 +32,28 @@ var _ = Describe("its commands for working with zones", func() {
 		err       error
 		args      []string
 		zonesArgs []string
+		makeGroup = func() *vinyldns.Group {
+			return &vinyldns.Group{
+				Name:        "zones-test-group",
+				Description: "description",
+				Email:       "email@email.com",
+				Admins: []vinyldns.User{{
+					UserName: "ok",
+					ID:       "ok",
+				}},
+				Members: []vinyldns.User{{
+					UserName: "ok",
+					ID:       "ok",
+				}},
+			}
+		}
+		makeZone = func(name, adminGroupID string) *vinyldns.Zone {
+			return &vinyldns.Zone{
+				Name:         name,
+				Email:        "email@email.com",
+				AdminGroupID: adminGroupID,
+			}
+		}
 	)
 
 	JustBeforeEach(func() {
@@ -92,6 +117,52 @@ var _ = Describe("its commands for working with zones", func() {
 
 				It("prints the correct data", func() {
 					Eventually(session.Out, 5).Should(gbytes.Say(`\[\]`))
+				})
+			})
+		})
+
+		Context("when zones exist", func() {
+			var (
+				zone  *vinyldns.ZoneUpdateResponse
+				group *vinyldns.Group
+				name  string = "vinyldns."
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			AfterEach(func() {
+				_, err = vinylClient.ZoneDelete(zone.Zone.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				time.Sleep(5 * time.Second)
+
+				_, err = vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			Context("when it's not passed the --output=json option", func() {
+				BeforeEach(func() {
+					zonesArgs = []string{
+						"zones",
+					}
+				})
+
+				It("prints zone details", func() {
+					output := fmt.Sprintf(`+-----------+--------------------------------------+
+|   NAME    |                  ID                  |
++-----------+--------------------------------------+
+| vinyldns. | %s |
++-----------+--------------------------------------+`, zone.Zone.ID)
+
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring(output))
 				})
 			})
 		})
