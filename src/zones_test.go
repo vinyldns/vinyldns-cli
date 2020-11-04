@@ -17,7 +17,6 @@ package main
 import (
 	"fmt"
 	"os/exec"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -140,7 +139,14 @@ var _ = Describe("its commands for working with zones", func() {
 				_, err = vinylClient.ZoneDelete(zone.Zone.ID)
 				Expect(err).NotTo(HaveOccurred())
 
-				time.Sleep(5 * time.Second)
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if !exists {
+						break
+					}
+				}
 
 				_, err = vinylClient.GroupDelete(group.ID)
 				Expect(err).NotTo(HaveOccurred())
