@@ -56,12 +56,6 @@ load test_helper
   [ "${output}" = "${fixture}" ]
 }
 
-@test "zone (when the zone exists)" {
-  fixture="$(cat tests/fixtures/zone)"
-
-  $ew zone --zone-name "ok." | grep "${fixture}"
-}
-
 @test "update zone (when the zone exists)" {
   fixture="$(cat tests/fixtures/zone_updated)"
   ok_zone=$($ew --op json zone --zone-name "ok.")
