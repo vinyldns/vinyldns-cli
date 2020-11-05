@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -160,6 +161,9 @@ var _ = Describe("its commands for working with zones", func() {
 				})
 
 				It("prints zone details", func() {
+					// wait to be sure the zone is fully created
+					time.Sleep(3 * time.Second)
+
 					output := fmt.Sprintf(`+-----------+--------------------------------------+
 |   NAME    |                  ID                  |
 +-----------+--------------------------------------+
@@ -170,6 +174,25 @@ var _ = Describe("its commands for working with zones", func() {
 						return string(session.Out.Contents())
 					}).Should(ContainSubstring(output))
 				})
+			})
+		})
+	})
+
+	Describe("its 'zone' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				zonesArgs = []string{
+					"zone",
+					"--help",
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("view zone details"))
 			})
 		})
 	})
