@@ -279,4 +279,23 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 		})
 	})
+
+	Describe("its 'zone-create' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				zonesArgs = []string{
+					"zone-create",
+					"--help",
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Create a zone"))
+			})
+		})
+	})
 })
