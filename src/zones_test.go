@@ -134,6 +134,9 @@ var _ = Describe("its commands for working with zones", func() {
 
 				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
 				Expect(err).NotTo(HaveOccurred())
+
+				// wait to be sure the zone is fully created
+				time.Sleep(3 * time.Second)
 			})
 
 			AfterEach(func() {
@@ -161,9 +164,6 @@ var _ = Describe("its commands for working with zones", func() {
 				})
 
 				It("prints zone details", func() {
-					// wait to be sure the zone is fully created
-					time.Sleep(3 * time.Second)
-
 					output := fmt.Sprintf(`+-----------+--------------------------------------+
 |   NAME    |                  ID                  |
 +-----------+--------------------------------------+
@@ -193,6 +193,89 @@ var _ = Describe("its commands for working with zones", func() {
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("view zone details"))
+			})
+		})
+
+		Context("when the zone exists", func() {
+			var (
+				zone  *vinyldns.ZoneUpdateResponse
+				group *vinyldns.Group
+				name  string = "vinyldns."
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// wait to be sure the zone is fully created
+				time.Sleep(3 * time.Second)
+			})
+
+			AfterEach(func() {
+				_, err = vinylClient.ZoneDelete(zone.Zone.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if !exists {
+						break
+					}
+				}
+
+				_, err = vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			Context("it's passed a '--zone-name'", func() {
+				BeforeEach(func() {
+					zonesArgs = []string{
+						"zone",
+						fmt.Sprintf("--zone-name=%s", name),
+					}
+				})
+
+				It("prints the zone's details", func() {
+					output := fmt.Sprintf(`+--------+--------------------------------------+
+| Name   | %s                            |
++--------+--------------------------------------+
+| ID     | %s |
++--------+--------------------------------------+
+| Status | Active                               |
++--------+--------------------------------------+`, name, zone.Zone.ID)
+
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring(output))
+
+				})
+			})
+
+			Context("it's passed a '--zone-id'", func() {
+				BeforeEach(func() {
+					zonesArgs = []string{
+						"zone",
+						fmt.Sprintf("--zone-id=%s", zone.Zone.ID),
+					}
+				})
+
+				It("prints the zone's details", func() {
+					output := fmt.Sprintf(`+--------+--------------------------------------+
+| Name   | %s                            |
++--------+--------------------------------------+
+| ID     | %s |
++--------+--------------------------------------+
+| Status | Active                               |
++--------+--------------------------------------+`, name, zone.Zone.ID)
+
+					Eventually(func() string {
+						return string(session.Out.Contents())
+					}).Should(ContainSubstring(output))
+				})
 			})
 		})
 	})
