@@ -7,7 +7,7 @@ DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
-VINYLDNS_VERSION=0.9.3
+VINYLDNS_VERSION=0.9.7
 SRC=src/*.go
 LOCAL_GO_PATH=`go env GOPATH`
 
