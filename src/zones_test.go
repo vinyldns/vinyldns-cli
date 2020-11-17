@@ -55,6 +55,53 @@ var _ = Describe("its commands for working with zones", func() {
 				AdminGroupID: adminGroupID,
 			}
 		}
+		cleanUp = func(group *vinyldns.Group, zone *vinyldns.ZoneUpdateResponse, name string) {
+			var zones []vinyldns.Zone
+
+			for {
+				zones, err = vinylClient.Zones()
+				Expect(err).NotTo(HaveOccurred())
+
+				if len(zones) != 0 {
+					break
+				}
+			}
+
+			for _, z := range zones {
+				if z.Name == name {
+					_, err = vinylClient.ZoneDelete(z.ID)
+					Expect(err).NotTo(HaveOccurred())
+					break
+				}
+			}
+
+			for {
+				var exists bool
+				exists, err = vinylClient.ZoneExists(zone.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				if !exists {
+					break
+				}
+			}
+
+			// There's a window of time following zone deletion in which
+			// VinylDNS continues to believe the group is a zone admin.
+			// We sleep for 3 seconds to allow VinylDNS to get itself straight.
+			time.Sleep(3 * time.Second)
+
+			_, err = vinylClient.GroupDelete(group.ID)
+			Expect(err).NotTo(HaveOccurred())
+
+			for {
+				groups, err := vinylClient.Groups()
+				Expect(err).NotTo(HaveOccurred())
+
+				if len(groups) == 0 {
+					break
+				}
+			}
+		}
 	)
 
 	JustBeforeEach(func() {
@@ -298,51 +345,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				var zones []vinyldns.Zone
-
-				for {
-					zones, err = vinylClient.Zones()
-					Expect(err).NotTo(HaveOccurred())
-
-					if len(zones) != 0 {
-						break
-					}
-				}
-
-				for _, z := range zones {
-					if z.Name == name {
-						_, err = vinylClient.ZoneDelete(z.ID)
-						Expect(err).NotTo(HaveOccurred())
-						break
-					}
-				}
-
-				for {
-					var exists bool
-					exists, err = vinylClient.ZoneExists(zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if !exists {
-						break
-					}
-				}
-
-				// There's a window of time following zone deletion in which
-				// VinylDNS continues to believe the group is a zone admin.
-				// We sleep for 3 seconds to allow VinylDNS to get itself straight.
-				time.Sleep(3 * time.Second)
-
-				_, err = vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
-
-				for {
-					groups, err := vinylClient.Groups()
-					Expect(err).NotTo(HaveOccurred())
-
-					if len(groups) == 0 {
-						break
-					}
-				}
+				cleanUp(group, zone, name)
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
