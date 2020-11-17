@@ -66,6 +66,27 @@ load test_helper
   [ "${output}" = "${fixture}" ]
 }
 
+@test "search-record-sets (when the search returns results)" {
+  fixture="$(cat tests/fixtures/search_with_results)"
+  $ew search-record-sets \
+    --record-name-filter "so*" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
+    --name-sort "DESC" | grep "${fixture}"
+}
+
+@test "search-record-sets (when the search returns no results)" {
+  run $ew search-record-sets \
+    --record-name-filter "asdf" \
+    --record-type-filter "CNAME" \
+    --record-type-filter "mx" \
+    --max-items "50" \
+    --name-sort "DESC"
+  fixture="$(cat tests/fixtures/search_with_no_results)"
+  [ "${output}" = "${fixture}" ]
+}
+
 @test "record-set-create (CNAME)" {
   run $ew record-set-create \
     --zone-name "ok." \
