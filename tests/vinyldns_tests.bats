@@ -1,22 +1,5 @@
 load test_helper
 
-@test "zone-create (with connection)" {
-  run $ew zone-create \
-    --name "ok." \
-    --email "test@test.com" \
-    --admin-group-name "ok-group" \
-    --zone-connection-key-name "vinyldns." \
-    --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9" \
-    --transfer-connection-key-name "vinyldns." \
-    --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
-
-  fixture="$(cat tests/fixtures/zone_create_connection)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "zone-create (with no connection)" {
   run $ew zone-create \
     --name "vinyldns." \

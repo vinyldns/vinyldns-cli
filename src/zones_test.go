@@ -352,5 +352,38 @@ var _ = Describe("its commands for working with zones", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Created zone vinyldns."))
 			})
 		})
+
+		Context("when it's passed connection details", func() {
+			var (
+				zone *vinyldns.ZoneUpdateResponse = &vinyldns.ZoneUpdateResponse{}
+				name string                       = "vinyldns."
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zonesArgs = []string{
+					"zone-create",
+					fmt.Sprintf("--name=%s", name),
+					"--email=admin@test.com",
+					fmt.Sprintf("--admin-group-name=%s", group.Name),
+					"--zone-connection-key-name=vinyldns.",
+					"--zone-connection-key=nzisn+4G2ldMn0q1CV3vsg==",
+					"--zone-connection-primary-server=vinyldns-bind9",
+					fmt.Sprintf("--transfer-connection-key-name=%s", name),
+					"--transfer-connection-key=nzisn+4G2ldMn0q1CV3vsg==",
+					"--transfer-connection-primary-server=vinyldns-bind9",
+				}
+			})
+
+			AfterEach(func() {
+				cleanUp(group, zone, name)
+			})
+
+			It("prints a message reporting that the zone has been created", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Created zone vinyldns."))
+			})
+		})
 	})
 })
