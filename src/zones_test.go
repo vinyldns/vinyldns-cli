@@ -353,7 +353,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 		})
 
-		Context("when it's passed connection details", func() {
+		Context("when it's passed valid connection details", func() {
 			var (
 				zone *vinyldns.ZoneUpdateResponse = &vinyldns.ZoneUpdateResponse{}
 				name string                       = "vinyldns."
