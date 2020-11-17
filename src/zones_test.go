@@ -32,6 +32,7 @@ var _ = Describe("its commands for working with zones", func() {
 		err       error
 		args      []string
 		zonesArgs []string
+		group     *vinyldns.Group
 		makeGroup = func() *vinyldns.Group {
 			return &vinyldns.Group{
 				Name:        "zones-test-group",
@@ -60,6 +61,7 @@ var _ = Describe("its commands for working with zones", func() {
 		args = append(baseArgs, zonesArgs...)
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	JustAfterEach(func() {
@@ -77,10 +79,6 @@ var _ = Describe("its commands for working with zones", func() {
 				}
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all vinyldns zones"))
 			})
@@ -92,10 +90,6 @@ var _ = Describe("its commands for working with zones", func() {
 					zonesArgs = []string{
 						"zones",
 					}
-				})
-
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("prints the correct data", func() {
@@ -111,10 +105,6 @@ var _ = Describe("its commands for working with zones", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints the correct data", func() {
 					Eventually(session.Out, 5).Should(gbytes.Say(`\[\]`))
 				})
@@ -123,9 +113,8 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when zones exist", func() {
 			var (
-				zone  *vinyldns.ZoneUpdateResponse
-				group *vinyldns.Group
-				name  string = "vinyldns."
+				zone *vinyldns.ZoneUpdateResponse
+				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
@@ -136,6 +125,7 @@ var _ = Describe("its commands for working with zones", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				// wait to be sure the zone is fully created
+				// TODO: this can be improved
 				time.Sleep(3 * time.Second)
 			})
 
@@ -187,10 +177,6 @@ var _ = Describe("its commands for working with zones", func() {
 				}
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("view zone details"))
 			})
@@ -198,9 +184,8 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when the zone exists", func() {
 			var (
-				zone  *vinyldns.ZoneUpdateResponse
-				group *vinyldns.Group
-				name  string = "vinyldns."
+				zone *vinyldns.ZoneUpdateResponse
+				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
@@ -289,12 +274,79 @@ var _ = Describe("its commands for working with zones", func() {
 				}
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Create a zone"))
+			})
+		})
+
+		Context("when it's not passed connection details", func() {
+			var (
+				zone *vinyldns.ZoneUpdateResponse = &vinyldns.ZoneUpdateResponse{}
+				name string                       = "vinyldns."
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zonesArgs = []string{
+					"zone-create",
+					fmt.Sprintf("--name=%s", name),
+					"--email=admin@test.com",
+					fmt.Sprintf("--admin-group-name=%s", group.Name),
+				}
+			})
+
+			AfterEach(func() {
+				var zones []vinyldns.Zone
+
+				for {
+					zones, err = vinylClient.Zones()
+					Expect(err).NotTo(HaveOccurred())
+
+					if len(zones) != 0 {
+						break
+					}
+				}
+
+				for _, z := range zones {
+					if z.Name == name {
+						_, err = vinylClient.ZoneDelete(z.ID)
+						Expect(err).NotTo(HaveOccurred())
+						break
+					}
+				}
+
+				for {
+					var exists bool
+					exists, err = vinylClient.ZoneExists(zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if !exists {
+						break
+					}
+				}
+
+				// There's a window of time following zone deletion in which
+				// VinylDNS continues to believe the group is a zone admin.
+				// We sleep for 3 seconds to allow VinylDNS to get itself straight.
+				time.Sleep(3 * time.Second)
+
+				_, err = vinylClient.GroupDelete(group.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				for {
+					groups, err := vinylClient.Groups()
+					Expect(err).NotTo(HaveOccurred())
+
+					if len(groups) == 0 {
+						break
+					}
+				}
+			})
+
+			It("prints a message reporting that the zone has been created", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Created zone vinyldns."))
 			})
 		})
 	})
