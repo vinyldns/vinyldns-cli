@@ -1,16 +1,5 @@
 load test_helper
 
-@test "zone-create (with no connection)" {
-  run $ew zone-create \
-    --name "vinyldns." \
-    --email "admin@test.com" \
-    --admin-group-name "ok-group"
-
-  fixture="$(cat tests/fixtures/zone_create_no_connection)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "zone-create (with invalid zone connection)" {
   run $ew zone-create \
     --name "ok-invalid-connection." \
