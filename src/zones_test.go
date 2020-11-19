@@ -55,7 +55,7 @@ var _ = Describe("its commands for working with zones", func() {
 				AdminGroupID: adminGroupID,
 			}
 		}
-		cleanUp = func(group *vinyldns.Group, deleteZones bool) {
+		cleanUp = func(deleteZones bool) {
 			var zones []vinyldns.Zone
 
 			// poll until zones created by the tests are completely created
@@ -77,7 +77,7 @@ var _ = Describe("its commands for working with zones", func() {
 				Expect(err).NotTo(HaveOccurred())
 			}
 
-			// poll until no more zones exist
+			// poll until all zones are deleted
 			for {
 				zones, err = vinylClient.Zones()
 				Expect(err).NotTo(HaveOccurred())
@@ -92,9 +92,16 @@ var _ = Describe("its commands for working with zones", func() {
 			// We sleep for 3 seconds to allow VinylDNS to get itself straight.
 			time.Sleep(3 * time.Second)
 
-			_, err = vinylClient.GroupDelete(group.ID)
+			var groups []vinyldns.Group
+			groups, err = vinylClient.Groups()
 			Expect(err).NotTo(HaveOccurred())
 
+			for _, g := range groups {
+				_, err = vinylClient.GroupDelete(g.ID)
+				Expect(err).NotTo(HaveOccurred())
+			}
+
+			// poll until all groups are deleted
 			for {
 				groups, err := vinylClient.Groups()
 				Expect(err).NotTo(HaveOccurred())
@@ -344,7 +351,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(group, true)
+				cleanUp(true)
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -376,7 +383,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(group, true)
+				cleanUp(true)
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -404,7 +411,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(group, false)
+				cleanUp(false)
 			})
 
 			It("prints an explanatory message to stderr", func() {
