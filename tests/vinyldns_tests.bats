@@ -1,33 +1,5 @@
 load test_helper
 
-@test "zone-create (with invalid zone connection)" {
-  run $ew zone-create \
-    --name "ok-invalid-connection." \
-    --email "test@test.com" \
-    --admin-group-name "ok-group" \
-    --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9"
-
-  fixture="$(cat tests/fixtures/zone_create_invalid_zone_connection)"
-
-  [ "${status}" -eq 1 ]
-  [ "${output}" = "${fixture}" ]
-}
-
-@test "zone-create (with invalid transfer connection)" {
-  run $ew zone-create \
-    --name "ok-invalid-connection." \
-    --email "test@test.com" \
-    --admin-group-name "ok-group" \
-    --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
-
-  fixture="$(cat tests/fixtures/zone_create_invalid_transfer_connection)"
-
-  [ "${status}" -eq 1 ]
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "update zone (when the zone exists)" {
   fixture="$(cat tests/fixtures/zone_updated)"
   ok_zone=$($ew --op json zone --zone-name "ok.")
