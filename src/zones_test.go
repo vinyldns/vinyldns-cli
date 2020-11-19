@@ -73,28 +73,16 @@ var _ = Describe("its commands for working with zones", func() {
 			}
 
 			for _, z := range zones {
-				if !deleteZones {
-					break
-				}
-
-				if z.Name == name {
-					id = z.ID
-					_, err = vinylClient.ZoneDelete(id)
-					Expect(err).NotTo(HaveOccurred())
-					break
-				}
+				id = z.ID
+				_, err = vinylClient.ZoneDelete(id)
+				Expect(err).NotTo(HaveOccurred())
 			}
 
 			for {
-				if !deleteZones {
-					break
-				}
-
-				var exists bool
-				exists, err = vinylClient.ZoneExists(id)
+				zones, err = vinylClient.Zones()
 				Expect(err).NotTo(HaveOccurred())
 
-				if !exists {
+				if len(zones) == 0 {
 					break
 				}
 			}
