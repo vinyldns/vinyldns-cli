@@ -47,6 +47,24 @@ func TestVinylDNSCLI(t *testing.T) {
 		SecretKey: secretKey,
 	})
 
+	// ensure there are no pre-existing groups
+	gs, err := vinylClient.Groups()
+	if err != nil {
+		panic(err)
+	}
+	for _, g := range gs {
+		vinylClient.GroupDelete(g.ID)
+	}
+
+	// ensure there are no pre-existing zones
+	zs, err := vinylClient.Zones()
+	if err != nil {
+		panic(err)
+	}
+	for _, z := range zs {
+		vinylClient.ZoneDelete(z.ID)
+	}
+
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "vinyldns CLI integration test suite")
 }
