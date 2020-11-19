@@ -410,5 +410,33 @@ var _ = Describe("its commands for working with zones", func() {
 				Eventually(session, 3).Should(gexec.Exit(1))
 			})
 		})
+
+		Context("when it's passed invalid transfer connection details", func() {
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zonesArgs = []string{
+					"zone-create",
+					fmt.Sprintf("--name=%s", name),
+					"--email=admin@test.com",
+					fmt.Sprintf("--admin-group-name=%s", group.Name),
+					"--transfer-connection-key=nzisn+4G2ldMn0q1CV3vsg==",
+					"--transfer-connection-primary-server=vinyldns-bind9",
+				}
+			})
+
+			AfterEach(func() {
+				cleanUp(false)
+			})
+
+			It("prints an explanatory message to stderr", func() {
+				Eventually(session.Err, 5).Should(gbytes.Say("transfer connection requires '--transfer-connection-key-name', '--transfer-connection-key', and '--transfer-connection-primary-server'"))
+			})
+
+			It("exits 1", func() {
+				Eventually(session, 3).Should(gexec.Exit(1))
+			})
+		})
 	})
 })
