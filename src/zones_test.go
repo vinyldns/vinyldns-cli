@@ -55,10 +55,15 @@ var _ = Describe("its commands for working with zones", func() {
 				AdminGroupID: adminGroupID,
 			}
 		}
-		cleanUp = func(group *vinyldns.Group, zone *vinyldns.ZoneUpdateResponse, name string) {
+		cleanUp = func(group *vinyldns.Group, name string, deleteZones bool) {
 			var zones []vinyldns.Zone
+			var id string
 
 			for {
+				if !deleteZones {
+					break
+				}
+
 				zones, err = vinylClient.Zones()
 				Expect(err).NotTo(HaveOccurred())
 
@@ -68,16 +73,25 @@ var _ = Describe("its commands for working with zones", func() {
 			}
 
 			for _, z := range zones {
+				if !deleteZones {
+					break
+				}
+
 				if z.Name == name {
-					_, err = vinylClient.ZoneDelete(z.ID)
+					id = z.ID
+					_, err = vinylClient.ZoneDelete(id)
 					Expect(err).NotTo(HaveOccurred())
 					break
 				}
 			}
 
 			for {
+				if !deleteZones {
+					break
+				}
+
 				var exists bool
-				exists, err = vinylClient.ZoneExists(zone.ID)
+				exists, err = vinylClient.ZoneExists(id)
 				Expect(err).NotTo(HaveOccurred())
 
 				if !exists {
@@ -112,9 +126,7 @@ var _ = Describe("its commands for working with zones", func() {
 	})
 
 	JustAfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
+		session.Terminate().Wait()
 	})
 
 	Describe("its 'zones' command", func() {
@@ -328,8 +340,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's not passed connection details", func() {
 			var (
-				zone *vinyldns.ZoneUpdateResponse = &vinyldns.ZoneUpdateResponse{}
-				name string                       = "vinyldns."
+				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
@@ -345,7 +356,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(group, zone, name)
+				cleanUp(group, name, true)
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -355,8 +366,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's passed valid connection details", func() {
 			var (
-				zone *vinyldns.ZoneUpdateResponse = &vinyldns.ZoneUpdateResponse{}
-				name string                       = "vinyldns."
+				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
@@ -378,11 +388,43 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(group, zone, name)
+				cleanUp(group, name, true)
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Created zone vinyldns."))
+			})
+		})
+
+		Context("when it's passed invalid connection details", func() {
+			var (
+				name string = "vinyldns."
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zonesArgs = []string{
+					"zone-create",
+					fmt.Sprintf("--name=%s", name),
+					"--email=admin@test.com",
+					fmt.Sprintf("--admin-group-name=%s", group.Name),
+					"--zone-connection-key=nzisn+4G2ldMn0q1CV3vsg==",
+					"--zone-connection-primary-server=vinyldns-bind9",
+				}
+			})
+
+			AfterEach(func() {
+				cleanUp(group, name, false)
+			})
+
+			It("prints an explanatory message to stderr", func() {
+				Eventually(session.Err, 5).Should(gbytes.Say("zone connection requires '--zone-connection-key-name', '--zone-connection-key', and '--zone-connection-primary-server'"))
+			})
+
+			It("exits 1", func() {
+				Eventually(session, 3).Should(gexec.Exit(1))
 			})
 		})
 	})
