@@ -439,4 +439,19 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 		})
 	})
+
+	Describe("its 'zone-update' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				zonesArgs = []string{
+					"zone-update",
+					"--help",
+				}
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("update zone details"))
+			})
+		})
+	})
 })
