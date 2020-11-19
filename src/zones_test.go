@@ -32,6 +32,7 @@ var _ = Describe("its commands for working with zones", func() {
 		err       error
 		args      []string
 		zonesArgs []string
+		name      string = "vinyldns."
 		group     *vinyldns.Group
 		makeGroup = func() *vinyldns.Group {
 			return &vinyldns.Group{
@@ -239,7 +240,6 @@ var _ = Describe("its commands for working with zones", func() {
 		Context("when the zone exists", func() {
 			var (
 				zone *vinyldns.ZoneUpdateResponse
-				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
@@ -334,10 +334,6 @@ var _ = Describe("its commands for working with zones", func() {
 		})
 
 		Context("when it's not passed connection details", func() {
-			var (
-				name string = "vinyldns."
-			)
-
 			BeforeEach(func() {
 				group, err = vinylClient.GroupCreate(makeGroup())
 				Expect(err).NotTo(HaveOccurred())
@@ -360,10 +356,6 @@ var _ = Describe("its commands for working with zones", func() {
 		})
 
 		Context("when it's passed valid connection details", func() {
-			var (
-				name string = "vinyldns."
-			)
-
 			BeforeEach(func() {
 				group, err = vinylClient.GroupCreate(makeGroup())
 				Expect(err).NotTo(HaveOccurred())
@@ -392,10 +384,6 @@ var _ = Describe("its commands for working with zones", func() {
 		})
 
 		Context("when it's passed invalid connection details", func() {
-			var (
-				name string = "vinyldns."
-			)
-
 			BeforeEach(func() {
 				group, err = vinylClient.GroupCreate(makeGroup())
 				Expect(err).NotTo(HaveOccurred())
