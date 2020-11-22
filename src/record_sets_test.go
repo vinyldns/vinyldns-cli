@@ -161,4 +161,90 @@ var _ = Describe("its commands for working with record sets", func() {
 			})
 		})
 	})
+
+	Describe("its 'record-set-create' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				recordSetsArgs = []string{
+					"record-set-create",
+					"--help",
+				}
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("add a record set in a zone"))
+			})
+		})
+
+		Context("when tasked in creating a record", func() {
+			var (
+				err    error
+				group  *vinyldns.Group
+				zone   *vinyldns.ZoneUpdateResponse
+				rsName string = "some-cname"
+			)
+
+			Context("when it's tasked in creating a CNAME", func() {
+				BeforeEach(func() {
+					zName := "vinyldns."
+					group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
+					Expect(err).NotTo(HaveOccurred())
+
+					zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
+					Expect(err).NotTo(HaveOccurred())
+
+					// poll until zone creation is complete
+					for {
+						exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+						Expect(err).NotTo(HaveOccurred())
+						if exists {
+							break
+						}
+					}
+
+					recordSetsArgs = []string{
+						"record-set-create",
+						fmt.Sprintf("--zone-name=%s", zName),
+						fmt.Sprintf("--record-set-name=%s", rsName),
+						"--record-set-type=CNAME",
+						"--record-set-ttl=123",
+						"--record-set-data=test.com",
+					}
+				})
+
+				AfterEach(func() {
+					rss, err := vinylClient.RecordSets(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					for _, rs := range rss {
+						if rs.Name == rsName {
+							_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.ID)
+							Expect(err).NotTo(HaveOccurred())
+						}
+					}
+
+					deleteAllGroupsAndZones()
+				})
+
+				It("prints a useful message", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say("Created record set some-cname"))
+				})
+
+				It("creates the record set", func() {
+					found := false
+					rss, err := vinylClient.RecordSets(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					for _, rs := range rss {
+						if rs.Name == rsName {
+							found = true
+							break
+						}
+					}
+
+					Expect(found).To(BeTrue())
+				})
+			})
+		})
+	})
 })
