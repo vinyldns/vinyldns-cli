@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -232,6 +233,11 @@ var _ = Describe("its commands for working with record sets", func() {
 
 				It("creates the record set", func() {
 					found := false
+
+					// sleep for 3 seconds until creation is complete
+					// TODO: this could be improved
+					time.Sleep(3 * time.Second)
+
 					rss, err := vinylClient.RecordSets(zone.Zone.ID)
 					Expect(err).NotTo(HaveOccurred())
 
