@@ -57,4 +57,21 @@ var _ = Describe("its commands for working with batch changes", func() {
 			})
 		})
 	})
+
+	Describe("its 'batch-change-create' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				bcArgs = []string{
+					"batch-change-create",
+					"--help",
+				}
+
+				args = append(baseArgs, bcArgs...)
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Create a batch change"))
+			})
+		})
+	})
 })
