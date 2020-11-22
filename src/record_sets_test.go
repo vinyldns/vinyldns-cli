@@ -59,4 +59,23 @@ var _ = Describe("its commands for working with record sets", func() {
 			})
 		})
 	})
+
+	Describe("its 'search-record-sets' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				recordSetsArgs = []string{
+					"search-record-sets",
+					"--help",
+				}
+			})
+
+			It("does not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("List all record sets matching given record name filter"))
+			})
+		})
+	})
 })
