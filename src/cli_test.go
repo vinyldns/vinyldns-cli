@@ -36,16 +36,11 @@ var _ = Describe("the --help flag", func() {
 
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
-	})
-
-	It("does not error", func() {
-		Expect(err).NotTo(HaveOccurred())
+		session.Terminate()
 	})
 
 	It("prints NAME info", func() {

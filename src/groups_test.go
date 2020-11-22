@@ -54,6 +54,7 @@ var _ = Describe("its commands for working with groups", func() {
 		args = append(baseArgs, groupsArgs...)
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	JustAfterEach(func() {
@@ -69,10 +70,6 @@ var _ = Describe("its commands for working with groups", func() {
 				}
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all vinyldns groups"))
 			})
@@ -86,10 +83,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints the correct data", func() {
 					Eventually(session.Out, 5).Should(gbytes.Say("No groups found"))
 				})
@@ -101,10 +94,6 @@ var _ = Describe("its commands for working with groups", func() {
 						"--output=json",
 						"groups",
 					}
-				})
-
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("prints the correct data", func() {
@@ -136,10 +125,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints groups details", func() {
 					output := fmt.Sprintf(`+----------------+--------------------------------------+
 |      NAME      |                  ID                  |
@@ -161,10 +146,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints the groups JSON", func() {
 					Eventually(func() string {
 						return string(session.Out.Contents())
@@ -181,10 +162,6 @@ var _ = Describe("its commands for working with groups", func() {
 					"group-create",
 					"--help",
 				}
-			})
-
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {
@@ -221,10 +198,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("creates the group and prints a helpful message", func() {
 					Eventually(session.Out, 5).Should(gbytes.Say("Created group ok-group-create-test"))
 				})
@@ -239,10 +212,6 @@ var _ = Describe("its commands for working with groups", func() {
 					"group",
 					"--help",
 				}
-			})
-
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {
@@ -286,10 +255,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints the group details", func() {
 					output := fmt.Sprintf(`+-------------+--------------------------------------+
 | Name        | ok-group-test                        |
@@ -322,10 +287,6 @@ var _ = Describe("its commands for working with groups", func() {
 					}
 				})
 
-				It("does not error", func() {
-					Expect(err).NotTo(HaveOccurred())
-				})
-
 				It("prints the group details JSON", func() {
 					Eventually(func() string {
 						return string(session.Out.Contents())
@@ -342,10 +303,6 @@ var _ = Describe("its commands for working with groups", func() {
 					"group-update",
 					"--help",
 				}
-			})
-
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {

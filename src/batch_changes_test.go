@@ -34,6 +34,7 @@ var _ = Describe("its commands for working with batch changes", func() {
 	JustBeforeEach(func() {
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	JustAfterEach(func() {
@@ -49,10 +50,6 @@ var _ = Describe("its commands for working with batch changes", func() {
 				}
 
 				args = append(baseArgs, bcArgs...)
-			})
-
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {

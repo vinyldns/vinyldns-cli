@@ -35,6 +35,7 @@ var _ = Describe("its commands for working with record sets", func() {
 		args = append(baseArgs, recordSetsArgs...)
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	JustAfterEach(func() {
@@ -50,10 +51,6 @@ var _ = Describe("its commands for working with record sets", func() {
 				}
 			})
 
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all record sets associated with a zone"))
 			})
@@ -67,10 +64,6 @@ var _ = Describe("its commands for working with record sets", func() {
 					"search-record-sets",
 					"--help",
 				}
-			})
-
-			It("does not error", func() {
-				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {
