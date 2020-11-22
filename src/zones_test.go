@@ -35,90 +35,7 @@ var _ = Describe("its commands for working with zones", func() {
 		zonesArgs []string
 		name      string = "vinyldns."
 		group     *vinyldns.Group
-		makeGroup = func() *vinyldns.Group {
-			return &vinyldns.Group{
-				Name:        "zones-test-group",
-				Description: "description",
-				Email:       "email@email.com",
-				Admins: []vinyldns.User{{
-					UserName: "ok",
-					ID:       "ok",
-				}},
-				Members: []vinyldns.User{{
-					UserName: "ok",
-					ID:       "ok",
-				}},
-			}
-		}
-		makeZone = func(name, adminGroupID string) *vinyldns.Zone {
-			return &vinyldns.Zone{
-				Name:         name,
-				Email:        "email@email.com",
-				AdminGroupID: adminGroupID,
-			}
-		}
-		cleanUp = func(deleteZones bool) {
-			var zones []vinyldns.Zone
-
-			// poll until zones created by the tests are completely created
-			for {
-				if !deleteZones {
-					break
-				}
-
-				zones, err = vinylClient.Zones()
-				Expect(err).NotTo(HaveOccurred())
-
-				if len(zones) != 0 {
-					break
-				}
-			}
-
-			for _, z := range zones {
-				_, err = vinylClient.ZoneDelete(z.ID)
-				Expect(err).NotTo(HaveOccurred())
-			}
-
-			// poll until all zones are deleted
-			for {
-				zones, err = vinylClient.Zones()
-				Expect(err).NotTo(HaveOccurred())
-
-				if len(zones) == 0 {
-					break
-				}
-			}
-
-			// There's a window of time following zone deletion in which
-			// VinylDNS continues to believe the group is a zone admin.
-			// We sleep for 3 seconds to allow VinylDNS to get itself straight.
-			time.Sleep(3 * time.Second)
-
-			var groups []vinyldns.Group
-			groups, err = vinylClient.Groups()
-			Expect(err).NotTo(HaveOccurred())
-
-			for _, g := range groups {
-				_, err = vinylClient.GroupDelete(g.ID)
-				Expect(err).NotTo(HaveOccurred())
-			}
-
-			// poll until all groups are deleted
-			for {
-				groups, err := vinylClient.Groups()
-				Expect(err).NotTo(HaveOccurred())
-
-				if len(groups) == 0 {
-					break
-				}
-			}
-		}
-		deleteAllGroupsAndZones = func() {
-			cleanUp(true)
-		}
-		deleteAllGroups = func() {
-			cleanUp(false)
-		}
+		groupName string = "zones-test-group"
 	)
 
 	JustBeforeEach(func() {
@@ -176,11 +93,10 @@ var _ = Describe("its commands for working with zones", func() {
 		Context("when zones exist", func() {
 			var (
 				zone *vinyldns.ZoneUpdateResponse
-				name string = "vinyldns."
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
@@ -250,7 +166,7 @@ var _ = Describe("its commands for working with zones", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
@@ -342,7 +258,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's not passed connection details", func() {
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zonesArgs = []string{
@@ -364,7 +280,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's passed valid connection details", func() {
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zonesArgs = []string{
@@ -392,7 +308,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's passed invalid connection details", func() {
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zonesArgs = []string{
@@ -420,7 +336,7 @@ var _ = Describe("its commands for working with zones", func() {
 
 		Context("when it's passed invalid transfer connection details", func() {
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zonesArgs = []string{
@@ -468,7 +384,7 @@ var _ = Describe("its commands for working with zones", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup())
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
 				Expect(err).NotTo(HaveOccurred())
 
 				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))

@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -27,6 +28,93 @@ var (
 	exe         string
 	baseArgs    []string
 	vinylClient *vinyldns.Client
+	makeGroup   = func(name string) *vinyldns.Group {
+		return &vinyldns.Group{
+			Name:        name,
+			Description: "description",
+			Email:       "email@email.com",
+			Admins: []vinyldns.User{{
+				UserName: "ok",
+				ID:       "ok",
+			}},
+			Members: []vinyldns.User{{
+				UserName: "ok",
+				ID:       "ok",
+			}},
+		}
+	}
+	makeZone = func(name, adminGroupID string) *vinyldns.Zone {
+		return &vinyldns.Zone{
+			Name:         name,
+			Email:        "email@email.com",
+			AdminGroupID: adminGroupID,
+		}
+	}
+	cleanUp = func(deleteZones bool) {
+		var (
+			zones []vinyldns.Zone
+			err   error
+		)
+
+		// poll until zones created by the tests are completely created
+		for {
+			if !deleteZones {
+				break
+			}
+
+			zones, err = vinylClient.Zones()
+			Expect(err).NotTo(HaveOccurred())
+
+			if len(zones) != 0 {
+				break
+			}
+		}
+
+		for _, z := range zones {
+			_, err = vinylClient.ZoneDelete(z.ID)
+			Expect(err).NotTo(HaveOccurred())
+		}
+
+		// poll until all zones are deleted
+		for {
+			zones, err = vinylClient.Zones()
+			Expect(err).NotTo(HaveOccurred())
+
+			if len(zones) == 0 {
+				break
+			}
+		}
+
+		// There's a window of time following zone deletion in which
+		// VinylDNS continues to believe the group is a zone admin.
+		// We sleep for 3 seconds to allow VinylDNS to get itself straight.
+		time.Sleep(3 * time.Second)
+
+		var groups []vinyldns.Group
+		groups, err = vinylClient.Groups()
+		Expect(err).NotTo(HaveOccurred())
+
+		for _, g := range groups {
+			_, err = vinylClient.GroupDelete(g.ID)
+			Expect(err).NotTo(HaveOccurred())
+		}
+
+		// poll until all groups are deleted
+		for {
+			groups, err := vinylClient.Groups()
+			Expect(err).NotTo(HaveOccurred())
+
+			if len(groups) == 0 {
+				break
+			}
+		}
+	}
+	deleteAllGroupsAndZones = func() {
+		cleanUp(true)
+	}
+	deleteAllGroups = func() {
+		cleanUp(false)
+	}
 )
 
 func TestVinylDNSCLI(t *testing.T) {

@@ -33,21 +33,6 @@ var _ = Describe("its commands for working with groups", func() {
 		err        error
 		args       []string
 		groupsArgs []string
-		makeGroup  = func(name string) *vinyldns.Group {
-			return &vinyldns.Group{
-				Name:        name,
-				Description: "description",
-				Email:       "email@email.com",
-				Admins: []vinyldns.User{{
-					UserName: "ok",
-					ID:       "ok",
-				}},
-				Members: []vinyldns.User{{
-					UserName: "ok",
-					ID:       "ok",
-				}},
-			}
-		}
 	)
 
 	JustBeforeEach(func() {
