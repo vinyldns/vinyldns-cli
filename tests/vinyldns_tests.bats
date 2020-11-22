@@ -1,18 +1,5 @@
 load test_helper
 
-@test "record-set-create (CNAME)" {
-  run $ew record-set-create \
-    --zone-name "ok." \
-    --record-set-name "some-cname" \
-    --record-set-type "CNAME" \
-    --record-set-ttl "123" \
-    --record-set-data "test.com"
-
-  fixture="$(cat tests/fixtures/record_set_create_cname)"
-
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "record-set-create (MX)" {
   run $ew record-set-create \
     --zone-name "ok." \
