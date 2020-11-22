@@ -182,26 +182,45 @@ var _ = Describe("its commands for working with record sets", func() {
 				err    error
 				group  *vinyldns.Group
 				zone   *vinyldns.ZoneUpdateResponse
-				rsName string = "some-cname"
+				rsName string
+				zName  string = "vinyldns."
 			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// poll until zone creation is complete
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+					if exists {
+						break
+					}
+				}
+
+			})
+
+			AfterEach(func() {
+				rss, err := vinylClient.RecordSets(zone.Zone.ID)
+				Expect(err).NotTo(HaveOccurred())
+
+				for _, rs := range rss {
+					if rs.Name == rsName {
+						_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.ID)
+						Expect(err).NotTo(HaveOccurred())
+					}
+				}
+
+				deleteAllGroupsAndZones()
+			})
 
 			Context("when it's tasked in creating a CNAME", func() {
 				BeforeEach(func() {
-					zName := "vinyldns."
-					group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
-					Expect(err).NotTo(HaveOccurred())
-
-					zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
-					Expect(err).NotTo(HaveOccurred())
-
-					// poll until zone creation is complete
-					for {
-						exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-						Expect(err).NotTo(HaveOccurred())
-						if exists {
-							break
-						}
-					}
+					rsName = "some-cname"
 
 					recordSetsArgs = []string{
 						"record-set-create",
@@ -211,20 +230,6 @@ var _ = Describe("its commands for working with record sets", func() {
 						"--record-set-ttl=123",
 						"--record-set-data=test.com",
 					}
-				})
-
-				AfterEach(func() {
-					rss, err := vinylClient.RecordSets(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					for _, rs := range rss {
-						if rs.Name == rsName {
-							_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.ID)
-							Expect(err).NotTo(HaveOccurred())
-						}
-					}
-
-					deleteAllGroupsAndZones()
 				})
 
 				It("prints a useful message", func() {
