@@ -15,6 +15,7 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"time"
@@ -451,6 +452,55 @@ var _ = Describe("its commands for working with zones", func() {
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("update zone details"))
+			})
+		})
+
+		Context("when it's passed a JSON string", func() {
+			var (
+				zone     *vinyldns.ZoneUpdateResponse
+				newEmail string = "updated@email.com"
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup())
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// poll until the new zone exists
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if exists {
+						break
+					}
+				}
+
+				zone.Zone.Email = newEmail
+				j, err := json.Marshal(zone.Zone)
+				Expect(err).NotTo(HaveOccurred())
+
+				zonesArgs = []string{
+					"zone-update",
+					"--json",
+					string(j),
+				}
+			})
+
+			AfterEach(func() {
+				cleanUp(true)
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("Updated zone vinyldns."))
+			})
+
+			It("updates the zone", func() {
+				z, err := vinylClient.Zone(zone.Zone.ID)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(z.Email).NotTo(Equal(newEmail))
 			})
 		})
 	})
