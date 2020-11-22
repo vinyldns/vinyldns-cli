@@ -15,12 +15,15 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 var _ = Describe("its commands for working with record sets", func() {
@@ -89,21 +92,72 @@ var _ = Describe("its commands for working with record sets", func() {
 		})
 
 		Context("when the search returns results", func() {
+			var (
+				err   error
+				group *vinyldns.Group
+				zone  *vinyldns.ZoneUpdateResponse
+				rs    *vinyldns.RecordSetUpdateResponse
+			)
+
 			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone("vinyldns.", group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// poll until zone creation is complete
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+					if exists {
+						break
+					}
+				}
+
+				rs, err = vinylClient.RecordSetCreate(&vinyldns.RecordSet{
+					ZoneID: zone.Zone.ID,
+					Name:   "name",
+					Type:   "A",
+					TTL:    200,
+					Records: []vinyldns.Record{{
+						Address: "127.0.0.1",
+					}},
+				})
+				Expect(err).NotTo(HaveOccurred())
+
+				for {
+					rss, err := vinylClient.RecordSets(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+					if len(rss) > 0 {
+						break
+					}
+				}
+				time.Sleep(3 * time.Second)
+
 				recordSetsArgs = []string{
 					"search-record-sets",
-					"--record-name-filter=so*",
-					"--record-type-filter=CNAME",
-					"--record-type-filter=mx",
-					"--max-items=50",
-					"--name-sort=DESC",
+					"--record-name-filter=*name*",
 				}
 			})
 
-			It("prints a useful description", func() {
-				Eventually(session.Out, 5).Should(gbytes.Say("No record sets found"))
+			AfterEach(func() {
+				_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.RecordSet.ID)
+				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroupsAndZones()
+			})
+
+			It("prints the search results", func() {
+				output := fmt.Sprintf(`|-------------------------------------------------------------|
+| Name | ID                                   | Type | Status |
+|-------------------------------------------------------------|
+| name | %s | A    | Active |
+|-------------------------------------------------------------|`, rs.RecordSet.ID)
+
+				Eventually(func() string {
+					return string(session.Out.Contents())
+				}).Should(ContainSubstring(output))
 			})
 		})
-
 	})
 })
