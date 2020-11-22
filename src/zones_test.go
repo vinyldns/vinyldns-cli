@@ -113,6 +113,12 @@ var _ = Describe("its commands for working with zones", func() {
 				}
 			}
 		}
+		deleteAllGroupsAndZones = func() {
+			cleanUp(true)
+		}
+		deleteAllGroups = func() {
+			cleanUp(false)
+		}
 	)
 
 	JustBeforeEach(func() {
@@ -348,7 +354,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(true)
+				deleteAllGroupsAndZones()
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -376,7 +382,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(true)
+				deleteAllGroupsAndZones()
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -400,7 +406,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(false)
+				deleteAllGroups()
 			})
 
 			It("prints an explanatory message to stderr", func() {
@@ -428,7 +434,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(false)
+				deleteAllGroups()
 			})
 
 			It("prints an explanatory message to stderr", func() {
@@ -490,7 +496,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				cleanUp(true)
+				deleteAllGroupsAndZones()
 			})
 
 			It("prints a useful description", func() {
