@@ -37,9 +37,7 @@ var _ = Describe("its commands for working with batch changes", func() {
 	})
 
 	JustAfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
+		session.Terminate()
 	})
 
 	Describe("its 'batch-changes' command", func() {

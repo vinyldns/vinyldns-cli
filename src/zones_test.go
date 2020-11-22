@@ -129,7 +129,7 @@ var _ = Describe("its commands for working with zones", func() {
 	})
 
 	JustAfterEach(func() {
-		session.Terminate().Wait()
+		session.Terminate()
 	})
 
 	Describe("its 'zones' command", func() {

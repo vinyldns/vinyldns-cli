@@ -57,9 +57,7 @@ var _ = Describe("its commands for working with groups", func() {
 	})
 
 	JustAfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
+		session.Terminate()
 	})
 
 	Describe("its 'groups' command", func() {

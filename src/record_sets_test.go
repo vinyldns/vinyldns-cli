@@ -38,9 +38,7 @@ var _ = Describe("its commands for working with record sets", func() {
 	})
 
 	JustAfterEach(func() {
-		if session != nil {
-			session.Terminate()
-		}
+		session.Terminate()
 	})
 
 	Describe("its 'record-sets' command", func() {
