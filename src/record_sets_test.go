@@ -17,7 +17,6 @@ package main
 import (
 	"fmt"
 	"os/exec"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -86,7 +85,7 @@ var _ = Describe("its commands for working with record sets", func() {
 				}
 			})
 
-			It("prints a useful description", func() {
+			It("prints a message", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("No record sets found"))
 			})
 		})
@@ -126,14 +125,16 @@ var _ = Describe("its commands for working with record sets", func() {
 				})
 				Expect(err).NotTo(HaveOccurred())
 
+				// poll until the record set creation is complete
 				for {
-					rss, err := vinylClient.RecordSets(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-					if len(rss) > 0 {
+					_, err := vinylClient.RecordSet(zone.Zone.ID, rs.RecordSet.ID)
+					if err == nil {
 						break
 					}
+
+					_, ok := err.(*vinyldns.Error)
+					Expect(ok).To(BeTrue())
 				}
-				time.Sleep(3 * time.Second)
 
 				recordSetsArgs = []string{
 					"search-record-sets",
