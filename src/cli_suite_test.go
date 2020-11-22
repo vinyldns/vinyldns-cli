@@ -135,19 +135,6 @@ func TestVinylDNSCLI(t *testing.T) {
 		SecretKey: secretKey,
 	})
 
-	// ensure there are no pre-existing groups
-	gs, err := vinylClient.Groups()
-	if err != nil {
-		t.Error(err)
-	}
-
-	for _, g := range gs {
-		_, err := vinylClient.GroupDelete(g.ID)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-
 	// ensure there are no pre-existing zones
 	zs, err := vinylClient.Zones()
 	if err != nil {
@@ -156,6 +143,19 @@ func TestVinylDNSCLI(t *testing.T) {
 
 	for _, z := range zs {
 		_, err := vinylClient.ZoneDelete(z.ID)
+		if err != nil {
+			t.Error(err)
+		}
+	}
+
+	// ensure there are no pre-existing groups
+	gs, err := vinylClient.Groups()
+	if err != nil {
+		t.Error(err)
+	}
+
+	for _, g := range gs {
+		_, err := vinylClient.GroupDelete(g.ID)
 		if err != nil {
 			t.Error(err)
 		}
