@@ -400,4 +400,57 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 		})
 	})
+
+	Describe("its 'zone-sync' command", func() {
+		Context("when it's passed '--help'", func() {
+			BeforeEach(func() {
+				zonesArgs = []string{
+					"zone-sync",
+					"--help",
+				}
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("starts zone sync process"))
+			})
+		})
+
+		Context("when it's passed a the name of an existing zone", func() {
+			var (
+				zone *vinyldns.ZoneUpdateResponse
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup(groupName))
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// poll until the new zone exists
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if exists {
+						break
+					}
+				}
+
+				// wait until the recently-created zone is in a state where it can be synced again
+				time.Sleep(10 * time.Second)
+
+				zonesArgs = []string{
+					"zone-sync",
+					fmt.Sprintf("--zone-name=%s", name),
+				}
+			})
+
+			It("prints information indicating the zone sync is in progress", func() {
+				Eventually(func() string {
+					return string(session.Out.Contents())
+				}).Should(ContainSubstring("Syncing"))
+			})
+		})
+	})
 })

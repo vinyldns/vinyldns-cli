@@ -20,6 +20,7 @@ import (
 	"time"
 
 	. "github.com/onsi/ginkgo"
+	"github.com/onsi/ginkgo/config"
 	. "github.com/onsi/gomega"
 	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
@@ -160,6 +161,8 @@ func TestVinylDNSCLI(t *testing.T) {
 			t.Error(err)
 		}
 	}
+
+	config.DefaultReporterConfig.SlowSpecThreshold = 30
 
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "vinyldns CLI integration test suite")
