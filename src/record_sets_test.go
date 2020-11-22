@@ -233,7 +233,46 @@ var _ = Describe("its commands for working with record sets", func() {
 				})
 
 				It("prints a useful message", func() {
-					Eventually(session.Out, 5).Should(gbytes.Say("Created record set some-cname"))
+					Eventually(session.Out, 5).Should(gbytes.Say(fmt.Sprintf("Created record set %s", rsName)))
+				})
+
+				It("creates the record set", func() {
+					found := false
+
+					// sleep for 3 seconds until creation is complete
+					// TODO: this could be improved
+					time.Sleep(3 * time.Second)
+
+					rss, err := vinylClient.RecordSets(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					for _, rs := range rss {
+						if rs.Name == rsName {
+							found = true
+							break
+						}
+					}
+
+					Expect(found).To(BeTrue())
+				})
+			})
+
+			Context("when it's tasked in creating an MX record", func() {
+				BeforeEach(func() {
+					rsName = "some-mx"
+
+					recordSetsArgs = []string{
+						"record-set-create",
+						fmt.Sprintf("--zone-name=%s", zName),
+						fmt.Sprintf("--record-set-name=%s", rsName),
+						"--record-set-type=mx",
+						"--record-set-ttl=123",
+						"--record-set-data=3,test.com",
+					}
+				})
+
+				It("prints a useful message", func() {
+					Eventually(session.Out, 5).Should(gbytes.Say(fmt.Sprintf("Created record set %s", rsName)))
 				})
 
 				It("creates the record set", func() {
