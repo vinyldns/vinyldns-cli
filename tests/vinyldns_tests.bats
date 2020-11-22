@@ -1,15 +1,5 @@
 load test_helper
 
-@test "update zone (when the zone exists)" {
-  fixture="$(cat tests/fixtures/zone_updated)"
-  ok_zone=$($ew --op json zone --zone-name "ok.")
-  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@update.com/g')"
-  run $ew zone-update \
-    --json "${updated_zone}"
-
-  [ "${output}" = "${fixture}" ]
-}
-
 @test "search-record-sets (when the search returns results)" {
   fixture="$(cat tests/fixtures/search_with_results)"
   $ew search-record-sets \
