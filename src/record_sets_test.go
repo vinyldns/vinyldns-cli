@@ -70,5 +70,22 @@ var _ = Describe("its commands for working with record sets", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("List all record sets matching given record name filter"))
 			})
 		})
+
+		Context("when the search returns no results", func() {
+			BeforeEach(func() {
+				recordSetsArgs = []string{
+					"search-record-sets",
+					"--record-name-filter=so*",
+					"--record-type-filter=CNAME",
+					"--record-type-filter=mx",
+					"--max-items=50",
+					"--name-sort=DESC",
+				}
+			})
+
+			It("prints a useful description", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("No record sets found"))
+			})
+		})
 	})
 })
