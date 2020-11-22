@@ -108,20 +108,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				_, err = vinylClient.ZoneDelete(zone.Zone.ID)
-				Expect(err).NotTo(HaveOccurred())
-
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if !exists {
-						break
-					}
-				}
-
-				_, err = vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroupsAndZones()
 			})
 
 			Context("when it's not passed the --output=json option", func() {
@@ -177,20 +164,7 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				_, err = vinylClient.ZoneDelete(zone.Zone.ID)
-				Expect(err).NotTo(HaveOccurred())
-
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if !exists {
-						break
-					}
-				}
-
-				_, err = vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroupsAndZones()
 			})
 
 			Context("it's passed a '--zone-name'", func() {

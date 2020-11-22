@@ -99,8 +99,7 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				_, err = vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroups()
 			})
 
 			Context("when it's not passed the --output=json option", func() {
@@ -173,14 +172,7 @@ var _ = Describe("its commands for working with groups", func() {
 				})
 
 				AfterEach(func() {
-					groups, err := vinylClient.Groups()
-
-					for _, g := range groups {
-						if g.Name == name {
-							_, err = vinylClient.GroupDelete(g.ID)
-							Expect(err).NotTo(HaveOccurred())
-						}
-					}
+					deleteAllGroups()
 				})
 
 				It("creates the group and prints a helpful message", func() {
@@ -228,8 +220,7 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				_, err = vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroups()
 			})
 
 			Context("when it's not passed --output=json", func() {
@@ -323,8 +314,7 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				_, err := vinylClient.GroupDelete(group.ID)
-				Expect(err).NotTo(HaveOccurred())
+				deleteAllGroups()
 			})
 
 			It("prints a message", func() {
