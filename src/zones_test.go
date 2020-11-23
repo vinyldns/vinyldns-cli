@@ -446,6 +446,10 @@ var _ = Describe("its commands for working with zones", func() {
 				}
 			})
 
+			AfterEach(func() {
+				deleteAllGroupsAndZones()
+			})
+
 			It("prints information indicating the zone sync is in progress", func() {
 				Eventually(func() string {
 					return string(session.Out.Contents())
