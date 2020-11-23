@@ -205,16 +205,7 @@ var _ = Describe("its commands for working with record sets", func() {
 			})
 
 			AfterEach(func() {
-				rss, err := vinylClient.RecordSets(zone.Zone.ID)
-				Expect(err).NotTo(HaveOccurred())
-
-				for _, rs := range rss {
-					if rs.Name == rsName {
-						_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.ID)
-						Expect(err).NotTo(HaveOccurred())
-					}
-				}
-
+				deleteRecordInZone(zone.Zone.ID, rsName)
 				deleteAllGroupsAndZones()
 			})
 
