@@ -15,12 +15,14 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"os/exec"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 	"github.com/onsi/gomega/gexec"
+	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
 var _ = Describe("its commands for working with batch changes", func() {
@@ -32,6 +34,7 @@ var _ = Describe("its commands for working with batch changes", func() {
 	)
 
 	JustBeforeEach(func() {
+		args = append(baseArgs, bcArgs...)
 		cmd := exec.Command(exe, args...)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
@@ -48,8 +51,6 @@ var _ = Describe("its commands for working with batch changes", func() {
 					"batch-changes",
 					"--help",
 				}
-
-				args = append(baseArgs, bcArgs...)
 			})
 
 			It("prints a useful description", func() {
@@ -65,12 +66,64 @@ var _ = Describe("its commands for working with batch changes", func() {
 					"batch-change-create",
 					"--help",
 				}
-
-				args = append(baseArgs, bcArgs...)
 			})
 
 			It("prints a useful description", func() {
 				Eventually(session.Out, 5).Should(gbytes.Say("Create a batch change"))
+			})
+		})
+
+		Context("when it's passed JSON", func() {
+			var (
+				zone   *vinyldns.ZoneUpdateResponse
+				group  *vinyldns.Group
+				zName  string = "vinyldns."
+				rsName string = fmt.Sprintf("batch-change.%s", zName)
+			)
+
+			BeforeEach(func() {
+				group, err = vinylClient.GroupCreate(makeGroup("test-group"))
+				Expect(err).NotTo(HaveOccurred())
+
+				zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
+				Expect(err).NotTo(HaveOccurred())
+
+				// poll until the new zone exists
+				for {
+					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+					Expect(err).NotTo(HaveOccurred())
+
+					if exists {
+						break
+					}
+				}
+
+				jsonData := fmt.Sprintf(`{
+					"comments": "request on behalf of someone",
+					"changes": [{
+						"inputName": "%s",
+						"changeType": "Add",
+						"type": "A",
+						"ttl": 7200,
+						"record": {
+							"address": "1.1.1.1"
+						}
+					}]
+				}`, rsName)
+
+				bcArgs = []string{
+					"batch-change-create",
+					fmt.Sprintf("--json=%s", jsonData),
+				}
+			})
+
+			AfterEach(func() {
+				deleteRecordInZone(zone.Zone.ID, rsName)
+				deleteAllGroupsAndZones()
+			})
+
+			It("prints the correct message", func() {
+				Eventually(session.Out, 5).Should(gbytes.Say("request on behalf of someone"))
 			})
 		})
 	})
