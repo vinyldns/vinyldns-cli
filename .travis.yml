@@ -5,7 +5,7 @@ services:
 
 go:
   - 1.14
-  - tip
+  - 1.15
 
 notifications:
   email:
