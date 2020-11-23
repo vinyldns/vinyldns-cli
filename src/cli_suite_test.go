@@ -88,8 +88,8 @@ var (
 
 		// There's a window of time following zone deletion in which
 		// VinylDNS continues to believe the group is a zone admin.
-		// We sleep for 3 seconds to allow VinylDNS to get itself straight.
-		time.Sleep(3 * time.Second)
+		// We sleep to allow VinylDNS to get itself straight.
+		time.Sleep(5 * time.Second)
 
 		var groups []vinyldns.Group
 		groups, err = vinylClient.Groups()
@@ -115,6 +115,17 @@ var (
 	}
 	deleteAllGroups = func() {
 		cleanUp(false)
+	}
+	deleteRecordInZone = func(zoneID, rsName string) {
+		rss, err := vinylClient.RecordSets(zoneID)
+		Expect(err).NotTo(HaveOccurred())
+
+		for _, rs := range rss {
+			if rs.Name == rsName {
+				_, err := vinylClient.RecordSetDelete(zoneID, rs.ID)
+				Expect(err).NotTo(HaveOccurred())
+			}
+		}
 	}
 )
 
