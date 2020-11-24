@@ -90,7 +90,7 @@ var _ = Describe("its commands for working with groups", func() {
 		Context("when groups exist", func() {
 			var (
 				group *vinyldns.Group
-				name  string = "ok-groups-test"
+				name  string = "test-group"
 			)
 
 			BeforeEach(func() {
@@ -110,11 +110,11 @@ var _ = Describe("its commands for working with groups", func() {
 				})
 
 				It("prints groups details", func() {
-					output := fmt.Sprintf(`+----------------+--------------------------------------+
-|      NAME      |                  ID                  |
-+----------------+--------------------------------------+
-| ok-groups-test | %s |
-+----------------+--------------------------------------+`, group.ID)
+					output := fmt.Sprintf(`+------------+--------------------------------------+
+|    NAME    |                  ID                  |
++------------+--------------------------------------+
+| %s | %s |
++------------+--------------------------------------+`, group.Name, group.ID)
 
 					Eventually(func() string {
 						return string(session.Out.Contents())
@@ -133,7 +133,7 @@ var _ = Describe("its commands for working with groups", func() {
 				It("prints the groups JSON", func() {
 					Eventually(func() string {
 						return string(session.Out.Contents())
-					}).Should(ContainSubstring(`"name":"ok-groups-test","email":"email@email.com","description":"description","status":"Active"`))
+					}).Should(ContainSubstring(fmt.Sprintf(`"name":"%s","email":"email@email.com","description":"description","status":"Active"`, name)))
 				})
 			})
 		})
@@ -156,7 +156,7 @@ var _ = Describe("its commands for working with groups", func() {
 		Context("when it's passed group JSON", func() {
 			Context("when it's not passed '--output=json'", func() {
 				var (
-					name string = "ok-group-create-test"
+					name string = "group-test-create"
 				)
 
 				BeforeEach(func() {
@@ -176,7 +176,7 @@ var _ = Describe("its commands for working with groups", func() {
 				})
 
 				It("creates the group and prints a helpful message", func() {
-					Eventually(session.Out, 5).Should(gbytes.Say("Created group ok-group-create-test"))
+					Eventually(session.Out, 5).Should(gbytes.Say(fmt.Sprintf("Created group %s", name)))
 				})
 			})
 		})
@@ -199,7 +199,7 @@ var _ = Describe("its commands for working with groups", func() {
 		Context("when it's passed the name of a group that exists", func() {
 			var (
 				group *vinyldns.Group
-				name  string = "ok-group-test"
+				name  string = "group-test"
 			)
 
 			BeforeEach(func() {
@@ -233,7 +233,7 @@ var _ = Describe("its commands for working with groups", func() {
 
 				It("prints the group details", func() {
 					output := fmt.Sprintf(`+-------------+--------------------------------------+
-| Name        | ok-group-test                        |
+| Name        | %s                           |
 +-------------+--------------------------------------+
 | ID          | %s |
 +-------------+--------------------------------------+
@@ -246,7 +246,7 @@ var _ = Describe("its commands for working with groups", func() {
 | Members     | ok                                   |
 +-------------+--------------------------------------+
 | Admins      | ok                                   |
-+-------------+--------------------------------------+`, group.ID)
++-------------+--------------------------------------+`, group.Name, group.ID)
 
 					Eventually(func() string {
 						return string(session.Out.Contents())
@@ -266,7 +266,7 @@ var _ = Describe("its commands for working with groups", func() {
 				It("prints the group details JSON", func() {
 					Eventually(func() string {
 						return string(session.Out.Contents())
-					}).Should(ContainSubstring(`"name":"ok-group-test","email":"email@email.com","description":"description","status":"Active","created":`))
+					}).Should(ContainSubstring(fmt.Sprintf(`"name":"%s","email":"email@email.com","description":"description","status":"Active","created":`, name)))
 				})
 			})
 		})
@@ -291,7 +291,7 @@ var _ = Describe("its commands for working with groups", func() {
 				group       *vinyldns.Group
 				err         error
 				updatedDesc string = "updated-description"
-				name        string = "ok-group-update-test"
+				name        string = "group-update-test"
 			)
 
 			BeforeEach(func() {
