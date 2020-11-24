@@ -17,6 +17,7 @@ package main
 import (
 	"fmt"
 	"os/exec"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -118,6 +119,10 @@ var _ = Describe("its commands for working with batch changes", func() {
 			})
 
 			AfterEach(func() {
+				// sleep until the record set is completely created
+				// TODO: this can be improved
+				time.Sleep(5 * time.Second)
+
 				deleteRecordInZone(zone.Zone.ID, rsName)
 				deleteAllGroupsAndZones()
 			})
