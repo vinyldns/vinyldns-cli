@@ -96,15 +96,8 @@ var _ = Describe("its commands for working with zones", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup(groupName))
+				_, zone, err = createGroupAndZone(groupName, name)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// wait to be sure the zone is fully created
-				// TODO: this can be improved
-				time.Sleep(3 * time.Second)
 			})
 
 			AfterEach(func() {
@@ -153,14 +146,8 @@ var _ = Describe("its commands for working with zones", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup(groupName))
+				_, zone, err = createGroupAndZone(groupName, name)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// wait to be sure the zone is fully created
-				time.Sleep(3 * time.Second)
 			})
 
 			AfterEach(func() {
@@ -358,21 +345,8 @@ var _ = Describe("its commands for working with zones", func() {
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup(groupName))
+				_, zone, err = createGroupAndZone(groupName, name)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// poll until the new zone exists
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if exists {
-						break
-					}
-				}
 
 				zone.Zone.Email = newEmail
 				j, err := json.Marshal(zone.Zone)
@@ -416,26 +390,9 @@ var _ = Describe("its commands for working with zones", func() {
 		})
 
 		Context("when it's passed a the name of an existing zone", func() {
-			var (
-				zone *vinyldns.ZoneUpdateResponse
-			)
-
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup(groupName))
+				_, _, err = createGroupAndZone(groupName, name)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(name, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// poll until the new zone exists
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if exists {
-						break
-					}
-				}
 
 				// wait until the recently-created zone is in a state where it can be synced again
 				time.Sleep(10 * time.Second)

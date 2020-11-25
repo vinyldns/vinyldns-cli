@@ -127,6 +127,31 @@ var (
 			}
 		}
 	}
+	createGroupAndZone = func(groupName, zoneName string) (*vinyldns.Group, *vinyldns.ZoneUpdateResponse, error) {
+		group, err := vinylClient.GroupCreate(makeGroup(groupName))
+		if err != nil {
+			return group, nil, err
+		}
+
+		zone, err := vinylClient.ZoneCreate(makeZone(zoneName, group.ID))
+		if err != nil {
+			return group, zone, err
+		}
+
+		// poll until zone creation is complete
+		for {
+			exists, err := vinylClient.ZoneExists(zone.Zone.ID)
+			if err != nil {
+				return group, zone, err
+			}
+
+			if exists {
+				break
+			}
+		}
+
+		return group, zone, err
+	}
 )
 
 func TestVinylDNSCLI(t *testing.T) {
