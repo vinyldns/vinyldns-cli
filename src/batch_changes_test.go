@@ -123,8 +123,11 @@ var _ = Describe("its commands for working with batch changes", func() {
 				// TODO: this can be improved
 				time.Sleep(5 * time.Second)
 
-				deleteRecordInZone(zone.Zone.ID, rsName)
-				deleteAllGroupsAndZones()
+				err = deleteRecordInZone(zone.Zone.ID, rsName)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints the correct message", func() {

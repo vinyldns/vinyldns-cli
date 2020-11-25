@@ -146,7 +146,9 @@ var _ = Describe("its commands for working with record sets", func() {
 			AfterEach(func() {
 				_, err := vinylClient.RecordSetDelete(zone.Zone.ID, rs.RecordSet.ID)
 				Expect(err).NotTo(HaveOccurred())
-				deleteAllGroupsAndZones()
+
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints the search results", func() {
@@ -205,8 +207,11 @@ var _ = Describe("its commands for working with record sets", func() {
 			})
 
 			AfterEach(func() {
-				deleteRecordInZone(zone.Zone.ID, rsName)
-				deleteAllGroupsAndZones()
+				err = deleteRecordInZone(zone.Zone.ID, rsName)
+				Expect(err).NotTo(HaveOccurred())
+
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("when it's tasked in creating a CNAME", func() {

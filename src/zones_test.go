@@ -101,7 +101,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("when it's not passed the --output=json option", func() {
@@ -151,7 +152,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("it's passed a '--zone-name'", func() {
@@ -231,7 +233,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -259,7 +262,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a message reporting that the zone has been created", func() {
@@ -283,7 +287,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroups()
+				err = deleteAllGroups()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints an explanatory message to stderr", func() {
@@ -311,7 +316,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroups()
+				err = deleteAllGroups()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints an explanatory message to stderr", func() {
@@ -360,7 +366,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a useful description", func() {
@@ -404,7 +411,8 @@ var _ = Describe("its commands for working with zones", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroupsAndZones()
+				err = deleteAllGroupsAndZones()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints information indicating the zone sync is in progress", func() {

@@ -51,7 +51,7 @@ var (
 			AdminGroupID: adminGroupID,
 		}
 	}
-	cleanUp = func(deleteZones bool) {
+	cleanUp = func(deleteZones bool) error {
 		var (
 			zones []vinyldns.Zone
 			err   error
@@ -64,7 +64,9 @@ var (
 			}
 
 			zones, err = vinylClient.Zones()
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				return err
+			}
 
 			if len(zones) != 0 {
 				break
@@ -73,13 +75,17 @@ var (
 
 		for _, z := range zones {
 			_, err = vinylClient.ZoneDelete(z.ID)
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				return err
+			}
 		}
 
 		// poll until all zones are deleted
 		for {
 			zones, err = vinylClient.Zones()
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				return err
+			}
 
 			if len(zones) == 0 {
 				break
@@ -93,39 +99,53 @@ var (
 
 		var groups []vinyldns.Group
 		groups, err = vinylClient.Groups()
-		Expect(err).NotTo(HaveOccurred())
+		if err != nil {
+			return err
+		}
 
 		for _, g := range groups {
 			_, err = vinylClient.GroupDelete(g.ID)
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				return err
+			}
 		}
 
 		// poll until all groups are deleted
 		for {
 			groups, err := vinylClient.Groups()
-			Expect(err).NotTo(HaveOccurred())
+			if err != nil {
+				return err
+			}
 
 			if len(groups) == 0 {
 				break
 			}
 		}
+
+		return nil
 	}
-	deleteAllGroupsAndZones = func() {
-		cleanUp(true)
+	deleteAllGroupsAndZones = func() error {
+		return cleanUp(true)
 	}
-	deleteAllGroups = func() {
-		cleanUp(false)
+	deleteAllGroups = func() error {
+		return cleanUp(false)
 	}
-	deleteRecordInZone = func(zoneID, rsName string) {
+	deleteRecordInZone = func(zoneID, rsName string) error {
 		rss, err := vinylClient.RecordSets(zoneID)
-		Expect(err).NotTo(HaveOccurred())
+		if err != nil {
+			return err
+		}
 
 		for _, rs := range rss {
 			if rs.Name == rsName {
 				_, err := vinylClient.RecordSetDelete(zoneID, rs.ID)
-				Expect(err).NotTo(HaveOccurred())
+				if err != nil {
+					return err
+				}
 			}
 		}
+
+		return nil
 	}
 	createGroupAndZone = func(groupName, zoneName string) (*vinyldns.Group, *vinyldns.ZoneUpdateResponse, error) {
 		group, err := vinylClient.GroupCreate(makeGroup(groupName))

@@ -99,7 +99,8 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroups()
+				err = deleteAllGroups()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("when it's not passed the --output=json option", func() {
@@ -172,7 +173,8 @@ var _ = Describe("its commands for working with groups", func() {
 				})
 
 				AfterEach(func() {
-					deleteAllGroups()
+					err = deleteAllGroups()
+					Expect(err).NotTo(HaveOccurred())
 				})
 
 				It("creates the group and prints a helpful message", func() {
@@ -220,7 +222,8 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroups()
+				err = deleteAllGroups()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			Context("when it's not passed --output=json", func() {
@@ -314,7 +317,8 @@ var _ = Describe("its commands for working with groups", func() {
 			})
 
 			AfterEach(func() {
-				deleteAllGroups()
+				err = deleteAllGroups()
+				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("prints a message", func() {
