@@ -102,7 +102,7 @@ var (
 		// There's a window of time following zone deletion in which
 		// VinylDNS continues to believe the group is a zone admin.
 		// We sleep to allow VinylDNS to get itself straight.
-		time.Sleep(5 * time.Second)
+		time.Sleep(6 * time.Second)
 
 		var groups []vinyldns.Group
 		groups, err = vinylClient.Groups()
