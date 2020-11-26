@@ -170,8 +170,7 @@ var _ = Describe("its commands for working with zones", func() {
 +--------+--------------------------------------+
 | ID     | %s |
 +--------+--------------------------------------+
-| Status | Active                               |
-+--------+--------------------------------------+`, name, zone.Zone.ID)
+| Status |`, name, zone.Zone.ID)
 
 					Eventually(func() string {
 						return string(session.Out.Contents())
@@ -194,8 +193,7 @@ var _ = Describe("its commands for working with zones", func() {
 +--------+--------------------------------------+
 | ID     | %s |
 +--------+--------------------------------------+
-| Status | Active                               |
-+--------+--------------------------------------+`, name, zone.Zone.ID)
+| Status |`, name, zone.Zone.ID)
 
 					Eventually(func() string {
 						return string(session.Out.Contents())
