@@ -51,15 +51,17 @@ var (
 			AdminGroupID: adminGroupID,
 		}
 	}
-	cleanUp = func(deleteZones bool) error {
+	deleteGroupsAndZones = func(waitForZoneCreation bool) error {
 		var (
 			zones []vinyldns.Zone
 			err   error
 		)
 
-		// poll until zones created by the tests are completely created
+		// Poll until zones created by the tests are completely created.
+		// TODO: This could perhaps be improved, as it may lead to an infinite
+		// loop if ever a zone creation is _expected_, but is unsuccessful.
 		for {
-			if !deleteZones {
+			if !waitForZoneCreation {
 				break
 			}
 
@@ -71,6 +73,11 @@ var (
 			if len(zones) != 0 {
 				break
 			}
+		}
+
+		zones, err = vinylClient.Zones()
+		if err != nil {
+			return err
 		}
 
 		for _, z := range zones {
@@ -125,10 +132,10 @@ var (
 		return nil
 	}
 	deleteAllGroupsAndZones = func() error {
-		return cleanUp(true)
+		return deleteGroupsAndZones(true)
 	}
 	deleteAllGroups = func() error {
-		return cleanUp(false)
+		return deleteGroupsAndZones(false)
 	}
 	deleteRecordInZone = func(zoneID, rsName string) error {
 		rss, err := vinylClient.RecordSets(zoneID)
@@ -175,6 +182,7 @@ var (
 )
 
 func TestVinylDNSCLI(t *testing.T) {
+	// The tests assume a local VinylDNS API is available on port 9000.
 	host := "http://localhost:9000"
 	accessKey := "okAccessKey"
 	secretKey := "okSecretKey"
@@ -192,34 +200,13 @@ func TestVinylDNSCLI(t *testing.T) {
 		SecretKey: secretKey,
 	})
 
-	// ensure there are no pre-existing zones
-	zs, err := vinylClient.Zones()
+	err := deleteGroupsAndZones(false)
 	if err != nil {
 		t.Error(err)
-	}
-
-	for _, z := range zs {
-		_, err := vinylClient.ZoneDelete(z.ID)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-
-	// ensure there are no pre-existing groups
-	gs, err := vinylClient.Groups()
-	if err != nil {
-		t.Error(err)
-	}
-
-	for _, g := range gs {
-		_, err := vinylClient.GroupDelete(g.ID)
-		if err != nil {
-			t.Error(err)
-		}
 	}
 
 	config.DefaultReporterConfig.SlowSpecThreshold = 30
 
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "vinyldns CLI integration test suite")
+	RunSpecs(t, "VinylDNS CLI integration test suite")
 }
