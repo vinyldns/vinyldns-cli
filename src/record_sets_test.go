@@ -93,27 +93,14 @@ var _ = Describe("its commands for working with record sets", func() {
 
 		Context("when the search returns results", func() {
 			var (
-				err   error
-				group *vinyldns.Group
-				zone  *vinyldns.ZoneUpdateResponse
-				rs    *vinyldns.RecordSetUpdateResponse
+				err  error
+				zone *vinyldns.ZoneUpdateResponse
+				rs   *vinyldns.RecordSetUpdateResponse
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
+				_, zone, err = createGroupAndZone("record-sets-group", "vinyldns.")
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone("vinyldns.", group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// poll until zone creation is complete
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-					if exists {
-						break
-					}
-				}
 
 				rs, err = vinylClient.RecordSetCreate(&vinyldns.RecordSet{
 					ZoneID: zone.Zone.ID,
@@ -182,28 +169,14 @@ var _ = Describe("its commands for working with record sets", func() {
 		Context("when tasked in creating a record", func() {
 			var (
 				err    error
-				group  *vinyldns.Group
 				zone   *vinyldns.ZoneUpdateResponse
 				rsName string
 				zName  string = "vinyldns."
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup("record-sets-group"))
+				_, zone, err = createGroupAndZone("record-sets-group", zName)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// poll until zone creation is complete
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-					if exists {
-						break
-					}
-				}
-
 			})
 
 			AfterEach(func() {
