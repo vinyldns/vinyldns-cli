@@ -77,27 +77,13 @@ var _ = Describe("its commands for working with batch changes", func() {
 		Context("when it's passed JSON", func() {
 			var (
 				zone   *vinyldns.ZoneUpdateResponse
-				group  *vinyldns.Group
 				zName  string = "vinyldns."
 				rsName string = fmt.Sprintf("batch-change.%s", zName)
 			)
 
 			BeforeEach(func() {
-				group, err = vinylClient.GroupCreate(makeGroup("test-group"))
+				_, zone, err = createGroupAndZone("test-group", zName)
 				Expect(err).NotTo(HaveOccurred())
-
-				zone, err = vinylClient.ZoneCreate(makeZone(zName, group.ID))
-				Expect(err).NotTo(HaveOccurred())
-
-				// poll until the new zone exists
-				for {
-					exists, err := vinylClient.ZoneExists(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
-
-					if exists {
-						break
-					}
-				}
 
 				jsonData := fmt.Sprintf(`{
 					"comments": "request on behalf of someone",
