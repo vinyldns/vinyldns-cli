@@ -284,14 +284,20 @@ var _ = Describe("its commands for working with record sets", func() {
 				})
 
 				It("creates the record set", func() {
-					found := false
+					var (
+						found bool = false
+						rss   []vinyldns.RecordSet
+						err   error
+					)
 
-					// sleep for 3 seconds until creation is complete
-					// TODO: this could be improved
-					time.Sleep(3 * time.Second)
-
-					rss, err := vinylClient.RecordSets(zone.Zone.ID)
-					Expect(err).NotTo(HaveOccurred())
+					// poll until creation is complete
+					for {
+						rss, err = vinylClient.RecordSets(zone.Zone.ID)
+						Expect(err).NotTo(HaveOccurred())
+						if len(rss) > 0 {
+							break
+						}
+					}
 
 					for _, rs := range rss {
 						if rs.Name == rsName {
