@@ -400,7 +400,7 @@ var _ = Describe("its commands for working with zones", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				// wait until the recently-created zone is in a state where it can be synced again
-				time.Sleep(10 * time.Second)
+				time.Sleep(13 * time.Second)
 
 				zonesArgs = []string{
 					"zone-sync",
