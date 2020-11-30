@@ -206,6 +206,7 @@ func TestVinylDNSCLI(t *testing.T) {
 	}
 
 	config.DefaultReporterConfig.SlowSpecThreshold = 30
+	config.GinkgoConfig.ParallelTotal = 1
 
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "VinylDNS CLI integration test suite")
