@@ -2,6 +2,7 @@ NAME=vinyldns
 VERSION=0.9.1
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
+ARCH_ARM=arm64
 PREFIX=/usr/local
 DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
@@ -26,9 +27,11 @@ build:
 
 build-releases:
 	rm -rf release && mkdir release
-	GOOS=linux go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
 	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) $(SRC)
-	GOOS=linux CGO_ENABLED=0  go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
+	GOOS=linux go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
+	GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
+	GOOS=linux GOARCH=$(ARCH_ARM) go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH_ARM) $(SRC)
+	GOOS=linux CGO_ENABLED=0 GOARCH=$(ARCH_ARM) go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH_ARM)_nocgo $(SRC)
 
 start-api:
 	if [ ! -d "$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)" ]; then \
