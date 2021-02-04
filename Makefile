@@ -1,5 +1,5 @@
 NAME=vinyldns
-VERSION=0.9.1
+VERSION=0.9.2
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 ARCH_ARM=arm64
