@@ -94,6 +94,7 @@ COMMANDS:
      record-sets         record-sets --zone-id <zoneID>
      batch-changes       batch-changes
      batch-change        batch-change --batch-change-id <batchChangeID>
+     batch-change-create batch-change-create --json <batchChangeJSON>
      help, h             Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
