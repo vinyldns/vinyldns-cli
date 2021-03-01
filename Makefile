@@ -7,7 +7,6 @@ PREFIX=/usr/local
 DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
-BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
 VINYLDNS_VERSION=0.9.7
 SRC=src/*.go
@@ -48,22 +47,17 @@ start-api:
 stop-api:
 	$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/remove-vinyl-containers.sh
 
-bats:
-	if ! [ -x ${LOCAL_GO_PATH}/src/${BATS}/bin/bats ]; then \
-		git clone --depth 1 https://${BATS}.git ${LOCAL_GO_PATH}/src/${BATS}; \
-	fi
-
 test-fmt:
 	if [ `go fmt $(SRC) | wc -l` != "0" ]; then \
 		echo "fix go code formatting by running 'go fmt'."; \
 		exit 1; \
 	fi;
 
-test: test-fmt build bats start-api
+test: test-fmt build start-api
 	go get -u golang.org/x/lint/golint
 	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SRC)
 	go vet $(SRC)
-	${LOCAL_GO_PATH}/src/${BATS}/bin/bats tests
+	go test $(SRC) -tags=integration -count=1
 
 release: build-releases
 	go get github.com/aktau/github-release
