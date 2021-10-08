@@ -9,7 +9,7 @@ A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS 
 
 ## Installation
 
-Download the desired pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases) version
+Download the latest pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases/latest) version
 for your operating system.
 
 For example, to install version 0.8.4 on Mac OS...
@@ -71,31 +71,33 @@ Supported commands:
 
 ```
 COMMANDS:
-     groups              groups
-     group               group --group-id <groupID>
-     group-create        group-create --json <groupJSON>
-     group-update        group-update --json <groupJSON>
-     group-delete        group-delete --group-id <groupID>
-     group-admins        group-admins --group-id <groupID>
-     group-members       group-members --group-id <groupID>
-     group-activity      group-activity --group-id <groupID>
-     zones               zones
-     zone                zone --zone-id <zoneID>
-     zone-create         zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>
-     zone-update         zone-update --json <zoneJSON>
-     zone-delete         zone-delete --zone-id <zoneID>
-     zone-connection     zone-connection --zone-id <zoneID>
-     zone-changes        zone-changes --zone-changes <zoneID>
-     record-set-changes  record-set-changes --zone-id <zoneID>
-     record-set          record-set --zone-id <zoneID> --record-set-id <recordSetID>
-     record-set-change   record-set-change --zone-id <zoneID> --record-set-id <recordSetID> --change-id <changeID>
-     record-set-create   record-set-create --zone-id <zoneID> --record-set-name <recordSetName> --record-set-type <type> --record-set-ttl <TTL> --record-set-data <rdata>
-     record-set-delete   record-set-delete --zone-id <zoneID> --record-set-id <recordSetID>
-     record-sets         record-sets --zone-id <zoneID>
-     batch-changes       batch-changes
-     batch-change        batch-change --batch-change-id <batchChangeID>
-     batch-change-create batch-change-create --json <batchChangeJSON>
-     help, h             Shows a list of commands or help for one command
+   groups               groups
+   group                group --group-id <groupID>
+   group-create         group-create --json <groupJSON>
+   group-update         group-update --json <groupJSON>
+   group-delete         group-delete --group-id <groupID>
+   group-admins         group-admins --group-id <groupID>
+   group-members        group-members --group-id <groupID>
+   group-activity       group-activity --group-id <groupID>
+   zones                zones
+   zone                 zone --zone-id <zoneID>
+   zone-create          zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>
+   zone-update          zone-update --json <zoneJSON>
+   zone-delete          zone-delete --zone-id <zoneID>
+   zone-connection      zone-connection --zone-id <zoneID>
+   zone-changes         zone-changes --zone-changes <zoneID>
+   zone-sync            zone-sync --zone-sync <zoneID>
+   record-set-changes   record-set-changes --zone-id <zoneID>
+   record-set           record-set --zone-id <zoneID> --record-set-id <recordSetID>
+   record-set-change    record-set-change --zone-id <zoneID> --record-set-id <recordSetID> --change-id <changeID>
+   record-set-create    record-set-create --zone-id <zoneID> --record-set-name <recordSetName> --record-set-type <type> --record-set-ttl <TTL> --record-set-data <rdata>
+   record-set-delete    record-set-delete --zone-id <zoneID> --record-set-id <recordSetID>
+   record-sets          record-sets --zone-id <zoneID>
+   search-record-sets   search-record-sets
+   batch-changes        batch-changes
+   batch-change         batch-change --batch-change-id <batchChangeID>
+   batch-change-create  batch-change-create --json <batchChangeJSON>
+   help, h              Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --host value                    vinyldns API Hostname [$VINYLDNS_HOST]
