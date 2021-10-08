@@ -32,4 +32,4 @@ jobs:
         tag_name: v${{ steps.get-version.outputs.CURRENT_VERSION }}
         draft: true
         prerelease: true
-        files: /release/*.tar.gz
+        files: release/*.tar.gz
