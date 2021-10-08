@@ -18,7 +18,7 @@ import (
 	"strconv"
 	"strings"
 
-	clitable "github.com/crackcomm/go-clitable"
+	"github.com/crackcomm/go-clitable"
 	"github.com/urfave/cli"
 	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
@@ -140,9 +140,18 @@ func searchRecordSets(c *cli.Context) error {
 		nameSort = vinyldns.DESC
 	}
 	filterOptions.NameSort = nameSort
-	rs, err := client.RecordSetsGlobalListAll(filterOptions)
-	if err != nil {
-		return err
+
+	var rs []vinyldns.RecordSet
+	if filterOptions.MaxItems <= 0 {
+		rs, err = client.RecordSetsGlobalListAll(filterOptions)
+		if err != nil {
+			return err
+		}
+	} else {
+		rs, _, err = client.RecordSetsGlobal(filterOptions)
+		if err != nil {
+			return err
+		}
 	}
 
 	if c.GlobalString(outputFlag) == "json" {

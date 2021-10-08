@@ -14,6 +14,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -30,26 +32,26 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "vinyldns"
 	app.Version = version
-	app.Usage = "A CLI to the vinyldns DNS-as-a-service API"
+	app.Usage = "A CLI to the VinylDNS DNS-as-a-service API"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   hostFlag,
-			Usage:  "vinyldns API Hostname",
+			Usage:  "VinylDNS API Hostname",
 			EnvVar: "VINYLDNS_HOST",
 		},
 		cli.StringFlag{
 			Name:   fmt.Sprintf("%s, ak", accessKeyFlag),
-			Usage:  "vinyldns access key",
+			Usage:  "VinylDNS access key",
 			EnvVar: "VINYLDNS_ACCESS_KEY",
 		},
 		cli.StringFlag{
 			Name:   fmt.Sprintf("%s, sk", secretKeyFlag),
-			Usage:  "vinyldns secret key",
+			Usage:  "VinylDNS secret key",
 			EnvVar: "VINYLDNS_SECRET_KEY",
 		},
 		cli.StringFlag{
 			Name:   fmt.Sprintf("%s, op", outputFlag),
-			Usage:  "vinyldns output format ('table' (default), 'json')",
+			Usage:  "VinylDNS output format ('table' (default), 'json')",
 			EnvVar: "VINYLDNS_FORMAT",
 		},
 	}
@@ -57,14 +59,16 @@ func main() {
 		{
 			Name:        "groups",
 			Usage:       "groups",
-			Description: "List all vinyldns groups",
+			Description: "List all VinylDNS groups",
 			Action:      groups,
 		},
 		{
 			Name:        "group",
 			Usage:       "group --group-id <groupID>",
-			Description: "Retrieve details for vinyldns group",
-			Action:      group,
+			Description: "Retrieve details for VinylDNS group",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, group, "group-id", "name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "group-id",
@@ -79,86 +83,94 @@ func main() {
 		{
 			Name:        "group-create",
 			Usage:       "group-create --json <groupJSON>",
-			Description: "Create a vinyldns group",
+			Description: "Create a VinylDNS group",
 			Action:      groupCreate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "json",
-					Usage: "The vinyldns JSON representing the group",
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the group",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "group-update",
 			Usage:       "group-update --json <groupJSON>",
-			Description: "Update a vinyldns group",
+			Description: "Update a VinylDNS group",
 			Action:      groupUpdate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "json",
-					Usage: "The vinyldns JSON representing the group",
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the group",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "group-delete",
 			Usage:       "group-delete --group-id <groupID>",
-			Description: "Delete the targeted vinyldns group",
+			Description: "Delete the targeted VinylDNS group",
 			Action:      groupDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "group-id",
-					Usage: "The group ID",
+					Name:     "group-id",
+					Usage:    "The group ID",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "group-admins",
 			Usage:       "group-admins --group-id <groupID>",
-			Description: "Retrieve details for vinyldns group admins",
+			Description: "Retrieve details for VinylDNS group admins",
 			Action:      groupAdmins,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "group-id",
-					Usage: "The group ID",
+					Name:     "group-id",
+					Usage:    "The group ID",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "group-members",
 			Usage:       "group-members --group-id <groupID>",
-			Description: "Retrieve details for vinyldns group members",
+			Description: "Retrieve details for VinylDNS group members",
 			Action:      groupMembers,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "group-id",
-					Usage: "The group ID",
+					Name:     "group-id",
+					Usage:    "The group ID",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "group-activity",
 			Usage:       "group-activity --group-id <groupID>",
-			Description: "Retrieve change activity details for vinyldns group activity",
+			Description: "Retrieve change activity details for VinylDNS group activity",
 			Action:      groupActivity,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "group-id",
-					Usage: "The group ID",
+					Name:     "group-id",
+					Usage:    "The group ID",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "zones",
 			Usage:       "zones",
-			Description: "List all vinyldns zones",
+			Description: "List all VinylDNS zones",
 			Action:      zones,
 		},
 		{
 			Name:        "zone",
 			Usage:       "zone --zone-id <zoneID>",
 			Description: "view zone details",
-			Action:      zone,
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zone, "zone-id", "zone-name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "zone-id",
@@ -174,15 +186,19 @@ func main() {
 			Name:        "zone-create",
 			Usage:       "zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>",
 			Description: "Create a zone",
-			Action:      zoneCreate,
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zoneCreate, "admin-group-id", "admin-group-name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "name",
-					Usage: "The zone name",
+					Name:     "name",
+					Usage:    "The zone name",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "email",
-					Usage: "The zone email",
+					Name:     "email",
+					Usage:    "The zone email",
+					Required: true,
 				},
 				cli.StringFlag{
 					Name:  "admin-group-id",
@@ -225,8 +241,9 @@ func main() {
 			Action:      zoneUpdate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "json",
-					Usage: "The vinyldns JSON representing the zone details",
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the zone details",
+					Required: true,
 				},
 			},
 		},
@@ -237,8 +254,9 @@ func main() {
 			Action:      zoneDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 			},
 		},
@@ -249,8 +267,9 @@ func main() {
 			Action:      zoneConnection,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 			},
 		},
@@ -261,8 +280,9 @@ func main() {
 			Action:      zoneChanges,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 			},
 		},
@@ -270,7 +290,9 @@ func main() {
 			Name:        "zone-sync",
 			Usage:       "zone-sync --zone-sync <zoneID>",
 			Description: "starts zone sync process",
-			Action:      zoneSync,
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zoneSync, "zone-id", "zone-name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "zone-id",
@@ -289,8 +311,9 @@ func main() {
 			Action:      recordSetChanges,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 			},
 		},
@@ -301,12 +324,14 @@ func main() {
 			Action:      recordSet,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-id",
-					Usage: "The record set ID",
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
 				},
 			},
 		},
@@ -314,19 +339,24 @@ func main() {
 			Name:        "record-set-change",
 			Usage:       "record-set-change --zone-id <zoneID> --record-set-id <recordSetID> --change-id <changeID>",
 			Description: "view record set change details for a zone",
-			Action:      recordSetChange,
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetChange, "zone-id", "zone-name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-id",
-					Usage: "The record set ID",
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "change-id",
-					Usage: "The change ID",
+					Name:     "change-id",
+					Usage:    "The change ID",
+					Required: true,
 				},
 			},
 		},
@@ -334,7 +364,9 @@ func main() {
 			Name:        "record-set-create",
 			Usage:       "record-set-create --zone-id <zoneID> --record-set-name <recordSetName> --record-set-type <type> --record-set-ttl <TTL> --record-set-data <rdata>",
 			Description: "add a record set in a zone",
-			Action:      recordSetCreate,
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetCreate, "zone-id", "zone-name")
+			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "zone-id",
@@ -345,20 +377,24 @@ func main() {
 					Usage: "The zone name (an alternative to zone-id)",
 				},
 				cli.StringFlag{
-					Name:  "record-set-name",
-					Usage: "The record set name",
+					Name:     "record-set-name",
+					Usage:    "The record set name",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-type",
-					Usage: "The record set type",
+					Name:     "record-set-type",
+					Usage:    "The record set type",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-ttl",
-					Usage: "The record set TTL",
+					Name:     "record-set-ttl",
+					Usage:    "The record set TTL",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-data",
-					Usage: "The record set data",
+					Name:     "record-set-data",
+					Usage:    "The record set data",
+					Required: true,
 				},
 			},
 		},
@@ -369,12 +405,14 @@ func main() {
 			Action:      recordSetDelete,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 				cli.StringFlag{
-					Name:  "record-set-id",
-					Usage: "The record set ID",
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
 				},
 			},
 		},
@@ -385,20 +423,22 @@ func main() {
 			Action:      recordSets,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
+					Name:     "zone-id",
+					Usage:    "The zone ID",
+					Required: true,
 				},
 			},
 		},
 		{
 			Name:        "search-record-sets",
-			Usage:       "search-record-sets",
+			Usage:       "search-record-sets --record-name-filter <string>",
 			Description: "List all record sets matching given record name filter",
 			Action:      searchRecordSets,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "record-name-filter",
-					Usage: "Record name search string. At least two alpha-numeric characters are required.",
+					Name:     "record-name-filter",
+					Usage:    "Record name search string. At least two alpha-numeric characters are required.",
+					Required: true,
 				},
 				cli.StringFlag{
 					Name:     "start-from",
@@ -440,8 +480,9 @@ func main() {
 			Action:      batchChange,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "batch-change-id",
-					Usage: "The batch change ID",
+					Name:     "batch-change-id",
+					Usage:    "The batch change ID",
+					Required: true,
 				},
 			},
 		},
@@ -452,11 +493,39 @@ func main() {
 			Action:      batchChangeCreate,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "json",
-					Usage: "The vinyldns JSON representing the batch change",
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the batch change",
+					Required: true,
 				},
 			},
 		},
 	}
-	app.RunAndExitOnError()
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func requireAtLeast(c *cli.Context, action func(*cli.Context) error, flags ...string) error {
+	haveAtLeastOne := false
+	for _, flag := range flags {
+		if c.String(flag) != "" {
+			haveAtLeastOne = true
+			break
+		}
+	}
+
+	if !haveAtLeastOne {
+		err := cli.ShowCommandHelp(c, c.Command.Name)
+		if err != nil {
+			return fmt.Errorf("error showing command help: %w", err)
+		}
+		prefixedFlags := make([]string, len(flags))
+		for i := range flags {
+			prefixedFlags[i] = fmt.Sprintf("'--%s'", flags[i])
+		}
+		return fmt.Errorf("one of the flags must be provided: %s", strings.Join(prefixedFlags, ", "))
+	}
+	return action(c)
 }

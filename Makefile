@@ -1,39 +1,73 @@
+VERSION=0.10.0
+
+SHELL=bash
+ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 NAME=vinyldns
-VERSION=0.9.2
 TAG=v$(VERSION)
+
 ARCH=$(shell uname -m)
 ARCH_ARM=arm64
-PREFIX=/usr/local
+INSTALL_PATH=/usr/local
 DOCKER_NAME=vinyldns/vinyldns-cli
 IMG=${DOCKER_NAME}:${VERSION}
 LATEST=${DOCKER_NAME}:latest
+
 BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
-VINYLDNS_VERSION=0.9.7
-SRC=src/*.go
+VINYLDNS_VERSION=0.9.10
+
+SOURCE_PATH:=$(ROOT_DIR)/src
 LOCAL_GO_PATH=`go env GOPATH`
 
-all: test stop-api docker build-releases
+GOOS=$(shell go env GOOS)
+GOARCH=$(shell go env GOARCH)
+PLATFORMS=darwin linux windows
+
+# Check that the required version of make is being used
+REQ_MAKE_VER:=3.82
+ifneq ($(REQ_MAKE_VER),$(firstword $(sort $(MAKE_VERSION) $(REQ_MAKE_VER))))
+   $(error The version of MAKE $(REQ_MAKE_VER) or higher is required; you are running $(MAKE_VERSION))
+endif
+
+.ONESHELL:
+
+
+.PHONY: install uninstall build build_releases release test docker docker-push
+
+all: test build-releases
 
 install: build
-	mkdir -p $(PREFIX)/bin
-	cp -v bin/$(NAME) $(PREFIX)/bin/$(NAME)
+	@set -euo pipefail
+	mkdir -p $(INSTALL_PATH)/bin
+	cp -v bin/$(NAME) $(INSTALL_PATH)/bin/$(NAME)
 
 uninstall:
-	rm -vf $(PREFIX)/bin/$(NAME)
+	@set -euo pipefail
+	rm -vf $(INSTALL_PATH)/bin/$(NAME)
 
 build:
-	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) $(SRC)
+	@set -euo pipefail
+	go build -ldflags "-X main.version=$(VERSION)" -o bin/$(NAME) $(SOURCE_PATH)
 
 build-releases:
+	@set -euo pipefail
 	rm -rf release && mkdir release
-	GOOS=darwin go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_darwin_$(ARCH) $(SRC)
-	GOOS=linux go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH) $(SRC)
-	GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH)_nocgo $(SRC)
-	GOOS=linux GOARCH=$(ARCH_ARM) go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH_ARM) $(SRC)
-	GOOS=linux CGO_ENABLED=0 GOARCH=$(ARCH_ARM) go build -ldflags "-X main.version=$(VERSION)" -o release/$(NAME)_$(VERSION)_linux_$(ARCH_ARM)_nocgo $(SRC)
+	for platform in $(PLATFORMS); do
+	    GOOS=$${platform}
+	    GOARCH=amd64
+	    BINARY="$(NAME)"
+	    if [ "$${platform}" == "windows" ]; then BINARY="$${BINARY}.exe"; fi
+
+	    echo -n "Building $${BINARY} v$(VERSION) for $${platform}/$${GOARCH}..."
+	    GOOS=$${platform} GOARCH=$${GOARCH} go build -ldflags "-X main.version=$(VERSION)" -o $(ROOT_DIR)/release/$${GOOS}_$${GOARCH}/$${BINARY} $(SOURCE_PATH);
+	    echo -n "compressing..."
+	    tar czf $(ROOT_DIR)/release/$(NAME)_$(VERSION)_$${GOOS}_$${GOARCH}.tar.gz -C $(ROOT_DIR)/release/$${GOOS}_$${GOARCH} $${BINARY};
+	    echo "done."
+	done
 
 start-api:
+	@set -euo pipefail
 	if [ ! -d "$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)" ]; then \
 		echo "$(VINYLDNS_REPO)-$(VINYLDNS_VERSION) not found in your GOPATH (necessary for acceptance tests), getting..."; \
 		git clone \
@@ -46,46 +80,42 @@ start-api:
 		--version $(VINYLDNS_VERSION)
 
 stop-api:
+	@set -euo pipefail
 	$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/remove-vinyl-containers.sh
 
 bats:
-	if ! [ -x ${LOCAL_GO_PATH}/src/${BATS}/bin/bats ]; then \
-		git clone --depth 1 https://${BATS}.git ${LOCAL_GO_PATH}/src/${BATS}; \
+	@set -euo pipefail
+	if ! [ -x ${LOCAL_GO_PATH}/src/${BATS}/bin/bats ]; then
+		git clone --depth 1 https://${BATS}.git ${LOCAL_GO_PATH}/src/${BATS};
 	fi
 
 test-fmt:
-	if [ `go fmt $(SRC) | wc -l` != "0" ]; then \
-		echo "fix go code formatting by running 'go fmt'."; \
-		exit 1; \
+	@set -euo pipefail
+	if [ `go fmt $(SOURCE_PATH) | wc -l` != "0" ]; then
+		echo "Fix go code formatting by running 'make format'."
+		exit 1
 	fi;
 
+format:
+	@set -euo pipefail
+	go fmt $(SOURCE_PATH)
+
 test: test-fmt build bats start-api
-	go get -u golang.org/x/lint/golint
-	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SRC)
-	go vet $(SRC)
+	@set -euo pipefail
+	trap 'make stop-api' TERM INT EXIT
+	go install golang.org/x/lint/golint@latest
+	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SOURCE_PATH)
+	go vet $(SOURCE_PATH)
 	${LOCAL_GO_PATH}/src/${BATS}/bin/bats tests
 
-release: build-releases
-	go get github.com/aktau/github-release
-	github-release release \
-		--user vinyldns \
-		--repo vinyldns-cli \
-		--tag $(TAG) \
-		--name "$(TAG)" \
-		--description "vinyldns-cli version $(VERSION)"
-	cd release && ls | xargs -I FILE github-release upload \
-		--user vinyldns \
-		--repo vinyldns-cli \
-		--tag $(TAG) \
-		--name FILE \
-		--file FILE
-
 docker:
+	@set -euo pipefail
 	docker build -t ${IMG} .
 	docker tag ${IMG} ${LATEST}
 
 docker-push:
+	@set -euo pipefail
 	docker push ${LATEST}
 	docker push ${IMG}
 
-.PHONY: install uninstall build build_releases release test docker docker-push
+

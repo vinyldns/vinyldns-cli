@@ -16,7 +16,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	clitable "github.com/crackcomm/go-clitable"
+	"github.com/crackcomm/go-clitable"
 	"github.com/urfave/cli"
 	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
@@ -110,10 +110,7 @@ func zoneDelete(c *cli.Context) error {
 
 func zoneCreate(c *cli.Context) error {
 	client := client(c)
-	id, err := getAdminGroupID(client, c.String("admin-group-id"), c.String("admin-group-name"))
-	if err != nil {
-		return err
-	}
+
 	connection := &vinyldns.ZoneConnection{
 		Key:           c.String("zone-connection-key"),
 		KeyName:       c.String("zone-connection-key-name"),
@@ -126,29 +123,34 @@ func zoneCreate(c *cli.Context) error {
 		Name:          c.String("transfer-connection-key-name"),
 		PrimaryServer: c.String("transfer-connection-primary-server"),
 	}
-	z := &vinyldns.Zone{
+
+	zoneConnectionValid, err := validateConnection("zone", connection)
+	if err != nil {
+		return err
+	}
+	transferConnectionValid, err := validateConnection("transfer", tConnection)
+	if err != nil {
+		return err
+	}
+
+	id, err := getAdminGroupID(client, c.String("admin-group-id"), c.String("admin-group-name"))
+	if err != nil {
+		return err
+	}
+	newZone := &vinyldns.Zone{
 		Name:         c.String("name"),
 		Email:        c.String("email"),
 		AdminGroupID: id,
 	}
 
-	zc, err := validateConnection("zone", connection)
-	if err != nil {
-		return err
+	if zoneConnectionValid {
+		newZone.Connection = connection
 	}
-	if zc {
-		z.Connection = connection
-	}
-
-	tc, err := validateConnection("transfer", tConnection)
-	if err != nil {
-		return err
-	}
-	if tc {
-		z.TransferConnection = tConnection
+	if transferConnectionValid {
+		newZone.TransferConnection = tConnection
 	}
 
-	created, err := client.ZoneCreate(z)
+	created, err := client.ZoneCreate(newZone)
 	if err != nil {
 		return err
 	}
