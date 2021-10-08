@@ -12,38 +12,33 @@ A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS 
 Download the latest pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases/latest) version
 for your operating system.
 
-For example, to install version 0.8.4 on Mac OS...
+For example, to install version 0.10.0 on Linux
 
 Download:
 
 ```
-wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.8.4/vinyldns_0.8.4_darwin_x86_64
+wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.0/vinyldns_0.10.0_linux_amd64.tar.gz
 ```
 
-Make the downloaded binary executable:
+Extract the executable:
 
 ```
-chmod +x vinyldns_0.8.4_darwin_x86_64
+tar zxf vinyldns_0.10.0_linux_amd64.tar.gz
 ```
 
-Use it:
+This will extract a file named `vinyldns`. To get started:
 
 ```
-./vinyldns_0.8.4_darwin_x86_64 --help
+./vinyldns --help
 ```
 
-And, of course, you can also rename the executable and move it to your path. For example...
+And, of course, you can also move it to your path. For example...
 
-Rename your downloaded binary:
-
-```
-mv vinyldns_0.8.4_darwin_x86_64 vinyldns
-```
 
 Move it somewhere in your `$PATH`:
 
 ```
-mv vinyldns /usr/local/bin
+sudo mv vinyldns /usr/local/bin
 ```
 
 Use the `vinyldns` command:
