@@ -6,7 +6,7 @@ require (
 	github.com/crackcomm/go-clitable v0.0.0-20151121230230-53bcff2fea36
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/urfave/cli v1.22.4
-	github.com/vinyldns/go-vinyldns v0.9.15
+	github.com/vinyldns/go-vinyldns v0.9.16
 )
 
 require (
