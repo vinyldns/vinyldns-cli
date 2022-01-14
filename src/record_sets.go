@@ -262,7 +262,7 @@ func recordSetCreate(c *cli.Context) error {
 	} else if t == "TXT" {
 		records = []vinyldns.Record{
 			{
-				Text: rdata[0],
+				Text: rdataS,
 			},
 		}
 	} else {
