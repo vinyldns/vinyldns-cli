@@ -9,7 +9,7 @@ require (
 	github.com/vinyldns/go-vinyldns v0.9.16
 )
 
-replace github.com/vinyldns/go-vinyldns => github.com/ssranjani06/go-vinyldns v0.0.0-20240611144018-a38e17c2e3c3
+replace github.com/vinyldns/go-vinyldns => github.com/ssranjani06/go-vinyldns zoneDetailsPR
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1 // indirect
