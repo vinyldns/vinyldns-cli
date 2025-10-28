@@ -183,6 +183,24 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-details",
+			Usage:       "zone --zone-id <zoneID>",
+			Description: "view zone details",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zoneDetails, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+			},
+		},
+		{
 			Name:        "zone-create",
 			Usage:       "zone-create --name <name> --email <email> --admin-group-id <adminGroupID> --transfer-connection-name <transferConnectionName> --transfer-connection-key <transferConnectionKey> --transfer-connection-key-name <transferConnectionKeyName> --transfer-connection-primary-server <transferConnectionPrimaryServer> --zone-connection-name <zoneConnectionName> --zone-connection-key <zoneConnectionKey> --zone-connection-key-name <zoneConnectionKeyName> --zone-connection-primary-server <zoneConnectionPrimaryServer>",
 			Description: "Create a zone",
