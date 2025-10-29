@@ -194,10 +194,6 @@ func main() {
 					Name:  "zone-id",
 					Usage: "The zone ID",
 				},
-				cli.StringFlag{
-					Name:  "zone-name",
-					Usage: "The zone name (an alternative to --zone-id)",
-				},
 			},
 		},
 		{
@@ -322,7 +318,7 @@ func main() {
 				},
 			},
 		},
-		{
+		/* 		{
 			Name:        "record-set-changes",
 			Usage:       "record-set-changes --zone-id <zoneID>",
 			Description: "view record set change history details for a zone",
@@ -334,7 +330,7 @@ func main() {
 					Required: true,
 				},
 			},
-		},
+		},  */
 		{
 			Name:        "record-set",
 			Usage:       "record-set --zone-id <zoneID> --record-set-id <recordSetID>",

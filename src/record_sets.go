@@ -23,7 +23,7 @@ import (
 	"github.com/vinyldns/go-vinyldns/vinyldns"
 )
 
-func recordSetChanges(c *cli.Context) error {
+/* func recordSetChanges(c *cli.Context) error {
 	client := client(c)
 	zh, err := client.RecordSetChanges(c.String("zone-id"), vinyldns.ListFilter{})
 	if err != nil {
@@ -49,7 +49,7 @@ func recordSetChanges(c *cli.Context) error {
 	}
 
 	return nil
-}
+} */
 
 func recordSetChange(c *cli.Context) error {
 	client := client(c)

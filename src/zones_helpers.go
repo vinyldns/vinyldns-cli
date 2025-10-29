@@ -49,7 +49,7 @@ func getZone(c *vinyldns.Client, name, id string) (vinyldns.Zone, error) {
 	return c.Zone(id)
 }
 
-func getZoneDetails(c *vinyldns.Client, id string) (vinyldns.ZoneDetail, error) {
+func getZoneDetails(c *vinyldns.Client, id string) (vinyldns.ZoneDetails, error) {
 
 	return c.ZoneDetails(id)
 }
