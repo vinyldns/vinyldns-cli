@@ -20,8 +20,8 @@ github.com/russross/blackfriday/v2 v2.0.1 h1:lPqVAte+HuHNfhJ/0LC98ESWRz8afy9tM/0
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5IYyJwS/kOiWx8mHo=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
-github.com/ssranjani06/go-vinyldns v0.0.0-20240611144018-a38e17c2e3c3 h1:TZSwHXUQ3yO/0W9jDRcHoFahdC1aJ1JfoNK1McGXgcA=
-github.com/ssranjani06/go-vinyldns v0.0.0-20240611144018-a38e17c2e3c3/go.mod h1:pwWhE9K/leGDOIduVhRGvQ3ecVMHWRfEnKYUTEU3gB4=
+github.com/ssranjani06/go-vinyldns v0.0.0-20251027105147-f37f8c8e432d h1:mt6lQkyGfgogtEpFRBUpw/b2iqTF9OTkL3hhLYOan0M=
+github.com/ssranjani06/go-vinyldns v0.0.0-20251027105147-f37f8c8e432d/go.mod h1:pwWhE9K/leGDOIduVhRGvQ3ecVMHWRfEnKYUTEU3gB4=
 github.com/urfave/cli v1.22.4 h1:u7tSpNPPswAFymm8IehJhy4uJMlUuU/GmqSkvJ1InXA=
 github.com/urfave/cli v1.22.4/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
