@@ -318,7 +318,7 @@ func main() {
 				},
 			},
 		},
-		/* 		{
+		 		{
 			Name:        "record-set-changes",
 			Usage:       "record-set-changes --zone-id <zoneID>",
 			Description: "view record set change history details for a zone",
@@ -330,7 +330,7 @@ func main() {
 					Required: true,
 				},
 			},
-		},  */
+		},
 		{
 			Name:        "record-set",
 			Usage:       "record-set --zone-id <zoneID> --record-set-id <recordSetID>",
