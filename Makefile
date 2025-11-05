@@ -92,7 +92,7 @@ bats:
 test-fmt:
 	@set -euo pipefail
 	if [ `go fmt $(SOURCE_PATH) | wc -l` != "0" ]; then
-		echo "Fix go code formatting by running 'gmake format'."
+		echo "Fix go code formatting by running 'make format'."
 		exit 1
 	fi;
 
