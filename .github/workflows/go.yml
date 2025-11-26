@@ -15,10 +15,19 @@ jobs:
     - uses: actions/checkout@v2
     - id: get-version
       run: echo "::set-output name=CURRENT_VERSION::$(cat Makefile | head -n1 | awk -F= '{print $2}')"
+
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+
+    - name: Setup docker-compose compatibility
+      run: |
+        mkdir -p $HOME/bin
+        echo '#!/bin/sh' > $HOME/bin/docker-compose
+        echo 'exec docker compose "$@"' >> $HOME/bin/docker-compose
+        chmod +x $HOME/bin/docker-compose
+        echo "$HOME/bin" >> $GITHUB_PATH
 
     - name: Build
       run: make
