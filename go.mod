@@ -1,4 +1,4 @@
-module github.com/ssranjani06/vinyldns-cli
+module github.com/vinyldns/vinyldns-cli
 
 go 1.19
 
@@ -6,10 +6,8 @@ require (
 	github.com/crackcomm/go-clitable v0.0.0-20151121230230-53bcff2fea36
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/urfave/cli v1.22.4
-	github.com/vinyldns/go-vinyldns v0.9.16
+	github.com/vinyldns/go-vinyldns v0.9.17
 )
-
-replace github.com/vinyldns/go-vinyldns => github.com/ssranjani06/go-vinyldns v0.0.0-20251027105147-f37f8c8e432d
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1 // indirect
