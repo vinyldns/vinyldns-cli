@@ -53,9 +53,9 @@ func getZoneDetails(c *vinyldns.Client, id string) (vinyldns.ZoneDetails, error)
 
 	z, err := c.ZoneDetails(id)
 	if err != nil {
-    	return z, err
-    }
-    return z, nil
+		return z, err
+	}
+	return z, nil
 }
 
 func validateConnection(connection string, c *vinyldns.ZoneConnection) (bool, error) {
