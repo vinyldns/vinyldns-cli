@@ -185,7 +185,7 @@ func main() {
 		{
 			Name:        "zone-details",
 			Usage:       "zone --zone-id <zoneID>",
-			Description: "view zone details",
+			Description: "viewing general zone info when not part of the zone's admin group using zoneID",
 			Action: func(c *cli.Context) error {
 				return requireAtLeast(c, zoneDetails, "zone-id", "zone-name")
 			},
