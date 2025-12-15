@@ -1,6 +1,6 @@
 module github.com/vinyldns/vinyldns-cli
 
-go 1.19
+go 1.21
 
 require (
 	github.com/crackcomm/go-clitable v0.0.0-20151121230230-53bcff2fea36
