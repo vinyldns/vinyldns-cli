@@ -49,6 +49,15 @@ func getZone(c *vinyldns.Client, name, id string) (vinyldns.Zone, error) {
 	return c.Zone(id)
 }
 
+func getZoneDetails(c *vinyldns.Client, id string) (vinyldns.ZoneDetails, error) {
+
+	z, err := c.ZoneDetails(id)
+	if err != nil {
+		return z, err
+	}
+	return z, nil
+}
+
 func validateConnection(connection string, c *vinyldns.ZoneConnection) (bool, error) {
 	// if all are empty, we assume the user does not want to declare a connection
 	if c.Key == "" && c.KeyName == "" && c.Name == "" && c.PrimaryServer == "" {

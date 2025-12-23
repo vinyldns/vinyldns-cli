@@ -25,7 +25,7 @@ import (
 
 func recordSetChanges(c *cli.Context) error {
 	client := client(c)
-	zh, err := client.RecordSetChanges(c.String("zone-id"), vinyldns.ListFilter{})
+	zh, err := client.RecordSetChanges(c.String("zone-id"), vinyldns.ListFilterRecordSetChanges{})
 	if err != nil {
 		return err
 	}

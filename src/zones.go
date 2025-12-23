@@ -73,6 +73,31 @@ func zone(c *cli.Context) error {
 	return nil
 }
 
+func zoneDetails(c *cli.Context) error {
+	client := client(c)
+	id := c.String("zone-id")
+	z, err := getZoneDetails(client, id)
+	if err != nil {
+		return err
+	}
+
+	if c.GlobalString(outputFlag) == "json" {
+		return printJSON(z)
+	}
+
+	data := [][]string{
+		{"Name", z.Name},
+		{"Email", z.Email},
+		{"Status", z.Status},
+		{"AdminGroupID", z.AdminGroupID},
+		{"AdminGroupName", z.AdminGroupName},
+	}
+
+	printBasicTable(data)
+
+	return nil
+}
+
 func zoneUpdate(c *cli.Context) error {
 	data := []byte(c.String("json"))
 	zone := &vinyldns.Zone{}
