@@ -335,6 +335,46 @@ load test_helper
   echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
 }
 
+@test "record-set-ownership-request (unknown record set)" {
+  run $ew record-set-ownership-request \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-approve (unknown record set)" {
+  run $ew record-set-ownership-approve \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-reject (unknown record set)" {
+  run $ew record-set-ownership-reject \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-cancel (unknown record set)" {
+  run $ew record-set-ownership-cancel \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
 @test "group-change (unknown group change)" {
   run $ew group-change --group-change-id "does-not-exist"
 

@@ -607,6 +607,118 @@ func main() {
 			},
 		},
 		{
+			Name:        "record-set-ownership-request",
+			Usage:       "record-set-ownership-request --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "request record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipRequest, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-approve",
+			Usage:       "record-set-ownership-approve --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "approve record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipApprove, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-reject",
+			Usage:       "record-set-ownership-reject --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "reject record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipReject, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-cancel",
+			Usage:       "record-set-ownership-cancel --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "cancel record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipCancel, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
 			Name:        "record-set",
 			Usage:       "record-set --zone-id <zoneID> --record-set-id <recordSetID>",
 			Description: "View record set details",
