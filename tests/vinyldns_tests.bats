@@ -214,3 +214,179 @@ load test_helper
 
   [ "$status" -eq 0 ]
 }
+
+@test "ping" {
+  run $ew ping
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "PONG" ]
+}
+
+@test "health" {
+  run $ew health
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "OK" ]
+}
+
+@test "color" {
+  run $ew color
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep -E "blue|green"
+}
+
+@test "metrics-prometheus" {
+  run $ew metrics-prometheus
+
+  [ "$status" -eq 0 ]
+  [ -n "$output" ]
+}
+
+@test "status" {
+  run $ew --output=json status
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"processingDisabled"'
+}
+
+@test "status-update (requires admin)" {
+  run $ew status-update --processing-disabled true
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/status?processingDisabled=true"
+}
+
+@test "zone-backend-ids" {
+  run $ew --output=json zone-backend-ids
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '\['
+}
+
+@test "zone-details" {
+  run $ew --output=json zone-details --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"name":"ok\.'
+}
+
+@test "zone-changes-failure" {
+  run $ew --output=json zone-changes-failure
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"failedZoneChanges"'
+}
+
+@test "zones-deleted-changes" {
+  run $ew --output=json zones-deleted-changes
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"zonesDeletedInfo"'
+}
+
+@test "zone-acl-rule-create (unknown zone)" {
+  run $ew zone-acl-rule-create \
+    --zone-id "does-not-exist" \
+    --json '{"accessLevel":"Read","recordTypes":["A"],"groupId":"global-acl-group-id"}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/acl/rules"
+}
+
+@test "zone-acl-rule-delete (unknown zone)" {
+  run $ew zone-acl-rule-delete \
+    --zone-id "does-not-exist" \
+    --json '{"accessLevel":"Read","recordTypes":["A"],"groupId":"global-acl-group-id"}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/acl/rules"
+}
+
+@test "record-set-count" {
+  run $ew --output=json record-set-count --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"count"'
+}
+
+@test "record-set-history" {
+  run $ew --output=json record-set-history \
+    --zone-name "ok." \
+    --record-set-fqdn "some-cname.ok." \
+    --record-set-type "CNAME"
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"recordSetChanges"'
+}
+
+@test "record-set-changes-failure" {
+  run $ew --output=json record-set-changes-failure --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"failedRecordSetChanges"'
+}
+
+@test "record-set-update (unknown record set)" {
+  run $ew record-set-update \
+    --json '{"zoneId":"does-not-exist","id":"does-not-exist","name":"nope","type":"CNAME","ttl":300,"records":[{"cname":"test.com"}]}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "group-change (unknown group change)" {
+  run $ew group-change --group-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/groups/change/does-not-exist"
+}
+
+@test "group-valid-domains" {
+  run $ew --output=json group-valid-domains
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '\['
+}
+
+@test "user (unknown user)" {
+  run $ew user --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist"
+}
+
+@test "user-lock (unknown user)" {
+  run $ew user-lock --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist/lock"
+}
+
+@test "user-unlock (unknown user)" {
+  run $ew user-unlock --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist/unlock"
+}
+
+@test "batch-change-approve (unknown batch change)" {
+  run $ew batch-change-approve --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/approve"
+}
+
+@test "batch-change-reject (unknown batch change)" {
+  run $ew batch-change-reject --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/reject"
+}
+
+@test "batch-change-cancel (unknown batch change)" {
+  run $ew batch-change-cancel --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/cancel"
+}

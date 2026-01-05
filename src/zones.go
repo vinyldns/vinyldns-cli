@@ -75,7 +75,10 @@ func zone(c *cli.Context) error {
 
 func zoneDetails(c *cli.Context) error {
 	client := client(c)
-	id := c.String("zone-id")
+	id, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
+	if err != nil {
+		return err
+	}
 	z, err := getZoneDetails(client, id)
 	if err != nil {
 		return err
