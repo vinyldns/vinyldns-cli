@@ -356,24 +356,6 @@ func main() {
 			},
 		},
 		{
-			Name:        "zone-details",
-			Usage:       "zone-details --zone-id <zoneID>",
-			Description: "view detailed zone info",
-			Action: func(c *cli.Context) error {
-				return requireAtLeast(c, zoneDetails, "zone-id", "zone-name")
-			},
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "zone-id",
-					Usage: "The zone ID",
-				},
-				cli.StringFlag{
-					Name:  "zone-name",
-					Usage: "The zone name (an alternative to --zone-id)",
-				},
-			},
-		},
-		{
 			Name:        "zone-backend-ids",
 			Usage:       "zone-backend-ids",
 			Description: "List DNS backend IDs",
