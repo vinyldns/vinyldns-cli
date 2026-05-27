@@ -1,5 +1,6 @@
 {
   "comments": "request on behalf of someone.",
+  "ownerGroupId": "ok-group-id",
   "changes": [{
     "inputName": "test-cli.ok.",
     "changeType": "Add",

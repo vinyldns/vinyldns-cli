@@ -45,7 +45,7 @@ load test_helper
 @test "group-update (when the group exists)" {
   fixture="$(cat tests/fixtures/group_updated)"
   ok_group=$($ew --op json group --name "ok-group")
-  updated_group="$(echo ${ok_group} | sed 's/test@test.com/update@update.com/g')"
+  updated_group="$(echo ${ok_group} | sed 's/test@test.com/update@test.com/g')"
   run $ew group-update --json "${updated_group}"
 
   [ "${output}" = "${fixture}" ]
@@ -74,10 +74,10 @@ load test_helper
     --admin-group-name "ok-group" \
     --zone-connection-key-name "vinyldns." \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9" \
+    --zone-connection-primary-server "vinyldns-integration:19001" \
     --transfer-connection-key-name "vinyldns." \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
+    --transfer-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_connection)"
 
@@ -101,7 +101,7 @@ load test_helper
     --email "test@test.com" \
     --admin-group-name "ok-group" \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9"
+    --zone-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_invalid_zone_connection)"
 
@@ -115,7 +115,7 @@ load test_helper
     --email "test@test.com" \
     --admin-group-name "ok-group" \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
+    --transfer-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_invalid_transfer_connection)"
 
@@ -132,7 +132,7 @@ load test_helper
 @test "update zone (when the zone exists)" {
   fixture="$(cat tests/fixtures/zone_updated)"
   ok_zone=$($ew --op json zone --zone-name "ok.")
-  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@update.com/g')"
+  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@test.com/g')"
   run $ew zone-update \
     --json "${updated_zone}"
 
@@ -209,8 +209,11 @@ load test_helper
 }
 
 @test "batch-change-create" {
+  ok_group_id="$($ew --op json group --name "ok-group" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')"
+  batch_change_json="$(sed "s/ok-group-id/${ok_group_id}/g" tests/fixtures/batch_change_create_json)"
+
   run $ew batch-change-create \
-    --json "$(cat tests/fixtures/batch_change_create_json)"
+    --json "${batch_change_json}"
 
   [ "$status" -eq 0 ]
 }
