@@ -209,7 +209,7 @@ load test_helper
 }
 
 @test "batch-change-create" {
-  ok_group_id="$($ew --op json group --name "ok-group" | sed -n 's/.*"id":"\([^"]*\)".*/\1/p')"
+  ok_group_id="$($ew --op json group --name "ok-group" | sed -n 's/^{"id":"\([^"]*\)".*/\1/p')"
   batch_change_json="$(sed "s/ok-group-id/${ok_group_id}/g" tests/fixtures/batch_change_create_json)"
 
   run $ew batch-change-create \
