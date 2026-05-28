@@ -112,7 +112,8 @@ func zonesDeletedChanges(c *cli.Context) error {
 }
 
 func zoneACLRuleCreate(c *cli.Context) error {
-	zoneID, err := getZoneID(client(c), c.String("zone-id"), c.String("zone-name"))
+	client := client(c)
+	zoneID, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
 	if err != nil {
 		return err
 	}
@@ -123,7 +124,6 @@ func zoneACLRuleCreate(c *cli.Context) error {
 		return err
 	}
 
-	client := client(c)
 	updated, err := client.ZoneACLRuleCreate(zoneID, rule)
 	if err != nil {
 		return err
@@ -142,7 +142,8 @@ func zoneACLRuleCreate(c *cli.Context) error {
 }
 
 func zoneACLRuleDelete(c *cli.Context) error {
-	zoneID, err := getZoneID(client(c), c.String("zone-id"), c.String("zone-name"))
+	client := client(c)
+	zoneID, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
 	if err != nil {
 		return err
 	}
@@ -153,7 +154,6 @@ func zoneACLRuleDelete(c *cli.Context) error {
 		return err
 	}
 
-	client := client(c)
 	updated, err := client.ZoneACLRuleDelete(zoneID, rule)
 	if err != nil {
 		return err

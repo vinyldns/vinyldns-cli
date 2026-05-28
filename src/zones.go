@@ -253,6 +253,10 @@ func zoneChanges(c *cli.Context) error {
 func zoneSync(c *cli.Context) error {
 	client := client(c)
 	id, err := getZoneID(client, c.String("zone-id"), c.String("zone-name"))
+	if err != nil {
+		return err
+	}
+
 	z, err := client.ZoneSync(id)
 	if err != nil {
 		return err
