@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -103,4 +104,27 @@ func printJSON(i interface{}) error {
 	fmt.Println(string(j))
 
 	return nil
+}
+
+func parseIntFlag(c *cli.Context, name string) (int, error) {
+	val := c.String(name)
+	if val == "" {
+		return 0, nil
+	}
+
+	return strconv.Atoi(val)
+}
+
+func parseBoolFlag(c *cli.Context, name string) (*bool, error) {
+	val := c.String(name)
+	if val == "" {
+		return nil, nil
+	}
+
+	parsed, err := strconv.ParseBool(val)
+	if err != nil {
+		return nil, err
+	}
+
+	return &parsed, nil
 }

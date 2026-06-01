@@ -15,7 +15,7 @@ LATEST=${DOCKER_NAME}:latest
 
 BATS=github.com/sstephenson/bats
 VINYLDNS_REPO=github.com/vinyldns/vinyldns
-VINYLDNS_VERSION=0.9.10
+VINYLDNS_VERSION=0.21.6
 
 SOURCE_PATH:=$(ROOT_DIR)/src
 LOCAL_GO_PATH=`go env GOPATH`
@@ -75,13 +75,23 @@ start-api:
 			https://$(VINYLDNS_REPO) \
 		$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION); \
 	fi
-	$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/docker-up-vinyldns.sh \
-		--api-only \
-		--version $(VINYLDNS_VERSION)
+	if [ -x "$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/quickstart/quickstart-vinyldns.sh" ]; then \
+		$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/quickstart/quickstart-vinyldns.sh \
+			--api-only \
+			--version-tag $(VINYLDNS_VERSION); \
+	else \
+		$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/docker-up-vinyldns.sh \
+			--api-only \
+			--version $(VINYLDNS_VERSION); \
+	fi
 
 stop-api:
 	@set -euo pipefail
-	$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/remove-vinyl-containers.sh
+	if [ -x "$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/utils/clean-vinyldns-containers.sh" ]; then \
+		$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/utils/clean-vinyldns-containers.sh; \
+	else \
+		$(LOCAL_GO_PATH)/src/$(VINYLDNS_REPO)-$(VINYLDNS_VERSION)/bin/remove-vinyl-containers.sh; \
+	fi
 
 bats:
 	@set -euo pipefail
@@ -117,5 +127,3 @@ docker-push:
 	@set -euo pipefail
 	docker push ${LATEST}
 	docker push ${IMG}
-
-
