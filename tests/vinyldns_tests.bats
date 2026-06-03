@@ -45,7 +45,7 @@ load test_helper
 @test "group-update (when the group exists)" {
   fixture="$(cat tests/fixtures/group_updated)"
   ok_group=$($ew --op json group --name "ok-group")
-  updated_group="$(echo ${ok_group} | sed 's/test@test.com/update@update.com/g')"
+  updated_group="$(echo ${ok_group} | sed 's/test@test.com/update@test.com/g')"
   run $ew group-update --json "${updated_group}"
 
   [ "${output}" = "${fixture}" ]
@@ -74,10 +74,10 @@ load test_helper
     --admin-group-name "ok-group" \
     --zone-connection-key-name "vinyldns." \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9" \
+    --zone-connection-primary-server "vinyldns-integration:19001" \
     --transfer-connection-key-name "vinyldns." \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
+    --transfer-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_connection)"
 
@@ -101,7 +101,7 @@ load test_helper
     --email "test@test.com" \
     --admin-group-name "ok-group" \
     --zone-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --zone-connection-primary-server "vinyldns-bind9"
+    --zone-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_invalid_zone_connection)"
 
@@ -115,7 +115,7 @@ load test_helper
     --email "test@test.com" \
     --admin-group-name "ok-group" \
     --transfer-connection-key "nzisn+4G2ldMn0q1CV3vsg==" \
-    --transfer-connection-primary-server "vinyldns-bind9"
+    --transfer-connection-primary-server "vinyldns-integration:19001"
 
   fixture="$(cat tests/fixtures/zone_create_invalid_transfer_connection)"
 
@@ -132,7 +132,7 @@ load test_helper
 @test "update zone (when the zone exists)" {
   fixture="$(cat tests/fixtures/zone_updated)"
   ok_zone=$($ew --op json zone --zone-name "ok.")
-  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@update.com/g')"
+  updated_zone="$(echo ${ok_zone} | sed 's/test@test.com/update@test.com/g')"
   run $ew zone-update \
     --json "${updated_zone}"
 
@@ -209,8 +209,227 @@ load test_helper
 }
 
 @test "batch-change-create" {
+  ok_group_id="$($ew --op json group --name "ok-group" | sed -n 's/^{"id":"\([^"]*\)".*/\1/p')"
+  batch_change_json="$(sed "s/ok-group-id/${ok_group_id}/g" tests/fixtures/batch_change_create_json)"
+
   run $ew batch-change-create \
-    --json "$(cat tests/fixtures/batch_change_create_json)"
+    --json "${batch_change_json}"
 
   [ "$status" -eq 0 ]
+}
+
+@test "ping" {
+  run $ew ping
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "PONG" ]
+}
+
+@test "health" {
+  run $ew health
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "OK" ]
+}
+
+@test "color" {
+  run $ew color
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep -E "blue|green"
+}
+
+@test "metrics-prometheus" {
+  run $ew metrics-prometheus
+
+  [ "$status" -eq 0 ]
+  [ -n "$output" ]
+}
+
+@test "status" {
+  run $ew --output=json status
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"processingDisabled"'
+}
+
+@test "status-update (requires admin)" {
+  run $ew status-update --processing-disabled true
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/status?processingDisabled=true"
+}
+
+@test "zone-backend-ids" {
+  run $ew --output=json zone-backend-ids
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '\['
+}
+
+@test "zone-details" {
+  run $ew --output=json zone-details --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"name":"ok\.'
+}
+
+@test "zone-changes-failure" {
+  run $ew --output=json zone-changes-failure
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"failedZoneChanges"'
+}
+
+@test "zones-deleted-changes" {
+  run $ew --output=json zones-deleted-changes
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"zonesDeletedInfo"'
+}
+
+@test "zone-acl-rule-create (unknown zone)" {
+  run $ew zone-acl-rule-create \
+    --zone-id "does-not-exist" \
+    --json '{"accessLevel":"Read","recordTypes":["A"],"groupId":"global-acl-group-id"}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/acl/rules"
+}
+
+@test "zone-acl-rule-delete (unknown zone)" {
+  run $ew zone-acl-rule-delete \
+    --zone-id "does-not-exist" \
+    --json '{"accessLevel":"Read","recordTypes":["A"],"groupId":"global-acl-group-id"}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/acl/rules"
+}
+
+@test "record-set-count" {
+  run $ew --output=json record-set-count --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"count"'
+}
+
+@test "record-set-history" {
+  run $ew --output=json record-set-history \
+    --zone-name "ok." \
+    --record-set-fqdn "some-cname.ok." \
+    --record-set-type "CNAME"
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"recordSetChanges"'
+}
+
+@test "record-set-changes-failure" {
+  run $ew --output=json record-set-changes-failure --zone-name "ok."
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '"failedRecordSetChanges"'
+}
+
+@test "record-set-update (unknown record set)" {
+  run $ew record-set-update \
+    --json '{"zoneId":"does-not-exist","id":"does-not-exist","name":"nope","type":"CNAME","ttl":300,"records":[{"cname":"test.com"}]}'
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-request (unknown record set)" {
+  run $ew record-set-ownership-request \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-approve (unknown record set)" {
+  run $ew record-set-ownership-approve \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-reject (unknown record set)" {
+  run $ew record-set-ownership-reject \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "record-set-ownership-cancel (unknown record set)" {
+  run $ew record-set-ownership-cancel \
+    --zone-id "does-not-exist" \
+    --record-set-id "does-not-exist" \
+    --requested-owner-group-id "group-does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/does-not-exist/recordsets/does-not-exist"
+}
+
+@test "group-change (unknown group change)" {
+  run $ew group-change --group-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/groups/change/does-not-exist"
+}
+
+@test "group-valid-domains" {
+  run $ew --output=json group-valid-domains
+
+  [ "$status" -eq 0 ]
+  echo "$output" | grep '\['
+}
+
+@test "user (unknown user)" {
+  run $ew user --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist"
+}
+
+@test "user-lock (unknown user)" {
+  run $ew user-lock --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist/lock"
+}
+
+@test "user-unlock (unknown user)" {
+  run $ew user-unlock --user-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/users/does-not-exist/unlock"
+}
+
+@test "batch-change-approve (unknown batch change)" {
+  run $ew batch-change-approve --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/approve"
+}
+
+@test "batch-change-reject (unknown batch change)" {
+  run $ew batch-change-reject --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/reject"
+}
+
+@test "batch-change-cancel (unknown batch change)" {
+  run $ew batch-change-cancel --batch-change-id "does-not-exist"
+
+  [ "$status" -eq 1 ]
+  echo "$output" | grep "/zones/batchrecordchanges/does-not-exist/cancel"
 }

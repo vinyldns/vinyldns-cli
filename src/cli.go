@@ -57,6 +57,55 @@ func main() {
 	}
 	app.Commands = []cli.Command{
 		{
+			Name:        "ping",
+			Usage:       "ping",
+			Description: "Simple health check",
+			Action:      ping,
+		},
+		{
+			Name:        "health",
+			Usage:       "health",
+			Description: "Comprehensive health check",
+			Action:      health,
+		},
+		{
+			Name:        "color",
+			Usage:       "color",
+			Description: "Blue/green deployment status",
+			Action:      color,
+		},
+		{
+			Name:        "metrics-prometheus",
+			Usage:       "metrics-prometheus --name <metricName>",
+			Description: "Prometheus metrics export",
+			Action:      metricsPrometheus,
+			Flags: []cli.Flag{
+				cli.StringSliceFlag{
+					Name:  "name",
+					Usage: "Metric name (repeatable)",
+				},
+			},
+		},
+		{
+			Name:        "status",
+			Usage:       "status",
+			Description: "System processing status",
+			Action:      status,
+		},
+		{
+			Name:        "status-update",
+			Usage:       "status-update --processing-disabled <true|false>",
+			Description: "Enable/disable processing (admin)",
+			Action:      statusUpdate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "processing-disabled",
+					Usage:    "Set processing disabled (true|false)",
+					Required: true,
+				},
+			},
+		},
+		{
 			Name:        "groups",
 			Usage:       "groups",
 			Description: "List all VinylDNS groups",
@@ -159,6 +208,25 @@ func main() {
 			},
 		},
 		{
+			Name:        "group-change",
+			Usage:       "group-change --group-change-id <groupChangeID>",
+			Description: "Retrieve a specific group change",
+			Action:      groupChange,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "group-change-id",
+					Usage:    "The group change ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "group-valid-domains",
+			Usage:       "group-valid-domains",
+			Description: "List valid email domains for group membership",
+			Action:      groupValidDomains,
+		},
+		{
 			Name:        "zones",
 			Usage:       "zones",
 			Description: "List all VinylDNS zones",
@@ -193,6 +261,10 @@ func main() {
 				cli.StringFlag{
 					Name:  "zone-id",
 					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
 				},
 			},
 		},
@@ -288,6 +360,12 @@ func main() {
 			},
 		},
 		{
+			Name:        "zone-backend-ids",
+			Usage:       "zone-backend-ids",
+			Description: "List DNS backend IDs",
+			Action:      zoneBackendIDs,
+		},
+		{
 			Name:        "zone-changes",
 			Usage:       "zone-changes --zone-changes <zoneID>",
 			Description: "view zone change history details",
@@ -296,6 +374,96 @@ func main() {
 				cli.StringFlag{
 					Name:     "zone-id",
 					Usage:    "The zone ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "zone-changes-failure",
+			Usage:       "zone-changes-failure",
+			Description: "view failed zone changes",
+			Action:      zoneChangesFailure,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name-filter",
+					Usage: "The name filter for the zone",
+				},
+				cli.StringFlag{
+					Name:  "start-from",
+					Usage: "The start key of the page",
+				},
+				cli.StringFlag{
+					Name:  "max-items",
+					Usage: "The page limit",
+				},
+			},
+		},
+		{
+			Name:        "zones-deleted-changes",
+			Usage:       "zones-deleted-changes",
+			Description: "view deleted zone changes",
+			Action:      zonesDeletedChanges,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name-filter",
+					Usage: "The name filter for the zone",
+				},
+				cli.StringFlag{
+					Name:  "start-from",
+					Usage: "The start key of the page",
+				},
+				cli.StringFlag{
+					Name:  "max-items",
+					Usage: "The page limit",
+				},
+				cli.StringFlag{
+					Name:  "ignore-access",
+					Usage: "Ignore access restrictions (true|false)",
+				},
+			},
+		},
+		{
+			Name:        "zone-acl-rule-create",
+			Usage:       "zone-acl-rule-create --zone-id <zoneID> --json <aclRuleJSON>",
+			Description: "Add an ACL rule to a zone",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zoneACLRuleCreate, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the ACL rule",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "zone-acl-rule-delete",
+			Usage:       "zone-acl-rule-delete --zone-id <zoneID> --json <aclRuleJSON>",
+			Description: "Delete an ACL rule from a zone",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, zoneACLRuleDelete, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the ACL rule",
 					Required: true,
 				},
 			},
@@ -319,6 +487,99 @@ func main() {
 			},
 		},
 		{
+			Name:        "record-set-update",
+			Usage:       "record-set-update --json <recordSetJSON>",
+			Description: "update record set details",
+			Action:      recordSetUpdate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "json",
+					Usage:    "The VinylDNS JSON representing the record set",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-count",
+			Usage:       "record-set-count --zone-id <zoneID>",
+			Description: "view record set count for a zone",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetCount, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+			},
+		},
+		{
+			Name:        "record-set-history",
+			Usage:       "record-set-history --zone-id <zoneID> --record-set-fqdn <fqdn> --record-set-type <type>",
+			Description: "view record set change history for a FQDN",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetHistory, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-fqdn",
+					Usage:    "The record set FQDN",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "record-set-type",
+					Usage:    "The record set type",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:  "start-from",
+					Usage: "The start key of the page",
+				},
+				cli.StringFlag{
+					Name:  "max-items",
+					Usage: "The page limit",
+				},
+			},
+		},
+		{
+			Name:        "record-set-changes-failure",
+			Usage:       "record-set-changes-failure --zone-id <zoneID>",
+			Description: "view failed record set changes for a zone",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetChangesFailure, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:  "start-from",
+					Usage: "The start key of the page",
+				},
+				cli.StringFlag{
+					Name:  "max-items",
+					Usage: "The page limit",
+				},
+			},
+		},
+		{
 			Name:        "record-set-changes",
 			Usage:       "record-set-changes --zone-id <zoneID>",
 			Description: "view record set change history details for a zone",
@@ -327,6 +588,118 @@ func main() {
 				cli.StringFlag{
 					Name:     "zone-id",
 					Usage:    "The zone ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-request",
+			Usage:       "record-set-ownership-request --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "request record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipRequest, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-approve",
+			Usage:       "record-set-ownership-approve --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "approve record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipApprove, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-reject",
+			Usage:       "record-set-ownership-reject --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "reject record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipReject, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "record-set-ownership-cancel",
+			Usage:       "record-set-ownership-cancel --zone-id <zoneID> --record-set-id <recordSetID> --requested-owner-group-id <groupID>",
+			Description: "cancel record set ownership transfer",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, recordSetOwnershipCancel, "zone-id", "zone-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "zone-id",
+					Usage: "The zone ID",
+				},
+				cli.StringFlag{
+					Name:  "zone-name",
+					Usage: "The zone name (an alternative to --zone-id)",
+				},
+				cli.StringFlag{
+					Name:     "record-set-id",
+					Usage:    "The record set ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     "requested-owner-group-id",
+					Usage:    "The requested owner group ID",
 					Required: true,
 				},
 			},
@@ -509,6 +882,101 @@ func main() {
 				cli.StringFlag{
 					Name:     "json",
 					Usage:    "The VinylDNS JSON representing the batch change",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "batch-change-approve",
+			Usage:       "batch-change-approve --batch-change-id <batchChangeID>",
+			Description: "Approve a batch change (manual review)",
+			Action:      batchChangeApprove,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "batch-change-id",
+					Usage:    "The batch change ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:  "review-comment",
+					Usage: "Review comment",
+				},
+			},
+		},
+		{
+			Name:        "batch-change-reject",
+			Usage:       "batch-change-reject --batch-change-id <batchChangeID>",
+			Description: "Reject a batch change (manual review)",
+			Action:      batchChangeReject,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "batch-change-id",
+					Usage:    "The batch change ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:  "review-comment",
+					Usage: "Review comment",
+				},
+			},
+		},
+		{
+			Name:        "batch-change-cancel",
+			Usage:       "batch-change-cancel --batch-change-id <batchChangeID>",
+			Description: "Cancel a batch change",
+			Action:      batchChangeCancel,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "batch-change-id",
+					Usage:    "The batch change ID",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:  "review-comment",
+					Usage: "Review comment",
+				},
+			},
+		},
+		{
+			Name:        "user",
+			Usage:       "user --user-id <userID>",
+			Description: "Retrieve user details",
+			Action: func(c *cli.Context) error {
+				return requireAtLeast(c, user, "user-id", "user-name")
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "user-id",
+					Usage: "The user ID",
+				},
+				cli.StringFlag{
+					Name:  "user-name",
+					Usage: "The user name",
+				},
+			},
+		},
+		{
+			Name:        "user-lock",
+			Usage:       "user-lock --user-id <userID>",
+			Description: "Lock a user account (admin)",
+			Action:      userLock,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "user-id",
+					Usage:    "The user ID",
+					Required: true,
+				},
+			},
+		},
+		{
+			Name:        "user-unlock",
+			Usage:       "user-unlock --user-id <userID>",
+			Description: "Unlock a user account (admin)",
+			Action:      userUnlock,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     "user-id",
+					Usage:    "The user ID",
 					Required: true,
 				},
 			},
