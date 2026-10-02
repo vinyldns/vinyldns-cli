@@ -32,6 +32,36 @@ jobs:
     - name: Build
       run: make
 
+    - name: Validate release artifacts
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        version="$(awk -F= '$1 == "VERSION" { print $2; exit }' Makefile)"
+
+        test -f "release/vinyldns_${version}_darwin_amd64.tar.gz"
+        test -f "release/vinyldns_${version}_darwin_arm64.tar.gz"
+        test -f "release/vinyldns_${version}_linux_amd64.tar.gz"
+        test -f "release/vinyldns_${version}_linux_arm64.tar.gz"
+        test -f "release/vinyldns_${version}_windows_amd64.zip"
+
+        for archive in release/*.tar.gz; do
+          test "$(tar -tzf "$archive" | wc -l)" -eq 1
+          tar -tzf "$archive" | grep -Eq '^vinyldns$'
+        done
+
+        test "$(unzip -Z1 "release/vinyldns_${version}_windows_amd64.zip" | wc -l)" -eq 1
+        unzip -Z1 "release/vinyldns_${version}_windows_amd64.zip" |
+          grep -Eq '^vinyldns\.exe$'
+
+    - name: Upload release artifacts
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: vinyldns-${{ github.sha }}
+        path: release/*
+        if-no-files-found: error
+
     - name: Create and Push Tag
       # Only create and push tag on push to the main branch
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -54,4 +84,6 @@ jobs:
         tag_name: v${{ steps.get-version.outputs.CURRENT_VERSION }}
         draft: true
         prerelease: true
-        files: release/*.tar.gz
+        files: |
+          release/*.tar.gz
+          release/*.zip

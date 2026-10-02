@@ -9,41 +9,54 @@ A Golang-based CLI for the [vinyldns](https://github.com/vinyldns/vinyldns) DNS 
 
 ## Installation
 
-Download the latest pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases/latest) version
-for your operating system.
+Download the latest pre-compiled executable [release](https://github.com/vinyldns/vinyldns-cli/releases/latest).
+Choose the artifact that matches your OS and architecture:
 
-For example, to install version 0.10.0 on Linux
+macOS amd64: `vinyldns_<version>_darwin_amd64.tar.gz`
 
-Download:
+macOS arm64: `vinyldns_<version>_darwin_arm64.tar.gz`
 
+Linux amd64: `vinyldns_<version>_linux_amd64.tar.gz`
+
+Linux arm64: `vinyldns_<version>_linux_arm64.tar.gz`
+
+Windows amd64: `vinyldns_<version>_windows_amd64.zip`
+
+For example, for version `0.10.3`:
+
+- macOS amd64:
 ```
-wget https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.0/vinyldns_0.10.0_linux_amd64.tar.gz
-```
-
-Extract the executable:
-
-```
-tar zxf vinyldns_0.10.0_linux_amd64.tar.gz
-```
-
-This will extract a file named `vinyldns`. To get started:
-
-```
-./vinyldns --help
-```
-
-And, of course, you can also move it to your path. For example...
-
-
-Move it somewhere in your `$PATH`:
-
-```
-sudo mv vinyldns /usr/local/bin
+    curl -L -o vinyldns_0.10.3_darwin_amd64.tar.gz \
+    https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_darwin_amd64.tar.gz
+    tar -xzf vinyldns_0.10.3_darwin_amd64.tar.gz
+    ./vinyldns --help
 ```
 
-Use the `vinyldns` command:
-
+- Linux amd64:
 ```
+    curl -L -o vinyldns_0.10.3_linux_amd64.tar.gz \
+    https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_linux_amd64.tar.gz
+    tar -xzf vinyldns_0.10.3_linux_amd64.tar.gz
+    ./vinyldns --help
+```
+
+- Windows amd64 (PowerShell):
+```
+    Invoke-WebRequest `
+      -Uri "https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_windows_amd64.zip" `
+      -OutFile "vinyldns_0.10.3_windows_amd64.zip"
+
+  Expand-Archive `
+      -Path "vinyldns_0.10.3_windows_amd64.zip" `
+      -DestinationPath .
+
+  .\vinyldns.exe --help
+```
+You can also extract the ZIP in File Explorer by right-clicking the archive and choosing "Extract All..." before running vinyldns.exe
+
+On macOS and Linux, after extraction you can move the binary into your $PATH:
+```
+sudo mv ./vinyldns /usr/local/bin/vinyldns
 vinyldns --help
 ```
 

@@ -32,7 +32,6 @@ endif
 
 .ONESHELL:
 
-
 .PHONY: install uninstall build build_releases release test docker docker-push
 
 all: test build-releases
@@ -52,18 +51,36 @@ build:
 
 build-releases:
 	@set -euo pipefail
-	rm -rf release && mkdir release
+	rm -rf release && mkdir -p release
 	for platform in $(PLATFORMS); do
-	    GOOS=$${platform}
-	    GOARCH=amd64
-	    BINARY="$(NAME)"
-	    if [ "$${platform}" == "windows" ]; then BINARY="$${BINARY}.exe"; fi
+		case "$${platform}" in
+			darwin|linux) arches="amd64 arm64" ;;
+			windows) arches="amd64" ;;
+		esac
 
-	    echo -n "Building $${BINARY} v$(VERSION) for $${platform}/$${GOARCH}..."
-	    GOOS=$${platform} GOARCH=$${GOARCH} go build -ldflags "-X main.version=$(VERSION)" -o $(ROOT_DIR)/release/$${GOOS}_$${GOARCH}/$${BINARY} $(SOURCE_PATH);
-	    echo -n "compressing..."
-	    tar czf $(ROOT_DIR)/release/$(NAME)_$(VERSION)_$${GOOS}_$${GOARCH}.tar.gz -C $(ROOT_DIR)/release/$${GOOS}_$${GOARCH} $${BINARY};
-	    echo "done."
+		for arch in $${arches}; do
+			BINARY="$(NAME)"
+			if [ "$${platform}" = "windows" ]; then
+				BINARY="$${BINARY}.exe"
+			fi
+
+			TMPDIR="$(ROOT_DIR)/release/.tmp_$${platform}_$${arch}"
+			rm -rf "$$TMPDIR"
+			mkdir -p "$$TMPDIR"
+
+			echo -n "Building $${BINARY} v$(VERSION) for $${platform}/$${arch}..."
+			GOOS=$${platform} GOARCH=$${arch} go build -ldflags "-X main.version=$(VERSION)" -o "$$TMPDIR/$${BINARY}" $(SOURCE_PATH)
+			echo -n "compressing..."
+
+			if [ "$${platform}" = "windows" ]; then
+				(cd "$$TMPDIR" && zip -j "$(ROOT_DIR)/release/$(NAME)_$(VERSION)_$${platform}_$${arch}.zip" "$${BINARY}")
+			else
+				tar czf "$(ROOT_DIR)/release/$(NAME)_$(VERSION)_$${platform}_$${arch}.tar.gz" -C "$$TMPDIR" "$${BINARY}"
+			fi
+
+			rm -rf "$$TMPDIR"
+			echo "done."
+		done
 	done
 
 start-api:
