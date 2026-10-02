@@ -42,11 +42,15 @@ For example, for version `0.10.3`:
 
 - Windows amd64 (PowerShell):
 ```
-    Invoke-WebRequest -Uri
-    "https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_windows_amd64.zip" -OutFile
-    "vinyldns_0.10.3_windows_amd64.zip"
-    Expand-Archive -Path "vinyldns_0.10.3_windows_amd64.zip" -DestinationPath .
-    .\vinyldns.exe --help
+    Invoke-WebRequest `
+      -Uri "https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_windows_amd64.zip" `
+      -OutFile "vinyldns_0.10.3_windows_amd64.zip"
+
+  Expand-Archive `
+      -Path "vinyldns_0.10.3_windows_amd64.zip" `
+      -DestinationPath .
+
+  .\vinyldns.exe --help
 ```
 You can also extract the ZIP in File Explorer by right-clicking the archive and choosing "Extract All..." before running vinyldns.exe
 
