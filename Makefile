@@ -1,4 +1,4 @@
-VERSION=0.10.3
+VERSION=0.10.4
 
 SHELL=bash
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
@@ -129,7 +129,7 @@ format:
 
 test: test-fmt build bats start-api
 	@set -euo pipefail
-	trap 'make stop-api' TERM INT EXIT
+	trap '$(MAKE) stop-api' TERM INT EXIT
 	go install golang.org/x/lint/golint@latest
 	$(LOCAL_GO_PATH)/bin/golint -set_exit_status $(SOURCE_PATH)
 	go vet $(SOURCE_PATH)

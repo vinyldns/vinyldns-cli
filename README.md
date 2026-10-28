@@ -22,32 +22,36 @@ Linux arm64: `vinyldns_<version>_linux_arm64.tar.gz`
 
 Windows amd64: `vinyldns_<version>_windows_amd64.zip`
 
-For example, for version `0.10.3`:
+Set `VERSION` to the release version without its leading `v`. These examples use
+amd64; use `arm64` instead on Apple Silicon or ARM Linux.
 
 - macOS amd64:
 ```
-    curl -L -o vinyldns_0.10.3_darwin_amd64.tar.gz \
-    https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_darwin_amd64.tar.gz
-    tar -xzf vinyldns_0.10.3_darwin_amd64.tar.gz
+    VERSION='<version>'
+    curl -fL -o vinyldns.tar.gz \
+      "https://github.com/vinyldns/vinyldns-cli/releases/download/v${VERSION}/vinyldns_${VERSION}_darwin_amd64.tar.gz"
+    tar -xzf vinyldns.tar.gz
     ./vinyldns --help
 ```
 
 - Linux amd64:
 ```
-    curl -L -o vinyldns_0.10.3_linux_amd64.tar.gz \
-    https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_linux_amd64.tar.gz
-    tar -xzf vinyldns_0.10.3_linux_amd64.tar.gz
+    VERSION='<version>'
+    curl -fL -o vinyldns.tar.gz \
+      "https://github.com/vinyldns/vinyldns-cli/releases/download/v${VERSION}/vinyldns_${VERSION}_linux_amd64.tar.gz"
+    tar -xzf vinyldns.tar.gz
     ./vinyldns --help
 ```
 
 - Windows amd64 (PowerShell):
 ```
+    $Version = "<version>"
     Invoke-WebRequest `
-      -Uri "https://github.com/vinyldns/vinyldns-cli/releases/download/v0.10.3/vinyldns_0.10.3_windows_amd64.zip" `
-      -OutFile "vinyldns_0.10.3_windows_amd64.zip"
+      -Uri "https://github.com/vinyldns/vinyldns-cli/releases/download/v${Version}/vinyldns_${Version}_windows_amd64.zip" `
+      -OutFile "vinyldns.zip"
 
   Expand-Archive `
-      -Path "vinyldns_0.10.3_windows_amd64.zip" `
+      -Path "vinyldns.zip" `
       -DestinationPath .
 
   .\vinyldns.exe --help
@@ -64,10 +68,18 @@ vinyldns --help
 
 Alternatively, if you choose to compile from Golang source code:
 
-* install Golang
-* set up your `$GOPATH`
-* `go get github.com/vinyldns/vinyldns-cli`
-* `cd $GOPATH/src/github.com/vinyldns/vinyldns-cli && make`
+Install the Go version declared in `go.mod` or a newer supported patch, plus
+GNU Make. Clone this repository, then run `make build` (`gmake build` on macOS).
+The executable is written to `bin/vinyldns`. This does not start a local API.
+
+When upgrading, replace the installed executable with one from the new release;
+updating Go on your machine does not rebuild a downloaded binary. You can inspect
+an executable's compiler and dependency versions with `go version -m <binary>`.
+
+The CLI uses the operating system's certificate trust configuration. Keep that
+configuration current through your OS or organization-managed certificate
+updates. Rebuilding the CLI does not remove a compromised CA from a host's trust
+store. Do not disable TLS verification to work around certificate errors.
 
 ## Usage
 
