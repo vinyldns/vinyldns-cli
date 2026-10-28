@@ -12,13 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - id: get-version
-      run: echo "::set-output name=CURRENT_VERSION::$(cat Makefile | head -n1 | awk -F= '{print $2}')"
+      run: echo "CURRENT_VERSION=$(awk -F= '$1 == "VERSION" { print $2; exit }' Makefile)" >> "$GITHUB_OUTPUT"
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
-        go-version: 1.21
+        go-version-file: go.mod
 
     - name: Setup docker-compose compatibility
       run: |
@@ -53,6 +53,27 @@ jobs:
         test "$(unzip -Z1 "release/vinyldns_${version}_windows_amd64.zip" | wc -l)" -eq 1
         unzip -Z1 "release/vinyldns_${version}_windows_amd64.zip" |
           grep -Eq '^vinyldns\.exe$'
+
+        # Inspect the binaries, not just the archive names. Do not execute
+        # cross-compiled binaries on the CI host.
+        expected_go="go$(awk '$1 == "go" { print $2 }' go.mod)"
+        expected_client="$(go list -m -f '{{.Version}}' github.com/vinyldns/go-vinyldns)"
+        workdir="$(mktemp -d)"
+        trap 'rm -rf "$workdir"' EXIT
+        for target in darwin_amd64 darwin_arm64 linux_amd64 linux_arm64 windows_amd64; do
+          binary="$workdir/vinyldns"
+          if [[ "$target" == windows_* ]]; then
+            unzip -p "release/vinyldns_${version}_${target}.zip" vinyldns.exe > "$binary"
+          else
+            tar -xOzf "release/vinyldns_${version}_${target}.tar.gz" vinyldns > "$binary"
+          fi
+          metadata="$(go version -m "$binary")"
+          echo "$target: $metadata"
+          test "$(awk 'NR == 1 { print $NF }' <<< "$metadata")" = "$expected_go"
+          test "$(awk '$1 == "dep" && $2 == "github.com/vinyldns/go-vinyldns" { print $3 }' <<< "$metadata")" = "$expected_client"
+          grep -Fq "GOOS=${target%_*}" <<< "$metadata"
+          grep -Fq "GOARCH=${target#*_}" <<< "$metadata"
+        done
 
     - name: Upload release artifacts
       if: ${{ github.event_name == 'pull_request' }}
